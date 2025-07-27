@@ -1,0 +1,15 @@
+objdir = obj
+cflags = -Wall
+ldflags = -lgtest -lgtest_main -pthread
+
+rule compile_obj_rule
+    command = g++ -MMD -MF $out.d $cflags -c $in -o $out
+    depfile = $out.d
+
+rule compile_exec_rule
+    command = g++ -MMD -MF $objdir/$out.d $cflags $in -o $out $ldflags
+    depfile = $objdir/$out.d
+
+build $objdir/neural_network.o: compile_obj_rule neural_network.cpp
+
+build run_tests: compile_exec_rule neural_network_unittest.cpp $objdir/neural_network.o
