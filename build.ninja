@@ -2,14 +2,26 @@ objdir = obj
 cflags = -Wall
 ldflags = -lgtest -lgtest_main -pthread
 
+# Compile from .cpp -> .o
 rule compile_obj_rule
     command = g++ -MMD -MF $out.d $cflags -c $in -o $out
     depfile = $out.d
 
+# Compile from .cpp files, link .o files and produce binary
 rule compile_exec_rule
     command = g++ -MMD -MF $objdir/$out.d $cflags $in -o $out $ldflags
     depfile = $objdir/$out.d
 
-build $objdir/neural_network.o: compile_obj_rule neural_network.cpp
+# Link .o files
+rule link_rule
+    command = g++ $in -o $out $ldflags
+    description  = Linking $out
 
-build run_tests: compile_exec_rule neural_network_unittest.cpp $objdir/neural_network.o
+# Build the .o files
+build $objdir/neural_network.o: compile_obj_rule neural_network.cpp
+build $objdir/matrix.o: compile_obj_rule matrix.cpp
+build $objdir/matrix_unittest.o: compile_obj_rule matrix_unittest.cpp
+build $objdir/neural_network_unittest.o: compile_obj_rule neural_network_unittest.cpp
+
+# Link the .o files and produce the binary
+build run_tests: link_rule $objdir/neural_network.o $objdir/matrix.o $objdir/neural_network_unittest.o $objdir/matrix_unittest.o
