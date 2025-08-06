@@ -21,9 +21,17 @@ const vector<double>& Matrix::operator[](size_t row) const {
     return this->data_[row];
 }
 
-double Matrix::at(size_t row, size_t col) const {
+double& Matrix::at(size_t row, size_t col) {
     if (row >= this->rows_ || col >= this->cols_) {
         throw std::out_of_range("Matrix indices out of bounds!");
     }
     return data_[row][col];
 }
+
+const double& Matrix::at(size_t row, size_t col) const {
+    if (row >= this->rows_ || col >= this->cols_) {
+        throw std::out_of_range("Matrix indices out of bounds!");
+    }
+    return data_[row][col];
+}
+

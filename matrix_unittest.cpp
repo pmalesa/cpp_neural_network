@@ -61,3 +61,21 @@ TEST_F(MatrixTest, MoveConstructorTest) {
     ASSERT_EQ(matrix_1.get_cols(), 0);
     ASSERT_EQ(matrix_1.is_empty(), true);
 }
+
+TEST_F(MatrixTest, AccessOperatorTest) {
+    Matrix matrix(5, 5);
+    ASSERT_NEAR(matrix[2][2], 0.0, 1e-9);
+    matrix[2][2] += 5.0;
+    ASSERT_NEAR(matrix[2][2], 5.0, 1e-9);
+}
+
+TEST_F(MatrixTest, AtMethodTest) {
+    Matrix matrix(5, 5);
+    ASSERT_NEAR(matrix.at(2, 2), 0.0, 1e-9);
+    matrix.at(2, 2) += 5.0;
+    ASSERT_NEAR(matrix.at(2, 2), 5.0, 1e-9);
+    ASSERT_THROW(matrix.at(-1, -1), std::out_of_range);
+    ASSERT_THROW(matrix.at(5, 5), std::out_of_range);
+    ASSERT_NO_THROW(matrix.at(0, 0));
+    ASSERT_NO_THROW(matrix.at(4, 4));
+}
