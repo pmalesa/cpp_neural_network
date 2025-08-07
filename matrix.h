@@ -8,6 +8,7 @@ class Matrix {
 public:
     Matrix() = delete;
     Matrix(size_t rows, size_t cols);
+    Matrix(size_t rows, size_t cols, double val);
     Matrix(const Matrix& mat);
     Matrix(Matrix&& mat) noexcept;
     ~Matrix() = default;
@@ -17,6 +18,9 @@ public:
 
     Matrix& operator=(const Matrix& mat);
     Matrix& operator=(Matrix&& mat) noexcept;
+
+    Matrix operator*(double val);
+    Matrix operator*(const Matrix& mat);
 
     double& at(size_t row, size_t col);
     const double& at(size_t row, size_t col) const;

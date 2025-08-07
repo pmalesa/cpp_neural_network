@@ -79,3 +79,26 @@ TEST_F(MatrixTest, AtMethodTest) {
     ASSERT_NO_THROW(matrix.at(0, 0));
     ASSERT_NO_THROW(matrix.at(4, 4));
 }
+
+TEST_F(MatrixTest, MultiplyByValueTest) {
+    Matrix matrix_1(5, 5, 1.0);
+    Matrix matrix_2 = matrix_1 * 5.0;
+    for (size_t row = 0; row < matrix_2.get_rows(); ++row) {
+        for (size_t col = 0; col < matrix_2.get_cols(); ++col) {
+            ASSERT_NEAR(matrix_2[row][col], 5.0, 1e-9);
+        }
+    }
+}
+
+TEST_F(MatrixTest, MultiplyByMatrixTest_1) {
+    // TODO - rewrite this test after implementation of operator==() method
+    Matrix matrix_1(2, 3, 1.0);
+    Matrix matrix_2(3, 4, 2.0);
+    ASSERT_THROW(matrix_2 * matrix_1, std::domain_error);
+    Matrix result = matrix_1 * matrix_2;
+    for (size_t row = 0; row < result.get_rows(); ++row) {
+        for (size_t col = 0; col < result.get_cols(); ++col) {
+            ASSERT_NEAR(result[row][col], 6.0, 1e-9);
+        }
+    }
+}
