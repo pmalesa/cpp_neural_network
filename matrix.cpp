@@ -52,6 +52,37 @@ Matrix Matrix::operator*(const Matrix& mat) {
     return result;
 }
 
+bool Matrix::operator==(const Matrix& mat) {
+    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+        return false;
+    }
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            if (abs(this->data_[row][col] - mat.data_[row][col]) > 1e-9) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool Matrix::operator==(const vector<vector<double>>& data) {
+    if (data.empty()) {
+        return this->data_.empty();
+    }
+    if (this->rows_ != data.size() || this->cols_ != data[0].size()) {
+        return false;
+    }
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            if (abs(this->data_[row][col] - data[row][col]) > 1e-9) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 double& Matrix::at(size_t row, size_t col) {
     if (row >= this->rows_ || col >= this->cols_) {
         throw std::out_of_range("Matrix indices out of bounds!");

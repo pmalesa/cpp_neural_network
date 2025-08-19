@@ -1,5 +1,8 @@
 #include "matrix.h"
 #include <gtest/gtest.h>
+#include <vector>
+
+using std::vector;
 
 class MatrixTest : public testing::Test {
 public:
@@ -78,6 +81,29 @@ TEST_F(MatrixTest, AtMethodTest) {
     ASSERT_THROW(matrix.at(5, 5), std::out_of_range);
     ASSERT_NO_THROW(matrix.at(0, 0));
     ASSERT_NO_THROW(matrix.at(4, 4));
+}
+
+TEST_F(MatrixTest, EqualsOperatorMat) {
+    Matrix matrix_1(5, 5, 6.66);
+    Matrix matrix_2(5, 5, 6.66);
+    Matrix matrix_3(4, 4, 6.66);
+    Matrix matrix_4(5, 5, 1.00);
+    ASSERT_EQ(matrix_1 == matrix_2, true);
+    ASSERT_EQ(matrix_2 == matrix_3, false);
+    ASSERT_EQ(matrix_3 == matrix_4, false);
+    ASSERT_EQ(matrix_4 == matrix_1, false);
+}
+
+TEST_F(MatrixTest, EqualsOperatorVec) {
+    Matrix matrix(3, 3, 5.0);
+    vector<vector<double>> data_1 = { {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} };
+    vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0} };
+    vector<vector<double>> data_3 = { {5.0, 5.0}, {5.0, 5.0} };
+    vector<vector<double>> data_4 = {};
+    ASSERT_EQ(matrix == data_1, true);
+    ASSERT_EQ(matrix == data_2, false);
+    ASSERT_EQ(matrix == data_3, false);
+    ASSERT_EQ(matrix == data_4, false);
 }
 
 TEST_F(MatrixTest, MultiplyByValueTest) {

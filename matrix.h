@@ -19,6 +19,9 @@ public:
     Matrix& operator=(const Matrix& mat);
     Matrix& operator=(Matrix&& mat) noexcept;
 
+    bool operator==(const Matrix& mat);
+    bool operator==(const vector<vector<double>>& data);
+
     Matrix operator*(double val);
     Matrix operator*(const Matrix& mat);
 
