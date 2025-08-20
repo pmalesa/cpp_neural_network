@@ -22,6 +22,9 @@ public:
     bool operator==(const Matrix& mat);
     bool operator==(const vector<vector<double>>& data);
 
+    Matrix operator+(double val);
+    Matrix operator+(const Matrix& mat);
+
     Matrix operator*(double val);
     Matrix operator*(const Matrix& mat);
 
@@ -37,3 +40,10 @@ private:
     size_t rows_;
     size_t cols_;
 };
+
+
+/*
+TODO:
+- Prevent double overflow handling.
+-
+*/

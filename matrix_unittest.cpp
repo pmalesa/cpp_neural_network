@@ -106,25 +106,33 @@ TEST_F(MatrixTest, EqualsOperatorVec) {
     ASSERT_EQ(matrix == data_4, false);
 }
 
-TEST_F(MatrixTest, MultiplyByValueTest) {
-    Matrix matrix_1(5, 5, 1.0);
-    Matrix matrix_2 = matrix_1 * 5.0;
-    for (size_t row = 0; row < matrix_2.get_rows(); ++row) {
-        for (size_t col = 0; col < matrix_2.get_cols(); ++col) {
-            ASSERT_NEAR(matrix_2[row][col], 5.0, 1e-9);
-        }
-    }
+TEST_F(MatrixTest, AdditionWithValueTest) {
+    Matrix matrix(5, 5, 1.0);
+    Matrix result(5, 5, 5.0);
+    ASSERT_EQ(matrix + 4.0 == result, true);
+    ASSERT_EQ(matrix + 3.0 == result, false);
 }
 
-TEST_F(MatrixTest, MultiplyByMatrixTest_1) {
-    // TODO - rewrite this test after implementation of operator==() method
+TEST_F(MatrixTest, AdditionWithMatrixTest) {
+    Matrix matrix_1(5, 5, 1.0);
+    Matrix matrix_2(5, 5, 4.0);
+    Matrix matrix_3(4, 4, 4.0);
+    Matrix result(5, 5, 5.0);
+    ASSERT_THROW(matrix_1 + matrix_3, std::domain_error);
+    ASSERT_EQ(matrix_1 + matrix_2 == result, true);
+    ASSERT_EQ(matrix_2 + matrix_1 == result, true);
+}
+
+TEST_F(MatrixTest, MultiplyByValueTest) {
+    Matrix matrix(5, 5, 1.0);
+    Matrix result(5, 5, 5.0);
+    ASSERT_EQ(matrix * 5 == result, true);
+}
+
+TEST_F(MatrixTest, MultiplyByMatrixTest) {
     Matrix matrix_1(2, 3, 1.0);
     Matrix matrix_2(3, 4, 2.0);
     ASSERT_THROW(matrix_2 * matrix_1, std::domain_error);
-    Matrix result = matrix_1 * matrix_2;
-    for (size_t row = 0; row < result.get_rows(); ++row) {
-        for (size_t col = 0; col < result.get_cols(); ++col) {
-            ASSERT_NEAR(result[row][col], 6.0, 1e-9);
-        }
-    }
+    Matrix result(matrix_1.get_rows(), matrix_2.get_cols(), 6.0);
+    ASSERT_EQ(matrix_1 * matrix_2 == result, true);
 }
