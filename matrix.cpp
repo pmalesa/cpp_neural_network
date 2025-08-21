@@ -77,6 +77,29 @@ Matrix Matrix::operator+(const Matrix& mat) {
     return result;
 }
 
+Matrix Matrix::operator-(double val) {
+    Matrix result(this->rows_, this->cols_);
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            result[row][col] = this->data_[row][col] - val;
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::operator-(const Matrix& mat) {
+    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+        throw std::domain_error("Matrices can not be added!");
+    }
+    Matrix result(this->rows_, this->cols_);
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            result[row][col] = this->data_[row][col] - mat.data_[row][col];
+        }
+    }
+    return result;
+}
+
 Matrix Matrix::operator*(double val) {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {

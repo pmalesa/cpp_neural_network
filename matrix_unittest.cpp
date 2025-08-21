@@ -123,6 +123,22 @@ TEST_F(MatrixTest, AdditionWithMatrixTest) {
     ASSERT_EQ(matrix_2 + matrix_1 == result, true);
 }
 
+TEST_F(MatrixTest, SubtractionWithValueTest) {
+    Matrix matrix(5, 5, 5.0);
+    Matrix result(5, 5, 1.0);
+    ASSERT_EQ(matrix - 4.0 == result, true);
+    ASSERT_EQ(matrix - 3.0 == result, false);
+}
+
+TEST_F(MatrixTest, SubtractionWithMatrixTest) {
+    Matrix matrix_1(5, 5, 5.0);
+    Matrix matrix_2(5, 5, 1.0);
+    Matrix matrix_3(4, 4, 1.0);
+    Matrix result(5, 5, 4.0);
+    ASSERT_THROW(matrix_1 - matrix_3, std::domain_error);
+    ASSERT_EQ(matrix_1 - matrix_2 == result, true);
+}
+
 TEST_F(MatrixTest, MultiplyByValueTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, 5.0);
