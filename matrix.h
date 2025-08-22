@@ -21,6 +21,9 @@ public:
 
     bool operator==(const Matrix& mat);
     bool operator==(const vector<vector<double>>& data);
+    
+    bool operator!=(const Matrix& mat);
+    bool operator!=(const vector<vector<double>>& data);
 
     Matrix operator+(double val);
     Matrix operator+(const Matrix& mat);

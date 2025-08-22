@@ -53,6 +53,36 @@ bool Matrix::operator==(const vector<vector<double>>& data) {
     }
     return true;
 }
+bool Matrix::operator!=(const Matrix& mat) {
+    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+        return true;
+    }
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            if (abs(this->data_[row][col] - mat.data_[row][col]) > 1e-9) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Matrix::operator!=(const vector<vector<double>>& data) {
+    if (data.empty()) {
+        return !this->data_.empty();
+    }
+    if (this->rows_ != data.size() || this->cols_ != data[0].size()) {
+        return true;
+    }
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            if (abs(this->data_[row][col] - data[row][col]) > 1e-9) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 Matrix Matrix::operator+(double val) {  
     Matrix result(this->rows_, this->cols_);
