@@ -16,23 +16,28 @@ public:
     vector<double>& operator[](size_t row);
     const vector<double>& operator[](size_t row) const;
 
+    double& operator()(size_t row, size_t col);
+    const double& operator()(size_t row, size_t col) const;
+
     Matrix& operator=(const Matrix& mat);
     Matrix& operator=(Matrix&& mat) noexcept;
 
-    bool operator==(const Matrix& mat);
-    bool operator==(const vector<vector<double>>& data);
+    bool operator==(const Matrix& mat) const;
+    bool operator==(const vector<vector<double>>& data) const;
     
-    bool operator!=(const Matrix& mat);
-    bool operator!=(const vector<vector<double>>& data);
+    bool operator!=(const Matrix& mat) const;
+    bool operator!=(const vector<vector<double>>& data) const;
 
-    Matrix operator+(double val);
-    Matrix operator+(const Matrix& mat);
+    Matrix operator+(double val) const;
+    Matrix operator+(const Matrix& mat) const;
     
-    Matrix operator-(double val);
-    Matrix operator-(const Matrix& mat);
+    Matrix operator-(double val) const;
+    Matrix operator-(const Matrix& mat) const;
 
-    Matrix operator*(double val);
-    Matrix operator*(const Matrix& mat);
+    Matrix operator*(double val) const;
+    Matrix operator*(const Matrix& mat) const;
+
+    Matrix operator-() const;
 
     double& at(size_t row, size_t col);
     const double& at(size_t row, size_t col) const;

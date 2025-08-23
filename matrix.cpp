@@ -23,7 +23,22 @@ vector<double>& Matrix::operator[](size_t row) {
 const vector<double>& Matrix::operator[](size_t row) const {
     return this->data_[row];
 }
-bool Matrix::operator==(const Matrix& mat) {
+
+double& Matrix::operator()(size_t row, size_t col) {
+    if (row >= this->rows_ || row < 0 || col >= this->cols_ || col < 0) {
+        throw std::out_of_range("Matrix indices out of bounds!");
+    }
+    return this->data_[row][col];
+}
+
+const double& Matrix::operator()(size_t row, size_t col) const {
+    if (row >= this->rows_ || row < 0 || col >= this->cols_ || col < 0) {
+        throw std::out_of_range("Matrix indices out of bounds!");
+    }
+    return this->data_[row][col];
+}
+
+bool Matrix::operator==(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return false;
     }
@@ -37,7 +52,7 @@ bool Matrix::operator==(const Matrix& mat) {
     return true;
 }
 
-bool Matrix::operator==(const vector<vector<double>>& data) {
+bool Matrix::operator==(const vector<vector<double>>& data) const {
     if (data.empty()) {
         return this->data_.empty();
     }
@@ -53,7 +68,7 @@ bool Matrix::operator==(const vector<vector<double>>& data) {
     }
     return true;
 }
-bool Matrix::operator!=(const Matrix& mat) {
+bool Matrix::operator!=(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return true;
     }
@@ -67,7 +82,7 @@ bool Matrix::operator!=(const Matrix& mat) {
     return false;
 }
 
-bool Matrix::operator!=(const vector<vector<double>>& data) {
+bool Matrix::operator!=(const vector<vector<double>>& data) const {
     if (data.empty()) {
         return !this->data_.empty();
     }
@@ -84,7 +99,7 @@ bool Matrix::operator!=(const vector<vector<double>>& data) {
     return false;
 }
 
-Matrix Matrix::operator+(double val) {  
+Matrix Matrix::operator+(double val) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
@@ -94,7 +109,7 @@ Matrix Matrix::operator+(double val) {
     return result;
 }
 
-Matrix Matrix::operator+(const Matrix& mat) {
+Matrix Matrix::operator+(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         throw std::domain_error("Matrices can not be added!");
     }
@@ -107,7 +122,7 @@ Matrix Matrix::operator+(const Matrix& mat) {
     return result;
 }
 
-Matrix Matrix::operator-(double val) {
+Matrix Matrix::operator-(double val) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
@@ -117,7 +132,7 @@ Matrix Matrix::operator-(double val) {
     return result;
 }
 
-Matrix Matrix::operator-(const Matrix& mat) {
+Matrix Matrix::operator-(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         throw std::domain_error("Matrices can not be added!");
     }
@@ -130,7 +145,7 @@ Matrix Matrix::operator-(const Matrix& mat) {
     return result;
 }
 
-Matrix Matrix::operator*(double val) {
+Matrix Matrix::operator*(double val) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
@@ -140,7 +155,7 @@ Matrix Matrix::operator*(double val) {
     return result;
 }
 
-Matrix Matrix::operator*(const Matrix& mat) {
+Matrix Matrix::operator*(const Matrix& mat) const {
     if (this->cols_ != mat.rows_) {
         throw std::domain_error("Matrices can not be multiplied!");
     }
@@ -153,6 +168,16 @@ Matrix Matrix::operator*(const Matrix& mat) {
                 sum += this->data_[row][i] * mat.data_[i][col];
             }
             result[row][col] = sum;
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::operator-() const {
+    Matrix result(this->rows_, this->cols_);
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            result[row][col] = -this->data_[row][col];
         }
     }
     return result;

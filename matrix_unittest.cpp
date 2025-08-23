@@ -72,6 +72,14 @@ TEST_F(MatrixTest, AccessOperatorTest) {
     ASSERT_NEAR(matrix[2][2], 5.0, 1e-9);
 }
 
+TEST_F(MatrixTest, SecondaryAccessOperatorTest) {
+    Matrix matrix(5, 5);
+    ASSERT_THROW(matrix(5, 5), std::out_of_range);
+    ASSERT_NEAR(matrix(2, 2), 0.0, 1e-9);
+    matrix(2, 2) += 5.0;
+    ASSERT_NEAR(matrix(2, 2), 5.0, 1e-9);
+}
+
 TEST_F(MatrixTest, AtMethodTest) {
     Matrix matrix(5, 5);
     ASSERT_NEAR(matrix.at(2, 2), 0.0, 1e-9);
@@ -174,4 +182,10 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     ASSERT_THROW(matrix_2 * matrix_1, std::domain_error);
     Matrix result(matrix_1.get_rows(), matrix_2.get_cols(), 6.0);
     ASSERT_EQ(matrix_1 * matrix_2 == result, true);
+}
+
+TEST_F(MatrixTest, NegationOperatorTest) {
+    Matrix matrix(5, 5, 1.0);
+    Matrix result(5, 5, -1.0);
+    ASSERT_EQ(-matrix == result, true);
 }
