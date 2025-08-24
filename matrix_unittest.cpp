@@ -176,6 +176,12 @@ TEST_F(MatrixTest, MultiplyByValueTest) {
     ASSERT_EQ(matrix * 5 == result, true);
 }
 
+TEST_F(MatrixTest, MultiplyByValueFriendTest) {
+    Matrix matrix(5, 5, 1.0);
+    Matrix result(5, 5, 5.0);
+    ASSERT_EQ(5 * matrix == result, true);
+}
+
 TEST_F(MatrixTest, MultiplyByMatrixTest) {
     Matrix matrix_1(2, 3, 1.0);
     Matrix matrix_2(3, 4, 2.0);
@@ -188,4 +194,27 @@ TEST_F(MatrixTest, NegationOperatorTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, -1.0);
     ASSERT_EQ(-matrix == result, true);
+}
+
+TEST_F(MatrixTest, EqualsMethodMat) {
+    Matrix matrix_1(5, 5, 6.66);
+    Matrix matrix_2(5, 5, 6.66);
+    Matrix matrix_3(4, 4, 6.66);
+    Matrix matrix_4(5, 5, 1.00);
+    ASSERT_EQ(matrix_1.equals(matrix_2), true);
+    ASSERT_EQ(matrix_2.equals(matrix_3), false);
+    ASSERT_EQ(matrix_3.equals(matrix_4), false);
+    ASSERT_EQ(matrix_4.equals(matrix_1), false);
+}
+
+TEST_F(MatrixTest, EqualsMethodVec) {
+    Matrix matrix(3, 3, 5.0);
+    vector<vector<double>> data_1 = { {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} };
+    vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0} };
+    vector<vector<double>> data_3 = { {5.0, 5.0}, {5.0, 5.0} };
+    vector<vector<double>> data_4 = {};
+    ASSERT_EQ(matrix.equals(data_1), true);
+    ASSERT_EQ(matrix.equals(data_2), false);
+    ASSERT_EQ(matrix.equals(data_3), false);
+    ASSERT_EQ(matrix.equals(data_4), false);
 }

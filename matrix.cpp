@@ -68,6 +68,7 @@ bool Matrix::operator==(const vector<vector<double>>& data) const {
     }
     return true;
 }
+
 bool Matrix::operator!=(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return true;
@@ -155,6 +156,16 @@ Matrix Matrix::operator*(double val) const {
     return result;
 }
 
+Matrix operator*(double val, const Matrix& mat) {
+    Matrix result(mat.get_rows(), mat.get_cols());
+    for (size_t row = 0; row < mat.get_rows(); ++row) {
+        for (size_t col = 0; col < mat.get_cols(); ++col) {
+            result[row][col] = mat.data_[row][col] * val;
+        }
+    }
+    return result;
+}
+
 Matrix Matrix::operator*(const Matrix& mat) const {
     if (this->cols_ != mat.rows_) {
         throw std::domain_error("Matrices can not be multiplied!");
@@ -195,5 +206,55 @@ const double& Matrix::at(size_t row, size_t col) const {
         throw std::out_of_range("Matrix indices out of bounds!");
     }
     return data_[row][col];
+}
+
+bool Matrix::equals(const Matrix& mat, double epsilon) const {
+    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+        return false;
+    }
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            if (abs(this->data_[row][col] - mat.data_[row][col]) > epsilon) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool Matrix::equals(const vector<vector<double>>& data, double epsilon) const {
+    if (data.empty()) {
+        return this->data_.empty();
+    }
+    if (this->rows_ != data.size() || this->cols_ != data[0].size()) {
+        return false;
+    }
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            if (abs(this->data_[row][col] - data[row][col]) > epsilon) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+ostream& operator<<(ostream& os, const Matrix& mat) {
+    os << "\n[";
+    for (size_t row = 0; row < mat.get_rows(); ++row) {
+        os << "[";
+        for (size_t col = 0; col < mat.get_cols(); ++col) {
+            os << mat.data_[row][col];
+            if (col < mat.get_cols() - 1) {
+                os << ", ";
+            }
+        }
+        os << "]";
+        if (row < mat.get_rows() - 1) {
+            os << ",\n";
+        }
+    }
+    os << "]\n";
+    return os;
 }
 

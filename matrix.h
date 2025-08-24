@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
+#include <ostream>
 
 using std::vector;
 using std::move;
+using std::ostream;
 
 class Matrix {
 public:
@@ -35,6 +37,7 @@ public:
     Matrix operator-(const Matrix& mat) const;
 
     Matrix operator*(double val) const;
+    friend Matrix operator*(double val, const Matrix& mat);
     Matrix operator*(const Matrix& mat) const;
 
     Matrix operator-() const;
@@ -45,8 +48,12 @@ public:
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
     bool is_empty() const { return data_.empty(); }
+    bool equals(const Matrix& mat, double epsilon = 1e-9) const;
+    bool equals(const vector<vector<double>>& data, double epsilon = 1e-9) const;
+    friend ostream& operator<<(ostream&, const Matrix& matrix);
 
 private:
+
     vector<vector<double>> data_;
     size_t rows_;
     size_t cols_;
@@ -56,5 +63,12 @@ private:
 /*
 TODO:
 - Prevent double overflow handling.
--
+- Implement:
+    - transpose()
+    - identity()
+    - fill()
+    - resize()
+    - determinant()
+    - inverse()
+
 */
