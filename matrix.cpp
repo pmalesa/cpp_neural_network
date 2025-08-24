@@ -208,6 +208,14 @@ const double& Matrix::at(size_t row, size_t col) const {
     return data_[row][col];
 }
 
+void Matrix::fill(double val) {
+    for (size_t row = 0; row < this->rows_; ++row) {
+        for (size_t col = 0; col < this->cols_; ++col) {
+            this->data_[row][col] = val;
+        }
+    }
+}
+
 bool Matrix::equals(const Matrix& mat, double epsilon) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return false;

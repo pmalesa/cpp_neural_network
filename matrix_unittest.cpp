@@ -91,6 +91,13 @@ TEST_F(MatrixTest, AtMethodTest) {
     ASSERT_NO_THROW(matrix.at(4, 4));
 }
 
+TEST_F(MatrixTest, FillMethodTest) {
+    Matrix matrix(5, 5, 1.0);
+    Matrix result(5, 5, 5.0);
+    matrix.fill(5.0);
+    ASSERT_EQ(matrix == result, true);
+}
+
 TEST_F(MatrixTest, EqualsOperatorMat) {
     Matrix matrix_1(5, 5, 6.66);
     Matrix matrix_2(5, 5, 6.66);

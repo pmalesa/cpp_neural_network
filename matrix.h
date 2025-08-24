@@ -45,6 +45,8 @@ public:
     double& at(size_t row, size_t col);
     const double& at(size_t row, size_t col) const;
     
+    void fill(double val);
+
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
     bool is_empty() const { return data_.empty(); }
@@ -66,7 +68,6 @@ TODO:
 - Implement:
     - transpose()
     - identity()
-    - fill()
     - resize()
     - determinant()
     - inverse()
