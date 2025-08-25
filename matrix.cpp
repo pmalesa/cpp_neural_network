@@ -10,6 +10,18 @@ Matrix::Matrix(size_t rows, size_t cols, double val)
 Matrix::Matrix(const Matrix& mat)
     : data_(mat.data_), rows_(mat.rows_), cols_(mat.cols_) {} 
 
+Matrix::Matrix(const vector<vector<double>>& data)
+    : data_(data), rows_(data.size()), cols_(0) {
+    if (!data.empty()) {
+        cols_ = data[0].size();
+        for (const auto& row : data) {
+            if (row.size() != cols_) {
+                throw std::invalid_argument("All rows must have the same number of columns!");
+            }
+        }
+    }
+}
+
 Matrix::Matrix(Matrix&& mat) noexcept
     : data_(move(mat.data_)), rows_(mat.rows_), cols_(mat.cols_) {
     mat.rows_ = 0;
@@ -37,6 +49,10 @@ const double& Matrix::operator()(size_t row, size_t col) const {
     }
     return this->data_[row][col];
 }
+
+// Matrix& Matrix::operator=(const Matrix& mat) { }
+// Matrix& Matrix::operator=(Matrix&& mat) noexcept { }
+// Matrix& Matrix::operator=(const vector<vector<double>>& data) { }
 
 bool Matrix::operator==(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
@@ -215,6 +231,16 @@ void Matrix::fill(double val) {
         }
     }
 }
+
+// Matrix Matrix::transpose() const {
+//     Matrix mat(this->cols_, this->rows_);
+//     for (size_t i = 0; i < this->cols_; ++i) {
+//         for (size_t j = 0; j < this->rows_; ++j) {
+//             mat[i][j] = this->data_[j][i];
+//         }
+//     }
+//     return mat;
+// }
 
 bool Matrix::equals(const Matrix& mat, double epsilon) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {

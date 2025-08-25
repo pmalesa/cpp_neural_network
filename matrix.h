@@ -12,6 +12,7 @@ public:
     Matrix(size_t rows, size_t cols);
     Matrix(size_t rows, size_t cols, double val);
     Matrix(const Matrix& mat);
+    Matrix(const vector<vector<double>>& data);
     Matrix(Matrix&& mat) noexcept;
     ~Matrix() = default;
     
@@ -23,6 +24,7 @@ public:
 
     Matrix& operator=(const Matrix& mat);
     Matrix& operator=(Matrix&& mat) noexcept;
+    Matrix& operator=(const vector<vector<double>>& data);
 
     bool operator==(const Matrix& mat) const;
     bool operator==(const vector<vector<double>>& data) const;
@@ -46,6 +48,7 @@ public:
     const double& at(size_t row, size_t col) const;
     
     void fill(double val);
+    Matrix transpose() const;
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
@@ -55,7 +58,6 @@ public:
     friend ostream& operator<<(ostream&, const Matrix& matrix);
 
 private:
-
     vector<vector<double>> data_;
     size_t rows_;
     size_t cols_;
@@ -67,6 +69,7 @@ TODO:
 - Prevent double overflow handling.
 - Implement:
     - transpose()
+    - assignment operators
     - identity()
     - resize()
     - determinant()

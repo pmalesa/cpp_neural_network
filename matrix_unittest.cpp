@@ -43,6 +43,16 @@ TEST_F(MatrixTest, CopyConstructorTest) {
     }
 }
 
+TEST_F(MatrixTest, CopyConstructorVecTest) {
+    vector<vector<double>> data_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    Matrix matrix_1(data_1);
+    ASSERT_EQ(matrix_1.get_rows(), data_1.size());
+    ASSERT_EQ(matrix_1.get_cols(), data_1[0].size());
+    ASSERT_EQ(matrix_1 == data_1, true);
+    vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
+    ASSERT_THROW(Matrix matrix_2(data_2), std::invalid_argument);
+}
+
 TEST_F(MatrixTest, MoveConstructorTest) {
     size_t rows = 5;
     size_t cols = 5;
@@ -97,6 +107,10 @@ TEST_F(MatrixTest, FillMethodTest) {
     matrix.fill(5.0);
     ASSERT_EQ(matrix == result, true);
 }
+
+// TEST_F(MatrixTest, TransposeMethodTest) {
+//     Matrix matrix
+// }
 
 TEST_F(MatrixTest, EqualsOperatorMat) {
     Matrix matrix_1(5, 5, 6.66);
