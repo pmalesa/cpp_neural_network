@@ -108,9 +108,14 @@ TEST_F(MatrixTest, FillMethodTest) {
     ASSERT_EQ(matrix == result, true);
 }
 
-// TEST_F(MatrixTest, TransposeMethodTest) {
-//     Matrix matrix
-// }
+TEST_F(MatrixTest, TransposeMethodTest) {
+    vector<vector<double>> data = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    vector<vector<double>> result = { {1.0, 3.0, 5.0}, {2.0, 4.0, 6.0} };
+    Matrix matrix(data);
+    ASSERT_EQ(matrix.transpose() == result, true);
+    ASSERT_EQ(matrix.transpose().transpose() == data, true);
+    ASSERT_EQ(matrix.transpose().transpose() == matrix, true);
+}
 
 TEST_F(MatrixTest, EqualsOperatorMat) {
     Matrix matrix_1(5, 5, 6.66);

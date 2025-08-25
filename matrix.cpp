@@ -232,15 +232,15 @@ void Matrix::fill(double val) {
     }
 }
 
-// Matrix Matrix::transpose() const {
-//     Matrix mat(this->cols_, this->rows_);
-//     for (size_t i = 0; i < this->cols_; ++i) {
-//         for (size_t j = 0; j < this->rows_; ++j) {
-//             mat[i][j] = this->data_[j][i];
-//         }
-//     }
-//     return mat;
-// }
+Matrix Matrix::transpose() const {
+    Matrix mat(this->cols_, this->rows_);
+    for (size_t i = 0; i < this->cols_; ++i) {
+        for (size_t j = 0; j < this->rows_; ++j) {
+            mat[i][j] = this->data_[j][i];
+        }
+    }
+    return mat;
+}
 
 bool Matrix::equals(const Matrix& mat, double epsilon) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
