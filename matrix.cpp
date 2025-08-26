@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <stdexcept>
+#include <iostream>
 
 Matrix::Matrix(size_t rows, size_t cols)
     : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {}
@@ -50,9 +51,61 @@ const double& Matrix::operator()(size_t row, size_t col) const {
     return this->data_[row][col];
 }
 
-// Matrix& Matrix::operator=(const Matrix& mat) { }
-// Matrix& Matrix::operator=(Matrix&& mat) noexcept { }
-// Matrix& Matrix::operator=(const vector<vector<double>>& data) { }
+Matrix& Matrix::operator=(const Matrix& mat) {
+    if (this != &mat) {
+        data_ = mat.data_;
+        rows_ = mat.rows_;
+        cols_ = mat.cols_;    
+    }
+    return *this;
+}
+
+Matrix& Matrix::operator=(Matrix&& mat) noexcept {
+    if (this != &mat) {
+        data_ = std::move(mat.data_);
+        rows_ = mat.rows_;
+        cols_ = mat.cols_;
+        mat.rows_ = 0;
+        mat.cols_ = 0;
+    }
+    return *this;
+}
+
+Matrix& Matrix::operator=(const vector<vector<double>>& data) {
+    if (!data.empty()) {
+        size_t cols = data[0].size();
+        for (const auto& row : data) {
+            if (row.size() != cols) {
+                throw std::invalid_argument("All rows must have the same number of columns!");
+            }
+        }
+        rows_ = data.size();
+        cols_ = cols;
+    } else {
+        rows_ = 0;
+        cols_ = 0;
+    }
+    data_ = data;
+    return *this;
+}
+
+Matrix& Matrix::operator=(vector<vector<double>>&& data) {
+    if (!data.empty()) {
+        size_t cols = data[0].size();
+        for (const auto& row : data) {
+            if (row.size() != cols) {
+                throw std::invalid_argument("All rows must have the same number of columns!");
+            }
+        }
+        rows_ = data.size();
+        cols_ = cols;
+    } else {
+        rows_ = 0;
+        cols_ = 0;
+    }
+    data_ = std::move(data);
+    return *this;
+}
 
 bool Matrix::operator==(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {

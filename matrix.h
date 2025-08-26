@@ -14,6 +14,7 @@ public:
     Matrix(const Matrix& mat);
     Matrix(const vector<vector<double>>& data);
     Matrix(Matrix&& mat) noexcept;
+    Matrix(vector<vector<double>>&& data);
     ~Matrix() = default;
     
     vector<double>& operator[](size_t row);
@@ -25,6 +26,7 @@ public:
     Matrix& operator=(const Matrix& mat);
     Matrix& operator=(Matrix&& mat) noexcept;
     Matrix& operator=(const vector<vector<double>>& data);
+    Matrix& operator=(vector<vector<double>>&& data);
 
     bool operator==(const Matrix& mat) const;
     bool operator==(const vector<vector<double>>& data) const;
@@ -68,8 +70,8 @@ private:
 TODO:
 - Prevent double overflow handling.
 - Implement:
-    - transpose()
     - assignment operators
+    - move constructor with vector
     - identity()
     - resize()
     - determinant()

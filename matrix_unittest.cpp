@@ -75,6 +75,61 @@ TEST_F(MatrixTest, MoveConstructorTest) {
     ASSERT_EQ(matrix_1.is_empty(), true);
 }
 
+TEST_F(MatrixTest, CopyAssignmentOperatorMatrixTest) {
+    Matrix matrix_1(5, 5, 666.0);
+    Matrix matrix_2(1, 1, 1.0);
+    matrix_2 = matrix_1;
+    ASSERT_EQ(matrix_1.get_rows(), matrix_2.get_rows());
+    ASSERT_EQ(matrix_1.get_cols(), matrix_2.get_cols());
+    ASSERT_EQ(matrix_1 == matrix_2, true);
+}
+
+TEST_F(MatrixTest, MoveAssignmentOperatorMatrixTest) {
+    size_t rows = 5;
+    size_t cols = 5;
+    double val = 666.0;
+    Matrix matrix_1(rows, cols, val);
+    Matrix matrix_2(1, 1, 1.0);
+    matrix_2 = std::move(matrix_1);
+    ASSERT_EQ(matrix_2.get_rows(), rows);
+    ASSERT_EQ(matrix_2.get_cols(), cols);
+    for (size_t row = 0; row < rows; ++row) {
+        for (size_t col = 0; col < cols; ++col) {
+            ASSERT_NEAR(matrix_2[row][col], val, 1e-9);
+        }
+    }
+    ASSERT_EQ(matrix_1.get_rows(), 0);
+    ASSERT_EQ(matrix_1.get_cols(), 0);
+    ASSERT_EQ(matrix_1.is_empty(), true);
+}
+
+TEST_F(MatrixTest, CopyAssignmentOperatorVecTest) {
+    vector<vector<double>> data_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    Matrix matrix_1(1, 1, 1.0);
+    matrix_1 = data_1;
+    ASSERT_EQ(matrix_1.get_rows(), data_1.size());
+    ASSERT_EQ(matrix_1.get_cols(), data_1[0].size());
+    ASSERT_EQ(matrix_1 == data_1, true);
+    vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
+    Matrix matrix_2(1, 1, 1.0);
+    ASSERT_THROW(matrix_2 = data_2, std::invalid_argument);
+}
+
+TEST_F(MatrixTest, MoveAssignmentOperatorVecTest) {
+    vector<vector<double>> data_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    vector<vector<double>> result_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    Matrix matrix_1(1, 1, 1.0);
+    size_t rows = data_1.size();
+    size_t cols = data_1[0].size();
+    matrix_1 = std::move(data_1);
+    ASSERT_EQ(matrix_1.get_rows(), rows);
+    ASSERT_EQ(matrix_1.get_cols(), cols);
+    ASSERT_EQ(matrix_1 == result_1, true);
+    vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
+    Matrix matrix_2(1, 1, 1.0);
+    ASSERT_THROW(matrix_2 = std::move(data_2), std::invalid_argument);
+}
+
 TEST_F(MatrixTest, AccessOperatorTest) {
     Matrix matrix(5, 5);
     ASSERT_NEAR(matrix[2][2], 0.0, 1e-9);
