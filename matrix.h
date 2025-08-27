@@ -70,7 +70,6 @@ private:
 TODO:
 - Prevent double overflow handling.
 - Implement:
-    - assignment operators
     - move constructor with vector
     - identity()
     - resize()

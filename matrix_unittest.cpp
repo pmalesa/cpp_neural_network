@@ -75,6 +75,18 @@ TEST_F(MatrixTest, MoveConstructorTest) {
     ASSERT_EQ(matrix_1.is_empty(), true);
 }
 
+TEST_F(MatrixTest, MoveConstructorVecTest) {
+    size_t rows = 5;
+    size_t cols = 5;
+    vector<vector<double>> data_1(rows, vector<double>(5, 1.0));
+    Matrix matrix_1(std::move(data_1));
+    ASSERT_EQ(matrix_1.get_rows(), rows);
+    ASSERT_EQ(matrix_1.get_cols(), cols);
+    ASSERT_EQ(matrix_1 == vector<vector<double>>(rows, vector<double>(5, 1.0)), true);
+    vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {4.0, 5.0}, {6.0} };
+    ASSERT_THROW(Matrix matrix_2(std::move(data_2)), std::invalid_argument);
+}
+
 TEST_F(MatrixTest, CopyAssignmentOperatorMatrixTest) {
     Matrix matrix_1(5, 5, 666.0);
     Matrix matrix_2(1, 1, 1.0);

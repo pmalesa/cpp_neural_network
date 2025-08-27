@@ -11,22 +11,45 @@ Matrix::Matrix(size_t rows, size_t cols, double val)
 Matrix::Matrix(const Matrix& mat)
     : data_(mat.data_), rows_(mat.rows_), cols_(mat.cols_) {} 
 
-Matrix::Matrix(const vector<vector<double>>& data)
-    : data_(data), rows_(data.size()), cols_(0) {
+Matrix::Matrix(const vector<vector<double>>& data) {
     if (!data.empty()) {
+        size_t cols = data[0].size();
         cols_ = data[0].size();
         for (const auto& row : data) {
-            if (row.size() != cols_) {
+            if (row.size() != cols) {
                 throw std::invalid_argument("All rows must have the same number of columns!");
             }
         }
+        rows_ = data.size();
+        cols_ = cols;
+    } else {
+        rows_ = 0;
+        cols_ = 0;
     }
+    data_ = data;
 }
 
 Matrix::Matrix(Matrix&& mat) noexcept
     : data_(move(mat.data_)), rows_(mat.rows_), cols_(mat.cols_) {
     mat.rows_ = 0;
     mat.cols_ = 0;
+}
+
+Matrix::Matrix(vector<vector<double>>&& data) {
+    if (!data.empty()) {
+        size_t cols = data[0].size();
+        for (const auto& row : data) {
+            if (row.size() != cols) {
+                throw std::invalid_argument("All rows must have the same number of columns!");
+            }
+        }
+        rows_ = data.size();
+        cols_ = cols;
+    } else {
+        rows_ = 0;
+        cols_ = 0;
+    }
+    data_ = move(data);
 }
 
 vector<double>& Matrix::operator[](size_t row) {
