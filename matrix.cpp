@@ -3,10 +3,18 @@
 #include <iostream>
 
 Matrix::Matrix(size_t rows, size_t cols)
-    : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {}
+    : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {
+    if (rows == 0 || cols == 0) {
+        throw std::invalid_argument("Matrix dimensions must be greater than 0!");
+    }
+}
 
 Matrix::Matrix(size_t rows, size_t cols, double val) 
-    : data_(vector<vector<double>>(rows, vector<double>(cols, val))), rows_(rows), cols_(cols) {}
+    : data_(vector<vector<double>>(rows, vector<double>(cols, val))), rows_(rows), cols_(cols) {
+    if (rows == 0 || cols == 0) {
+        throw std::invalid_argument("Matrix dimensions must be greater than 0!");
+    }
+}
 
 Matrix::Matrix(const Matrix& mat)
     : data_(mat.data_), rows_(mat.rows_), cols_(mat.cols_) {} 
@@ -318,6 +326,15 @@ Matrix Matrix::transpose() const {
     return mat;
 }
 
+void Matrix::resize(size_t new_rows, size_t new_cols) {
+    data_.resize(new_rows);
+    for (auto& row : data_) {
+        row.resize(new_cols, 0.0);
+    }
+    rows_ = new_rows;
+    cols_ = new_cols;
+}
+
 bool Matrix::equals(const Matrix& mat, double epsilon) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return false;
@@ -368,3 +385,18 @@ ostream& operator<<(ostream& os, const Matrix& mat) {
     return os;
 }
 
+Matrix Matrix::identity(size_t size) {
+    Matrix mat(size, size, 0.0);
+    for (size_t i = 0; i < size; ++i) {
+        mat[i][i] = 1.0;
+    }
+    return mat;
+}
+
+Matrix Matrix::zeros(size_t rows, size_t cols) {
+    return Matrix(rows, cols, 0.0);
+}
+
+Matrix Matrix::ones(size_t rows, size_t cols) {
+    return Matrix(rows, cols, 1.0);
+}

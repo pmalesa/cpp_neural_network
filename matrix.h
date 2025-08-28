@@ -51,6 +51,7 @@ public:
     
     void fill(double val);
     Matrix transpose() const;
+    void resize(size_t new_rows, size_t new_cols);
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
@@ -59,6 +60,10 @@ public:
     bool equals(const vector<vector<double>>& data, double epsilon = 1e-9) const;
     friend ostream& operator<<(ostream&, const Matrix& matrix);
 
+    static Matrix identity(size_t size);
+    static Matrix zeros(size_t rows, size_t cols);
+    static Matrix ones(size_t rows, size_t cols);
+    
 private:
     vector<vector<double>> data_;
     size_t rows_;
@@ -70,7 +75,6 @@ private:
 TODO:
 - Prevent double overflow handling.
 - Implement:
-    - identity()
     - resize()
     - determinant()
     - inverse()

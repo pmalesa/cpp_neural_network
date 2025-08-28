@@ -68,6 +68,8 @@ TEST_F(MatrixTest, MainConstructorTest) {
             EXPECT_NEAR(matrix[row][col], 0.0, 1e-9);
         }
     }
+    EXPECT_THROW(Matrix(0, 5), std::invalid_argument);
+    EXPECT_THROW(Matrix(5, 0), std::invalid_argument);
 }
 
 TEST_F(MatrixTest, MainConstructorValTest) { 
@@ -82,6 +84,8 @@ TEST_F(MatrixTest, MainConstructorValTest) {
             EXPECT_NEAR(matrix[row][col], val, 1e-9);
         }
     }
+    EXPECT_THROW(Matrix(0, 5, 1.0), std::invalid_argument);
+    EXPECT_THROW(Matrix(5, 0, 1.0), std::invalid_argument);
 }
 
 TEST_F(MatrixTest, CopyConstructorTest) {
@@ -234,6 +238,18 @@ TEST_F(MatrixTest, TransposeMethodTest) {
     EXPECT_EQ(matrix.transpose().transpose() == matrix, true);
 }
 
+TEST_F(MatrixTest, ResizeMethodTest) {
+    vector<vector<double>> data = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    vector<vector<double>> shrink_result = { {1.0}, {3.0} };
+    vector<vector<double>> expand_result = { {1.0, 2.0, 0.0}, {3.0, 4.0, 0.0}, {5.0, 6.0, 0.0}, {0.0, 0.0, 0.0} };
+    Matrix matrix(data);
+    matrix.resize(shrink_result.size(), shrink_result[0].size());
+    EXPECT_EQ(matrix == shrink_result, true);
+    matrix = data;
+    matrix.resize(expand_result.size(), expand_result[0].size());
+    EXPECT_EQ(matrix == expand_result, true);
+}
+
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, 5.0);
@@ -315,3 +331,45 @@ TEST_F(MatrixTest, EqualsMethodVec) {
     EXPECT_EQ(matrix.equals(data_3), false);
     EXPECT_EQ(matrix.equals(data_4), false);
 }
+
+TEST_F(MatrixTest, IdentityMethodTest) {
+    Matrix matrix = Matrix::identity(5);
+    EXPECT_EQ(matrix.get_rows() == 5, true);
+    EXPECT_EQ(matrix.get_cols() == 5, true);
+    for (size_t row = 0; row < matrix.get_rows(); ++row) {
+        for (size_t col = 0; col < matrix.get_cols(); ++col) {
+            if (row == col) {
+                EXPECT_NEAR(matrix[row][col], 1.0, 1e-9);
+            } else {
+                EXPECT_NEAR(matrix[row][col], 0.0, 1e-9);
+            }
+        }
+    }
+}
+
+TEST_F(MatrixTest, ZerosMethodTest) {
+    size_t rows = 5;
+    size_t cols = 7;
+    Matrix matrix = Matrix::zeros(rows, cols);
+    EXPECT_EQ(matrix.get_rows() == rows, true);    
+    EXPECT_EQ(matrix.get_cols() == cols, true);
+    for (size_t row = 0; row < matrix.get_rows(); ++row) {
+        for (size_t col = 0; col < matrix.get_cols(); ++col) {
+            EXPECT_NEAR(matrix[row][col], 0.0, 1e-9);
+        }
+    }
+}
+
+TEST_F(MatrixTest, OnesMethodTest) {
+    size_t rows = 5;
+    size_t cols = 7;
+    Matrix matrix = Matrix::ones(rows, cols);
+    EXPECT_EQ(matrix.get_rows() == rows, true);    
+    EXPECT_EQ(matrix.get_cols() == cols, true);
+    for (size_t row = 0; row < matrix.get_rows(); ++row) {
+        for (size_t col = 0; col < matrix.get_cols(); ++col) {
+            EXPECT_NEAR(matrix[row][col], 1.0, 1e-9);
+        }
+    }
+}
+
