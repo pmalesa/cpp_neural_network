@@ -1,6 +1,5 @@
 #include "matrix.h"
 #include <stdexcept>
-#include <iostream>
 
 Matrix::Matrix(size_t rows, size_t cols)
     : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {
@@ -60,9 +59,9 @@ Matrix::Matrix(vector<vector<double>>&& data) {
     data_ = move(data);
 }
 
-Matrix::Matrix(const initializer_list<initializer_list<double>> init_list) {
-    if (init_list.size() == 0) {
-        rows_ = 0;
+Matrix::Matrix(initializer_list<initializer_list<double>> init_list)
+    : rows_(init_list.size()), cols_(0) {
+    if (rows_ == 0) {
         cols_ = 0;
         return;
     }
@@ -71,9 +70,12 @@ Matrix::Matrix(const initializer_list<initializer_list<double>> init_list) {
         if (row.size() != cols_) {
             throw std::invalid_argument("All rows must have the same number of columns!");
         }
+    }
+
+    data_.reserve(rows_);
+    for (const auto& row : init_list) {
         data_.emplace_back(row);
     }
-    rows_ = data_.size();
 }
 
 vector<double>& Matrix::operator[](size_t row) {
@@ -153,6 +155,33 @@ Matrix& Matrix::operator=(vector<vector<double>>&& data) {
     data_ = std::move(data);
     return *this;
 }
+
+Matrix& Matrix::operator=(initializer_list<initializer_list<double>> init_list) {
+    if (init_list.size() == 0) {
+        rows_ = 0;
+        cols_ = 0;
+        data_.clear();
+        return *this;
+    }
+    size_t cols = init_list.begin()->size();
+    for (const auto& row : init_list) {
+        if (row.size() != cols) {
+            throw std::invalid_argument("All rows must have the same number of columns!");
+        }
+    }
+
+    rows_ = init_list.size();
+    cols_ = cols;
+    
+    data_.clear();
+    data_.reserve(rows_);
+    for (const auto& row : init_list) {
+        data_.emplace_back(row);
+    }
+
+    return *this;
+}
+
 
 bool Matrix::operator==(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {

@@ -143,8 +143,8 @@ TEST_F(MatrixTest, ConstructorInitListTest) {
     Matrix matrix_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
     vector<vector<double>> result_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
     EXPECT_EQ(matrix_1 == result_1, true);
-    Matrix matrix_2 = { { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} } };
-    vector<vector<double>> result_2 = { { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} } };
+    Matrix matrix_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    vector<vector<double>> result_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
     EXPECT_EQ(matrix_2 == result_2, true);
 
     /* Lambda in parentheses is needed due to the EXPECT_THROW processes comma separated arguments */
@@ -209,6 +209,26 @@ TEST_F(MatrixTest, MoveAssignmentOperatorVecTest) {
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     Matrix matrix_2(1, 1, 1.0);
     EXPECT_THROW(matrix_2 = std::move(data_2), std::invalid_argument);
+}
+
+TEST_F(MatrixTest, AssignmentOperatorInitListTest) {
+    Matrix matrix_1; 
+    matrix_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    vector<vector<double>> result_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    EXPECT_EQ(matrix_1 == result_1, true);
+    Matrix matrix_2; 
+    matrix_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    vector<vector<double>> result_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    EXPECT_EQ(matrix_2 == result_2, true);
+
+    /* Lambda in parentheses is needed due to the EXPECT_THROW processes comma separated arguments */
+    EXPECT_THROW(
+        ( [] {
+            Matrix matrix_3;
+            matrix_3 = { {1.0, 2.0}, {3.0, 4.0, 5.0} };
+        }() ),
+        std::invalid_argument
+    );
 }
 
 TEST_F(MatrixTest, AccessOperatorTest) {

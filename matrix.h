@@ -9,14 +9,14 @@ using std::initializer_list;
 
 class Matrix {
 public:
-    Matrix() = delete;
+    Matrix() = default;
     Matrix(size_t rows, size_t cols);
     Matrix(size_t rows, size_t cols, double val);
     Matrix(const Matrix& mat);
     Matrix(const vector<vector<double>>& data);
     Matrix(Matrix&& mat) noexcept;
     Matrix(vector<vector<double>>&& data);
-    Matrix(const initializer_list<initializer_list<double>> init_list);
+    Matrix(initializer_list<initializer_list<double>> init_list);
     ~Matrix() = default;
     
     vector<double>& operator[](size_t row);
@@ -29,6 +29,7 @@ public:
     Matrix& operator=(Matrix&& mat) noexcept;
     Matrix& operator=(const vector<vector<double>>& data);
     Matrix& operator=(vector<vector<double>>&& data);
+    Matrix& operator=(initializer_list<initializer_list<double>> init_list);
 
     bool operator==(const Matrix& mat) const;
     bool operator==(const vector<vector<double>>& data) const;
