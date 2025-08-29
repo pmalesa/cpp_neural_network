@@ -139,6 +139,23 @@ TEST_F(MatrixTest, MoveConstructorVecTest) {
     EXPECT_THROW(Matrix matrix_2(std::move(data_2)), std::invalid_argument);
 }
 
+TEST_F(MatrixTest, ConstructorInitListTest) {
+    Matrix matrix_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    vector<vector<double>> result_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    EXPECT_EQ(matrix_1 == result_1, true);
+    Matrix matrix_2 = { { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} } };
+    vector<vector<double>> result_2 = { { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} } };
+    EXPECT_EQ(matrix_2 == result_2, true);
+
+    /* Lambda in parentheses is needed due to the EXPECT_THROW processes comma separated arguments */
+    EXPECT_THROW(
+        ( [] {
+            Matrix matrix_3 = { {1.0, 2.0}, {3.0, 4.0, 5.0} };
+        }() ),
+        std::invalid_argument
+    );
+}
+
 TEST_F(MatrixTest, CopyAssignmentOperatorMatrixTest) {
     Matrix matrix_1(5, 5, 666.0);
     Matrix matrix_2(1, 1, 1.0);
@@ -249,6 +266,17 @@ TEST_F(MatrixTest, ResizeMethodTest) {
     matrix.resize(expand_result.size(), expand_result[0].size());
     EXPECT_EQ(matrix == expand_result, true);
 }
+
+// TEST_F(MatrixTest, DeterminantMethodTest) {
+//     Matrix matrix = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+//     EXPECT_NEAR(matrix.det(), 0.0, 1e-9);
+//     matrix = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+//     EXPECT_NEAR(matrix.det(), -922020.0, 1e-9);
+//     matrix = { {1.0} };
+//     EXPECT_NEAR(matrix.det(), 1.0, 1e-9);
+//     matrix = { {1.0, -90.999}, {2.555, -3.666} };
+//     EXPECT_NEAR(matrix.det(), 228.836445, 1e-9);
+// }
 
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix(5, 5, 1.0);

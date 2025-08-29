@@ -60,6 +60,22 @@ Matrix::Matrix(vector<vector<double>>&& data) {
     data_ = move(data);
 }
 
+Matrix::Matrix(const initializer_list<initializer_list<double>> init_list) {
+    if (init_list.size() == 0) {
+        rows_ = 0;
+        cols_ = 0;
+        return;
+    }
+    cols_ = init_list.begin()->size();
+    for (const auto& row : init_list) {
+        if (row.size() != cols_) {
+            throw std::invalid_argument("All rows must have the same number of columns!");
+        }
+        data_.emplace_back(row);
+    }
+    rows_ = data_.size();
+}
+
 vector<double>& Matrix::operator[](size_t row) {
     return this->data_[row];
 }

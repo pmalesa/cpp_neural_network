@@ -5,6 +5,7 @@
 using std::vector;
 using std::move;
 using std::ostream;
+using std::initializer_list;
 
 class Matrix {
 public:
@@ -15,6 +16,7 @@ public:
     Matrix(const vector<vector<double>>& data);
     Matrix(Matrix&& mat) noexcept;
     Matrix(vector<vector<double>>&& data);
+    Matrix(const initializer_list<initializer_list<double>> init_list);
     ~Matrix() = default;
     
     vector<double>& operator[](size_t row);
@@ -52,6 +54,7 @@ public:
     void fill(double val);
     Matrix transpose() const;
     void resize(size_t new_rows, size_t new_cols);
+    double det() const;
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
@@ -75,7 +78,8 @@ private:
 TODO:
 - Prevent double overflow handling.
 - Implement:
-    - resize()
+    - == and != operators with initializer list
+    - modify the unit tests for constructors with initializer lists after u implement the == and != operators versions with init lists
     - determinant()
     - inverse()
 */
