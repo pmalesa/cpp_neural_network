@@ -214,6 +214,40 @@ bool Matrix::operator==(const vector<vector<double>>& data) const {
     return true;
 }
 
+bool Matrix::operator==(initializer_list<initializer_list<double>> init_list) const {
+    if (init_list.size() != rows_) {
+        return false;
+    }
+
+    // Case of empty init list and 0 rows
+    if (rows_ == 0) {
+        return cols_ == 0;
+    }
+
+    const size_t cols = init_list.begin()->size();
+    if (cols != cols_) {
+        return false;
+    }
+
+    size_t i = 0;
+    for (const auto& row : init_list) {
+        if (row.size() != cols) {
+            return false;
+        }
+        size_t j = 0;
+        for (double val : row) {
+            if (abs(data_[i][j] - val) > eps) {
+                return false;
+            }
+            ++j;
+        }
+        ++i;
+    }
+    
+    return true;
+}
+
+
 bool Matrix::operator!=(const Matrix& mat) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return true;
@@ -242,6 +276,39 @@ bool Matrix::operator!=(const vector<vector<double>>& data) const {
             }
         }
     }
+    return false;
+}
+
+bool Matrix::operator!=(initializer_list<initializer_list<double>> init_list) const {
+    if (init_list.size() != rows_) {
+        return true;
+    }
+
+    // Case of empty init list and 0 rows
+    if (rows_ == 0) {
+        return cols_ != 0;
+    }
+
+    const size_t cols = init_list.begin()->size();
+    if (cols != cols_) {
+        return true;
+    }
+
+    size_t i = 0;
+    for (const auto& row : init_list) {
+        if (row.size() != cols) {
+            return true;
+        }
+        size_t j = 0;
+        for (double val : row) {
+            if (abs(data_[i][j] - val) > eps) {
+                return true;
+            }
+            ++j;
+        }
+        ++i;
+    }
+    
     return false;
 }
 

@@ -3,6 +3,8 @@
 #include <vector>
 
 using std::vector;
+using std::initializer_list;
+using il = std::initializer_list<std::initializer_list<double>>;
 
 class MatrixTest : public testing::Test {
 public:
@@ -34,6 +36,30 @@ TEST_F(MatrixTest, EqualsOperatorVec) {
     EXPECT_EQ(matrix == data_4, false);
 }
 
+TEST_F(MatrixTest, EqualsOperatorInitList) {
+    vector<vector<double>> data_1 = { {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} };
+    vector<vector<double>> data_2 = { {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} };
+    vector<vector<double>> data_3 = { {1.0} };
+    vector<vector<double>> data_4 = { {} };
+    vector<vector<double>> data_5 = {};
+    Matrix matrix_1(data_1);
+    Matrix matrix_2(data_2);
+    Matrix matrix_3(data_3);
+    Matrix matrix_4(data_4);
+    Matrix matrix_5(data_5);
+
+    EXPECT_TRUE((matrix_1 == il{ {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} }));
+    EXPECT_TRUE((matrix_2 == il{ {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} }));
+    EXPECT_TRUE((matrix_3 == il{ {1.0} }));
+    EXPECT_TRUE((matrix_4 == il{ {} }));
+    EXPECT_TRUE((matrix_5 == il{ }));
+    EXPECT_TRUE((il{ {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} } == matrix_1));
+    EXPECT_TRUE((il{ {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} } == matrix_2));
+    EXPECT_TRUE((il{ {1.0} } == matrix_3));
+    EXPECT_TRUE((il{ {} } == matrix_4));
+    EXPECT_TRUE((il{ } == matrix_5));
+}
+
 TEST_F(MatrixTest, NotEqualsOperatorMat) {
     Matrix matrix_1(5, 5, 6.66);
     Matrix matrix_2(5, 5, 6.66);
@@ -55,6 +81,30 @@ TEST_F(MatrixTest, NotEqualsOperatorVec) {
     EXPECT_EQ(matrix != data_2, true);
     EXPECT_EQ(matrix != data_3, true);
     EXPECT_EQ(matrix != data_4, true);
+}
+
+TEST_F(MatrixTest, NotEqualsOperatorInitList) {
+    vector<vector<double>> data_1 = { {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} };
+    vector<vector<double>> data_2 = { {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} };
+    vector<vector<double>> data_3 = { {1.0} };
+    vector<vector<double>> data_4 = { {} };
+    vector<vector<double>> data_5 = {};
+    Matrix matrix_1(data_1);
+    Matrix matrix_2(data_2);
+    Matrix matrix_3(data_3);
+    Matrix matrix_4(data_4);
+    Matrix matrix_5(data_5);
+
+    EXPECT_FALSE((matrix_1 != il{ {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} }));
+    EXPECT_FALSE((matrix_2 != il{ {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} }));
+    EXPECT_FALSE((matrix_3 != il{ {1.0} }));
+    EXPECT_FALSE((matrix_4 != il{ {} }));
+    EXPECT_FALSE((matrix_5 != il{ }));
+    EXPECT_FALSE((il{ {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} } != matrix_1));
+    EXPECT_FALSE((il{ {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} } != matrix_2));
+    EXPECT_FALSE((il{ {1.0} } != matrix_3));
+    EXPECT_FALSE((il{ {} } != matrix_4));
+    EXPECT_FALSE((il{ } != matrix_5));
 }
 
 TEST_F(MatrixTest, MainConstructorTest) { 
@@ -141,11 +191,9 @@ TEST_F(MatrixTest, MoveConstructorVecTest) {
 
 TEST_F(MatrixTest, ConstructorInitListTest) {
     Matrix matrix_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
-    vector<vector<double>> result_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
-    EXPECT_EQ(matrix_1 == result_1, true);
+    EXPECT_TRUE((matrix_1 == il{ {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} }));
     Matrix matrix_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
-    vector<vector<double>> result_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
-    EXPECT_EQ(matrix_2 == result_2, true);
+    EXPECT_TRUE((matrix_2 == il{ {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} }));
 
     /* Lambda in parentheses is needed due to the EXPECT_THROW processes comma separated arguments */
     EXPECT_THROW(
@@ -214,12 +262,10 @@ TEST_F(MatrixTest, MoveAssignmentOperatorVecTest) {
 TEST_F(MatrixTest, AssignmentOperatorInitListTest) {
     Matrix matrix_1; 
     matrix_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
-    vector<vector<double>> result_1 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
-    EXPECT_EQ(matrix_1 == result_1, true);
+    EXPECT_TRUE((matrix_1 == il{ {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} }));
     Matrix matrix_2; 
     matrix_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
-    vector<vector<double>> result_2 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
-    EXPECT_EQ(matrix_2 == result_2, true);
+    EXPECT_TRUE((matrix_2 == il{ {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} }));
 
     /* Lambda in parentheses is needed due to the EXPECT_THROW processes comma separated arguments */
     EXPECT_THROW(

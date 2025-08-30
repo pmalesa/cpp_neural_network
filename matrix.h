@@ -33,9 +33,13 @@ public:
 
     bool operator==(const Matrix& mat) const;
     bool operator==(const vector<vector<double>>& data) const;
+    bool operator==(initializer_list<initializer_list<double>> init_list) const;
+    friend bool operator==(initializer_list<initializer_list<double>> init_list, const Matrix& mat) { return mat == init_list; }
     
     bool operator!=(const Matrix& mat) const;
     bool operator!=(const vector<vector<double>>& data) const;
+    bool operator!=(initializer_list<initializer_list<double>> init_list) const;
+    friend bool operator!=(initializer_list<initializer_list<double>> init_list, const Matrix& mat) { return mat != init_list; }
 
     Matrix operator+(double val) const;
     Matrix operator+(const Matrix& mat) const;
@@ -69,18 +73,18 @@ public:
     static Matrix ones(size_t rows, size_t cols);
     
 private:
+    static constexpr double eps = 1e-9;
+
     vector<vector<double>> data_;
     size_t rows_;
     size_t cols_;
 };
 
-
 /*
 TODO:
 - Prevent double overflow handling.
 - Implement:
-    - == and != operators with initializer list
-    - modify the unit tests for constructors with initializer lists after u implement the == and != operators versions with init lists
+    - extend unit tests for constructors and assignment operators to check empty vectors or vectors with 1 row and 0 cols
     - determinant()
     - inverse()
 */
