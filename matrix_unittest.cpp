@@ -118,8 +118,6 @@ TEST_F(MatrixTest, MainConstructorTest) {
             EXPECT_NEAR(matrix[row][col], 0.0, 1e-9);
         }
     }
-    EXPECT_THROW(Matrix(0, 5), std::invalid_argument);
-    EXPECT_THROW(Matrix(5, 0), std::invalid_argument);
 }
 
 TEST_F(MatrixTest, MainConstructorValTest) { 
@@ -134,8 +132,6 @@ TEST_F(MatrixTest, MainConstructorValTest) {
             EXPECT_NEAR(matrix[row][col], val, 1e-9);
         }
     }
-    EXPECT_THROW(Matrix(0, 5, 1.0), std::invalid_argument);
-    EXPECT_THROW(Matrix(5, 0, 1.0), std::invalid_argument);
 }
 
 TEST_F(MatrixTest, CopyConstructorTest) {
@@ -157,6 +153,16 @@ TEST_F(MatrixTest, CopyConstructorVecTest) {
     EXPECT_EQ(matrix_1 == data_1, true);
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     EXPECT_THROW(Matrix matrix_2(data_2), std::invalid_argument);
+    vector<vector<double>> data_3 = { {} };
+    Matrix matrix_3(data_3);
+    EXPECT_TRUE(matrix_3.get_rows() == 1);
+    EXPECT_TRUE(matrix_3.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    vector<vector<double>> data_4 = { };
+    Matrix matrix_4(data_4);
+    EXPECT_TRUE(matrix_4.get_rows() == 0);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    EXPECT_TRUE(matrix_4.is_empty());
 }
 
 TEST_F(MatrixTest, MoveConstructorTest) {
@@ -187,6 +193,16 @@ TEST_F(MatrixTest, MoveConstructorVecTest) {
     EXPECT_EQ(matrix_1 == vector<vector<double>>(rows, vector<double>(5, 1.0)), true);
     vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {4.0, 5.0}, {6.0} };
     EXPECT_THROW(Matrix matrix_2(std::move(data_2)), std::invalid_argument);
+    vector<vector<double>> data_3 = { {} };
+    Matrix matrix_3(std::move(data_3));
+    EXPECT_TRUE(matrix_3.get_rows() == 1);
+    EXPECT_TRUE(matrix_3.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    vector<vector<double>> data_4 = { };
+    Matrix matrix_4(std::move(data_4));
+    EXPECT_TRUE(matrix_4.get_rows() == 0);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    EXPECT_TRUE(matrix_4.is_empty());
 }
 
 TEST_F(MatrixTest, ConstructorInitListTest) {
@@ -202,6 +218,14 @@ TEST_F(MatrixTest, ConstructorInitListTest) {
         }() ),
         std::invalid_argument
     );
+    Matrix matrix_3 = { {} };
+    EXPECT_TRUE(matrix_3.get_rows() == 1);
+    EXPECT_TRUE(matrix_3.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    Matrix matrix_4 = { };
+    EXPECT_TRUE(matrix_4.get_rows() == 0);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    EXPECT_TRUE(matrix_4.is_empty());
 }
 
 TEST_F(MatrixTest, CopyAssignmentOperatorMatrixTest) {
@@ -242,6 +266,18 @@ TEST_F(MatrixTest, CopyAssignmentOperatorVecTest) {
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     Matrix matrix_2(1, 1, 1.0);
     EXPECT_THROW(matrix_2 = data_2, std::invalid_argument);
+    vector<vector<double>> data_3 = { {} };
+    Matrix matrix_3;
+    matrix_3 = data_3;
+    EXPECT_TRUE(matrix_3.get_rows() == 1);
+    EXPECT_TRUE(matrix_3.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    vector<vector<double>> data_4 = { };
+    Matrix matrix_4;
+    matrix_4 = data_4;
+    EXPECT_TRUE(matrix_4.get_rows() == 0);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    EXPECT_TRUE(matrix_4.is_empty());
 }
 
 TEST_F(MatrixTest, MoveAssignmentOperatorVecTest) {
@@ -257,6 +293,18 @@ TEST_F(MatrixTest, MoveAssignmentOperatorVecTest) {
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     Matrix matrix_2(1, 1, 1.0);
     EXPECT_THROW(matrix_2 = std::move(data_2), std::invalid_argument);
+    vector<vector<double>> data_3 = { {} };
+    Matrix matrix_3;
+    matrix_3 = std::move(data_3);
+    EXPECT_TRUE(matrix_3.get_rows() == 1);
+    EXPECT_TRUE(matrix_3.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    vector<vector<double>> data_4 = { };
+    Matrix matrix_4;
+    matrix_4 = std::move(data_4);
+    EXPECT_TRUE(matrix_4.get_rows() == 0);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    EXPECT_TRUE(matrix_4.is_empty());
 }
 
 TEST_F(MatrixTest, AssignmentOperatorInitListTest) {
@@ -275,6 +323,17 @@ TEST_F(MatrixTest, AssignmentOperatorInitListTest) {
         }() ),
         std::invalid_argument
     );
+
+    Matrix matrix_3;
+    matrix_3 = { {} };
+    EXPECT_TRUE(matrix_3.get_rows() == 1);
+    EXPECT_TRUE(matrix_3.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    Matrix matrix_4;
+    matrix_4 = { };
+    EXPECT_TRUE(matrix_4.get_rows() == 0);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    EXPECT_TRUE(matrix_4.is_empty());
 }
 
 TEST_F(MatrixTest, AccessOperatorTest) {
@@ -401,6 +460,33 @@ TEST_F(MatrixTest, NegationOperatorTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, -1.0);
     EXPECT_EQ(-matrix == result, true);
+}
+
+TEST_F(MatrixTest, IsEmptyMethodTest) {
+    Matrix matrix_1(0, 5);
+    Matrix matrix_2(5, 0);
+    Matrix matrix_3(0, 4, 6.66);
+    Matrix matrix_4(5, 0, 1.00);
+    EXPECT_TRUE(matrix_1.is_empty());
+    EXPECT_TRUE(matrix_1.get_rows() == 0);
+    EXPECT_TRUE(matrix_1.get_cols() == 5);
+    EXPECT_TRUE(matrix_2.is_empty());
+    EXPECT_TRUE(matrix_2.get_rows() == 5);
+    EXPECT_TRUE(matrix_2.get_cols() == 0);
+    EXPECT_TRUE(matrix_3.is_empty());
+    EXPECT_TRUE(matrix_3.get_rows() == 0);
+    EXPECT_TRUE(matrix_3.get_cols() == 4);
+    EXPECT_TRUE(matrix_4.is_empty());
+    EXPECT_TRUE(matrix_4.get_rows() == 5);
+    EXPECT_TRUE(matrix_4.get_cols() == 0);
+    Matrix matrix_5(5, 5);
+    Matrix matrix_6(5, 5);
+    Matrix matrix_7(4, 4, 6.66);
+    Matrix matrix_8(5, 5, 1.00);
+    EXPECT_FALSE(matrix_5.is_empty());
+    EXPECT_FALSE(matrix_6.is_empty());
+    EXPECT_FALSE(matrix_7.is_empty());
+    EXPECT_FALSE(matrix_8.is_empty());
 }
 
 TEST_F(MatrixTest, EqualsMethodMat) {

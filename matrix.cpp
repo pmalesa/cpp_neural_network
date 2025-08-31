@@ -2,18 +2,10 @@
 #include <stdexcept>
 
 Matrix::Matrix(size_t rows, size_t cols)
-    : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {
-    if (rows == 0 || cols == 0) {
-        throw std::invalid_argument("Matrix dimensions must be greater than 0!");
-    }
-}
+    : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {}
 
 Matrix::Matrix(size_t rows, size_t cols, double val) 
-    : data_(vector<vector<double>>(rows, vector<double>(cols, val))), rows_(rows), cols_(cols) {
-    if (rows == 0 || cols == 0) {
-        throw std::invalid_argument("Matrix dimensions must be greater than 0!");
-    }
-}
+    : data_(vector<vector<double>>(rows, vector<double>(cols, val))), rows_(rows), cols_(cols) {}
 
 Matrix::Matrix(const Matrix& mat)
     : data_(mat.data_), rows_(mat.rows_), cols_(mat.cols_) {} 
@@ -62,7 +54,6 @@ Matrix::Matrix(vector<vector<double>>&& data) {
 Matrix::Matrix(initializer_list<initializer_list<double>> init_list)
     : rows_(init_list.size()), cols_(0) {
     if (rows_ == 0) {
-        cols_ = 0;
         return;
     }
     cols_ = init_list.begin()->size();
