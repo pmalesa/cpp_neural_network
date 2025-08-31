@@ -84,6 +84,5 @@ private:
 TODO:
 - Prevent double overflow handling.
 - Implement:
-    - determinant()
     - inverse()
 */

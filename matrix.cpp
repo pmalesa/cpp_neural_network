@@ -438,6 +438,73 @@ void Matrix::resize(size_t new_rows, size_t new_cols) {
     cols_ = new_cols;
 }
 
+double Matrix::det() const {
+    if (rows_ != cols_) {
+        throw std::domain_error("Matrix has to be square in order to calculate determinant!");
+    }
+    size_t n = rows_;
+    if (n == 0) {
+        return 1.0;
+    } 
+    if (n == 1) {
+        return data_[0][0];
+    }
+    if (n == 2) {
+        return data_[0][0] * data_[1][1] - data_[0][1] * data_[1][0];
+    }
+
+    auto data = data_;
+    double det = 1.0;
+    int sign = 1;
+
+    /* 
+    Gaussian elimination method - O(N^3):
+        1) We need to apply the row operations to transform a square matrix into an upper triangular
+           matrix (all zeros below the diagonal).
+        2) For an upper triangular matrix the determinant is just the product of diagonal entries.
+        3) While transforming the original matrix, we keep track of how each row operation affects
+           the determinant:
+           - Row swap - flips the sign of determinant,
+           - Multiply a row by a scalar - scales determinant by a scalar (this is usually avoided
+             by dividing during elimination instead).
+           - Add a multiple of one row to another - determinant unchanged.
+
+        In short:
+        - Repeatedly choose a pivot, eliminate below, swap if needed.
+        - Multiply diagonal entries, correcting sign if swaps happened.
+    */
+    for (size_t i = 0; i < n; ++i) {
+        // Partial pivoting: find max in column i
+        size_t pivot = i;
+        for (size_t j = i + 1; j < n; ++j) {
+            if (std::abs(data[j][i]) > std::abs(data[pivot][i])) {
+                pivot = j;
+            }
+        }
+
+        if (std::abs(data[pivot][i]) < eps) {
+            return 0.0;
+        }
+
+        if (pivot != i) {
+            std::swap(data[pivot], data[i]);
+            sign = -sign;
+        }
+
+        det *= data[i][i];
+
+        // Eliminate below
+        for (size_t j = i + 1; j < n; ++j) {
+            double factor = data[j][i] / data[i][i];
+            for (size_t k = i; k < n; ++k) {
+                data[j][k] -= factor * data[i][k];
+            }
+        }
+    }
+
+    return det * sign;
+}
+
 bool Matrix::equals(const Matrix& mat, double epsilon) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return false;

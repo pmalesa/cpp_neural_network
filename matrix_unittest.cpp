@@ -392,16 +392,26 @@ TEST_F(MatrixTest, ResizeMethodTest) {
     EXPECT_EQ(matrix == expand_result, true);
 }
 
-// TEST_F(MatrixTest, DeterminantMethodTest) {
-//     Matrix matrix = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
-//     EXPECT_NEAR(matrix.det(), 0.0, 1e-9);
-//     matrix = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
-//     EXPECT_NEAR(matrix.det(), -922020.0, 1e-9);
-//     matrix = { {1.0} };
-//     EXPECT_NEAR(matrix.det(), 1.0, 1e-9);
-//     matrix = { {1.0, -90.999}, {2.555, -3.666} };
-//     EXPECT_NEAR(matrix.det(), 228.836445, 1e-9);
-// }
+TEST_F(MatrixTest, DeterminantMethodTest) {
+    Matrix matrix = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    EXPECT_NEAR(matrix.det(), 0.0, 1e-9);
+    matrix = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    EXPECT_NEAR(matrix.det(), -922020.0, 1e-9);
+    matrix = { {1.0} };
+    EXPECT_NEAR(matrix.det(), 1.0, 1e-9);
+    matrix = { {1.0, -90.999}, {2.555, -3.666} };
+    EXPECT_NEAR(matrix.det(), 228.836445, 1e-9);
+    matrix = { };
+    EXPECT_NEAR(matrix.det(), 1.0, 1e-9);
+    matrix = Matrix(0, 0);
+    EXPECT_NEAR(matrix.det(), 1.0, 1e-9);
+    matrix = Matrix(0, 1, 1.0);
+    EXPECT_THROW(matrix.det(), std::domain_error);
+    matrix = Matrix(1, 0, 1.0);
+    EXPECT_THROW(matrix.det(), std::domain_error);
+    matrix = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    EXPECT_THROW(matrix.det(), std::domain_error);
+}
 
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix(5, 5, 1.0);
