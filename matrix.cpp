@@ -505,6 +505,79 @@ double Matrix::det() const {
     return det * sign;
 }
 
+Matrix Matrix::inverse() const {
+    if (rows_ != cols_) {
+        throw std::invalid_argument("Inverse requires a square matrix!");
+    }
+    size_t n = rows_;
+
+    if (n == 0) {
+        return Matrix(0, 0);
+    }
+
+    if (n == 1) {
+        if (std::abs(data_[0][0]) < eps) {
+            throw std::runtime_error("Inverse does not exist, because matrix is singular!");
+        }
+        return Matrix(1, 1, 1.0 / data_[0][0]);
+    }
+
+    // Augment matrix with identity
+    vector<vector<double>> aug(n, vector<double>(2 * n));
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            aug[i][j] = data_[i][j];
+        }
+        aug[i][n + i] = 1.0;
+    }
+
+    // Gaussian elimination with partial pivoting
+    for (size_t i = 0; i < n; ++i) {
+        // Find pivot row
+        size_t pivot = i;
+        for (size_t row = i + 1; row < n; ++row) {
+            if (std::abs(aug[row][i]) > std::abs(aug[pivot][i])) {
+                pivot = row;
+            }
+        }
+
+        if (std::abs(aug[pivot][i]) < eps) {
+            throw std::runtime_error("Inverse does not exist, because matrix is singular!");
+        }
+
+        if (pivot != i) {
+            std::swap(aug[pivot], aug[i]);
+        }
+
+        // Normalize pivot row
+        double diag = aug[i][i];
+        for (size_t j = 0; j < 2 * n; ++j) {
+            aug[i][j] /= diag;
+        }
+
+        // Eliminate other rows
+        for (size_t row = 0; row < n; ++row) {
+            if (row == i) {
+                continue;
+            }
+            double factor = aug[row][i];
+            for (size_t j = 0; j < 2 * n; ++j) {
+                aug[row][j] -= factor * aug[i][j];
+            }
+        }
+    }
+
+    // Extract inverse from augmented matrix
+    vector<vector<double>> inv_data(n, vector<double>(n));
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            inv_data[i][j] = aug[i][n + j];
+        }
+    }
+
+    return Matrix(std::move(inv_data));
+}
+
 bool Matrix::equals(const Matrix& mat, double epsilon) const {
     if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
         return false;

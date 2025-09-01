@@ -413,6 +413,49 @@ TEST_F(MatrixTest, DeterminantMethodTest) {
     EXPECT_THROW(matrix.det(), std::domain_error);
 }
 
+TEST_F(MatrixTest, InverseMethodTest){
+    Matrix matrix_1 = {};
+    Matrix result_1 = {};
+    EXPECT_TRUE(matrix_1.inverse() == result_1);
+    EXPECT_TRUE(matrix_1.inverse().inverse() == matrix_1);    
+
+    Matrix matrix_2 = { {2.0} };
+    Matrix result_2 = { {0.5} };
+    EXPECT_TRUE(matrix_2.inverse() == result_2);
+    EXPECT_TRUE(matrix_2.inverse().inverse() == matrix_2);    
+
+    Matrix matrix_3 = { {2.0, 3.0}, {4.0, 5.0} };
+    Matrix result_3 = { {-2.5, 1.5}, {2.0, -1.0} };
+    EXPECT_TRUE(matrix_3.inverse() == result_3);
+    EXPECT_TRUE(matrix_3.inverse().inverse() == matrix_3);    
+
+    Matrix matrix_4 = { {1.0, -6.0, 4.0}, {2.0, -2.0, 2.0}, {-3.0, -5.0, 7.0} };
+    Matrix result_4 = {
+        {-0.07692307692307692308, 0.42307692307692307693, -0.076923076923076923076},
+        {-0.38461538461538461538, 0.36538461538461538461, 0.11538461538461538461},
+        {-0.3076923076923076923, 0.44230769230769230769, 0.19230769230769230769}
+    };
+    EXPECT_TRUE(matrix_4.inverse() == result_4);
+    EXPECT_TRUE(matrix_4.inverse().inverse() == matrix_4);    
+
+    Matrix matrix_5 = { {1.5, 2.5, 7.9, -1.2}, {-4.5, -2.5, 4.0, 4.0}, {-11.2, -11.3, -1.5, 1.5}, {6.6, 7.7, -8.8, -9.9} };;
+    Matrix result_5 = {
+        {0.0132532296447390787, -0.41316611422743498215, -0.02286779704232534421, -0.172007073540092408},
+        {-0.04650582185959544435, 0.42776325854156042831, -0.08007712901580826109, 0.16633781079535796514},
+        {0.11861507734149243581, -0.042484701682814890354, 0.015776389597144314124, -0.029152759105589294264},
+        {-0.132771332653408125, 0.0950248597654258031, -0.091550866904640489536, -0.060394066879915936542}
+    };
+    EXPECT_TRUE(matrix_5.inverse() == result_5);
+    EXPECT_TRUE(matrix_5.inverse().inverse() == matrix_5);    
+
+    Matrix matrix_6(2, 3, 5.0); // rows != cols
+    EXPECT_THROW(matrix_6.inverse(), std::invalid_argument);
+    Matrix matrix_7(2, 2, 1.0); // det() == 0
+    EXPECT_THROW(matrix_7.inverse(), std::runtime_error);
+    Matrix matrix_8(1, 1, 0.0); // singular matrix with 0.0
+    EXPECT_THROW(matrix_8.inverse(), std::runtime_error);
+}
+
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, 5.0);

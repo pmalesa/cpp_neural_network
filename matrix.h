@@ -60,6 +60,7 @@ public:
     Matrix transpose() const;
     void resize(size_t new_rows, size_t new_cols);
     double det() const;
+    Matrix inverse() const;
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
@@ -83,6 +84,6 @@ private:
 /*
 TODO:
 - Prevent double overflow handling.
-- Implement:
-    - inverse()
+- REFACTOR
+- Concurrent calculations
 */
