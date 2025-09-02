@@ -83,7 +83,6 @@ private:
 
 /*
 TODO:
-- Prevent double overflow handling.
 - REFACTOR
 - Concurrent calculations
 */

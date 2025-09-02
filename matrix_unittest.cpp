@@ -1,10 +1,14 @@
 #include "matrix.h"
 #include <gtest/gtest.h>
 #include <vector>
+#include <limits>
 
 using std::vector;
 using std::initializer_list;
 using il = std::initializer_list<std::initializer_list<double>>;
+
+#define DOUBLE_MAX (std::numeric_limits<double>::max())
+#define DOUBLE_MIN (std::numeric_limits<double>::lowest())
 
 class MatrixTest : public testing::Test {
 public:
@@ -457,10 +461,12 @@ TEST_F(MatrixTest, InverseMethodTest){
 }
 
 TEST_F(MatrixTest, AdditionWithValueTest) {
-    Matrix matrix(5, 5, 1.0);
+    Matrix matrix_1(5, 5, 1.0);
     Matrix result(5, 5, 5.0);
-    EXPECT_EQ(matrix + 4.0 == result, true);
-    EXPECT_EQ(matrix + 3.0 == result, false);
+    EXPECT_EQ(matrix_1 + 4.0 == result, true);
+    EXPECT_EQ(matrix_1 + 3.0 == result, false);
+    Matrix matrix_2(5, 5, DOUBLE_MAX);
+    EXPECT_THROW(matrix_2 + DOUBLE_MAX, std::overflow_error);
 }
 
 TEST_F(MatrixTest, AdditionWithMatrixTest) {
@@ -471,13 +477,17 @@ TEST_F(MatrixTest, AdditionWithMatrixTest) {
     EXPECT_THROW(matrix_1 + matrix_3, std::domain_error);
     EXPECT_EQ(matrix_1 + matrix_2 == result, true);
     EXPECT_EQ(matrix_2 + matrix_1 == result, true);
+    Matrix matrix_4(5, 5, DOUBLE_MAX);
+    EXPECT_THROW(matrix_4 + matrix_4, std::overflow_error);
 }
 
 TEST_F(MatrixTest, SubtractionWithValueTest) {
-    Matrix matrix(5, 5, 5.0);
+    Matrix matrix_1(5, 5, 5.0);
     Matrix result(5, 5, 1.0);
-    EXPECT_EQ(matrix - 4.0 == result, true);
-    EXPECT_EQ(matrix - 3.0 == result, false);
+    EXPECT_EQ(matrix_1 - 4.0 == result, true);
+    EXPECT_EQ(matrix_1 - 3.0 == result, false);
+    Matrix matrix_2(5, 5, DOUBLE_MIN);
+    EXPECT_THROW(matrix_2 - DOUBLE_MAX, std::overflow_error);
 }
 
 TEST_F(MatrixTest, SubtractionWithMatrixTest) {
@@ -487,18 +497,42 @@ TEST_F(MatrixTest, SubtractionWithMatrixTest) {
     Matrix result(5, 5, 4.0);
     EXPECT_THROW(matrix_1 - matrix_3, std::domain_error);
     EXPECT_EQ(matrix_1 - matrix_2 == result, true);
+    Matrix matrix_4(5, 5, DOUBLE_MIN);
+    Matrix matrix_5(5, 5, DOUBLE_MAX);
+    EXPECT_THROW(matrix_4 - matrix_5, std::overflow_error);
+    EXPECT_THROW(matrix_4 - matrix_5, std::overflow_error);
 }
 
 TEST_F(MatrixTest, MultiplyByValueTest) {
-    Matrix matrix(5, 5, 1.0);
+    Matrix matrix_1(5, 5, 1.0);
     Matrix result(5, 5, 5.0);
-    EXPECT_EQ(matrix * 5 == result, true);
+    EXPECT_EQ(matrix_1 * 5 == result, true);
+    Matrix matrix_2(5, 5, DOUBLE_MAX);
+    Matrix matrix_3(5, 5, DOUBLE_MIN);
+    EXPECT_THROW(matrix_2 * DOUBLE_MAX, std::overflow_error);
+    EXPECT_THROW(matrix_2 * DOUBLE_MIN, std::overflow_error);
+    EXPECT_THROW(matrix_2 * 4.0, std::overflow_error);
+    EXPECT_THROW(matrix_2 * -4.0, std::overflow_error);
+    EXPECT_THROW(matrix_3 * DOUBLE_MAX, std::overflow_error);
+    EXPECT_THROW(matrix_3 * DOUBLE_MIN, std::overflow_error);
+    EXPECT_THROW(matrix_3 * 4.0, std::overflow_error);
+    EXPECT_THROW(matrix_3 * -4.0, std::overflow_error);
 }
 
 TEST_F(MatrixTest, MultiplyByValueFriendTest) {
-    Matrix matrix(5, 5, 1.0);
+    Matrix matrix_1(5, 5, 1.0);
     Matrix result(5, 5, 5.0);
-    EXPECT_EQ(5 * matrix == result, true);
+    EXPECT_EQ(5 * matrix_1 == result, true);
+    Matrix matrix_2(5, 5, DOUBLE_MAX);
+    Matrix matrix_3(5, 5, DOUBLE_MIN);
+    EXPECT_THROW(DOUBLE_MAX * matrix_2, std::overflow_error);
+    EXPECT_THROW(DOUBLE_MIN * matrix_2, std::overflow_error);
+    EXPECT_THROW(4.0 * matrix_2, std::overflow_error);
+    EXPECT_THROW(-4.0 * matrix_2, std::overflow_error);
+    EXPECT_THROW(DOUBLE_MAX * matrix_3, std::overflow_error);
+    EXPECT_THROW(DOUBLE_MIN * matrix_3, std::overflow_error);
+    EXPECT_THROW(4.0 * matrix_3, std::overflow_error);
+    EXPECT_THROW(-4.0 * matrix_3, std::overflow_error);
 }
 
 TEST_F(MatrixTest, MultiplyByMatrixTest) {
@@ -507,6 +541,16 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     EXPECT_THROW(matrix_2 * matrix_1, std::domain_error);
     Matrix result(matrix_1.get_rows(), matrix_2.get_cols(), 6.0);
     EXPECT_EQ(matrix_1 * matrix_2 == result, true);
+    Matrix matrix_3(5, 5, DOUBLE_MAX);
+    Matrix matrix_4(5, 5, DOUBLE_MIN);
+    EXPECT_THROW(matrix_3 * matrix_3, std::overflow_error);
+    EXPECT_THROW(matrix_3 * matrix_4, std::overflow_error);
+    EXPECT_THROW(matrix_3 * Matrix(5, 5, 4.0), std::overflow_error);
+    EXPECT_THROW(matrix_3 * Matrix(5, 5, -4.0), std::overflow_error);
+    EXPECT_THROW(matrix_4 * matrix_3, std::overflow_error);
+    EXPECT_THROW(matrix_4 * matrix_4, std::overflow_error);
+    EXPECT_THROW(matrix_4 * Matrix(5, 5, 4.0), std::overflow_error);
+    EXPECT_THROW(matrix_4 * Matrix(5, 5, -4.0), std::overflow_error);
 }
 
 TEST_F(MatrixTest, NegationOperatorTest) {

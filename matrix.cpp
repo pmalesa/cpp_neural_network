@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <stdexcept>
+#include <cmath>
 
 Matrix::Matrix(size_t rows, size_t cols)
     : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {}
@@ -307,7 +308,11 @@ Matrix Matrix::operator+(double val) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
-            result[row][col] = this->data_[row][col] + val;
+            double v = this->data_[row][col] + val;
+            if (!std::isfinite(v)) {
+                throw std::overflow_error("Addition overflowed!");
+            }
+            result[row][col] = v;
         }
     }
     return result;
@@ -320,7 +325,11 @@ Matrix Matrix::operator+(const Matrix& mat) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
-            result[row][col] = this->data_[row][col] + mat.data_[row][col];
+            double v = this->data_[row][col] + mat.data_[row][col];
+            if (!std::isfinite(v)) {
+                throw std::overflow_error("Addition overflowed!");
+            }
+            result[row][col] = v;
         }
     }
     return result;
@@ -330,7 +339,11 @@ Matrix Matrix::operator-(double val) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
-            result[row][col] = this->data_[row][col] - val;
+            double v = this->data_[row][col] - val;
+            if (!std::isfinite(v)) {
+                throw std::overflow_error("Subtraction overflowed!");
+            }
+            result[row][col] = v;
         }
     }
     return result;
@@ -343,7 +356,11 @@ Matrix Matrix::operator-(const Matrix& mat) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
         for (size_t col = 0; col < this->cols_; ++col) {
-            result[row][col] = this->data_[row][col] - mat.data_[row][col];
+            double v = this->data_[row][col] - mat.data_[row][col];
+            if (!std::isfinite(v)) {
+                throw std::overflow_error("Subtraction overflowed!");
+            }
+            result[row][col] = v;
         }
     }
     return result;
@@ -352,8 +369,15 @@ Matrix Matrix::operator-(const Matrix& mat) const {
 Matrix Matrix::operator*(double val) const {
     Matrix result(this->rows_, this->cols_);
     for (size_t row = 0; row < this->rows_; ++row) {
+        long double v_ld = 0.0;
         for (size_t col = 0; col < this->cols_; ++col) {
-            result[row][col] = this->data_[row][col] * val;
+            v_ld = static_cast<long double>(this->data_[row][col]) * 
+                   static_cast<long double>(val);
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Matrix multiplication overflowed!");
+            }
+            result[row][col] = v_d;
         }
     }
     return result;
@@ -362,8 +386,15 @@ Matrix Matrix::operator*(double val) const {
 Matrix operator*(double val, const Matrix& mat) {
     Matrix result(mat.get_rows(), mat.get_cols());
     for (size_t row = 0; row < mat.get_rows(); ++row) {
+        long double v_ld = 0.0;
         for (size_t col = 0; col < mat.get_cols(); ++col) {
-            result[row][col] = mat.data_[row][col] * val;
+            v_ld = static_cast<long double>(mat.data_[row][col]) * 
+                   static_cast<long double>(val);
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Matrix multiplication overflowed!");
+            }
+            result[row][col] = v_d;
         }
     }
     return result;
@@ -377,11 +408,16 @@ Matrix Matrix::operator*(const Matrix& mat) const {
     size_t common_dim = this->cols_; 
     for (size_t row = 0; row < result.rows_; ++row) {
         for (size_t col = 0; col < result.cols_; ++col) {
-            double sum = 0;
+            long double v_ld = 0.0;
             for (size_t i = 0; i < common_dim; ++i) {
-                sum += this->data_[row][i] * mat.data_[i][col];
+                v_ld += static_cast<long double>(this->data_[row][i]) * 
+                       static_cast<long double>(mat.data_[i][col]);
             }
-            result[row][col] = sum;
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Matrix multiplication overflowed!");
+            }
+            result[row][col] = v_d;
         }
     }
     return result;
