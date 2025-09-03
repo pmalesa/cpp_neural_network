@@ -12,21 +12,7 @@ Matrix::Matrix(const Matrix& mat)
     : data_(mat.data_), rows_(mat.rows_), cols_(mat.cols_) {} 
 
 Matrix::Matrix(const vector<vector<double>>& data) {
-    if (!data.empty()) {
-        size_t cols = data[0].size();
-        cols_ = data[0].size();
-        for (const auto& row : data) {
-            if (row.size() != cols) {
-                throw std::invalid_argument("All rows must have the same number of columns!");
-            }
-        }
-        rows_ = data.size();
-        cols_ = cols;
-    } else {
-        rows_ = 0;
-        cols_ = 0;
-    }
-    data_ = data;
+    assign_from_(data);
 }
 
 Matrix::Matrix(Matrix&& mat) noexcept
@@ -36,60 +22,33 @@ Matrix::Matrix(Matrix&& mat) noexcept
 }
 
 Matrix::Matrix(vector<vector<double>>&& data) {
-    if (!data.empty()) {
-        size_t cols = data[0].size();
-        for (const auto& row : data) {
-            if (row.size() != cols) {
-                throw std::invalid_argument("All rows must have the same number of columns!");
-            }
-        }
-        rows_ = data.size();
-        cols_ = cols;
-    } else {
-        rows_ = 0;
-        cols_ = 0;
-    }
-    data_ = move(data);
+    assign_from_(std::move(data));
 }
 
-Matrix::Matrix(initializer_list<initializer_list<double>> init_list)
-    : rows_(init_list.size()), cols_(0) {
-    if (rows_ == 0) {
-        return;
-    }
-    cols_ = init_list.begin()->size();
-    for (const auto& row : init_list) {
-        if (row.size() != cols_) {
-            throw std::invalid_argument("All rows must have the same number of columns!");
-        }
-    }
-
-    data_.reserve(rows_);
-    for (const auto& row : init_list) {
-        data_.emplace_back(row);
-    }
+Matrix::Matrix(initializer_list<initializer_list<double>> init_list) {
+    assign_from_(init_list);
 }
 
 vector<double>& Matrix::operator[](size_t row) {
-    return this->data_[row];
+    return data_[row];
 }
 
 const vector<double>& Matrix::operator[](size_t row) const {
-    return this->data_[row];
+    return data_[row];
 }
 
 double& Matrix::operator()(size_t row, size_t col) {
-    if (row >= this->rows_ || row < 0 || col >= this->cols_ || col < 0) {
+    if (row >= rows_ || row < 0 || col >= cols_ || col < 0) {
         throw std::out_of_range("Matrix indices out of bounds!");
     }
-    return this->data_[row][col];
+    return data_[row][col];
 }
 
 const double& Matrix::operator()(size_t row, size_t col) const {
-    if (row >= this->rows_ || row < 0 || col >= this->cols_ || col < 0) {
+    if (row >= rows_ || col >= cols_) {
         throw std::out_of_range("Matrix indices out of bounds!");
     }
-    return this->data_[row][col];
+    return data_[row][col];
 }
 
 Matrix& Matrix::operator=(const Matrix& mat) {
@@ -113,202 +72,49 @@ Matrix& Matrix::operator=(Matrix&& mat) noexcept {
 }
 
 Matrix& Matrix::operator=(const vector<vector<double>>& data) {
-    if (!data.empty()) {
-        size_t cols = data[0].size();
-        for (const auto& row : data) {
-            if (row.size() != cols) {
-                throw std::invalid_argument("All rows must have the same number of columns!");
-            }
-        }
-        rows_ = data.size();
-        cols_ = cols;
-    } else {
-        rows_ = 0;
-        cols_ = 0;
-    }
-    data_ = data;
+    assign_from_(data);
     return *this;
 }
 
 Matrix& Matrix::operator=(vector<vector<double>>&& data) {
-    if (!data.empty()) {
-        size_t cols = data[0].size();
-        for (const auto& row : data) {
-            if (row.size() != cols) {
-                throw std::invalid_argument("All rows must have the same number of columns!");
-            }
-        }
-        rows_ = data.size();
-        cols_ = cols;
-    } else {
-        rows_ = 0;
-        cols_ = 0;
-    }
-    data_ = std::move(data);
+    assign_from_(std::move(data));
     return *this;
 }
 
 Matrix& Matrix::operator=(initializer_list<initializer_list<double>> init_list) {
-    if (init_list.size() == 0) {
-        rows_ = 0;
-        cols_ = 0;
-        data_.clear();
-        return *this;
-    }
-    size_t cols = init_list.begin()->size();
-    for (const auto& row : init_list) {
-        if (row.size() != cols) {
-            throw std::invalid_argument("All rows must have the same number of columns!");
-        }
-    }
-
-    rows_ = init_list.size();
-    cols_ = cols;
-    
-    data_.clear();
-    data_.reserve(rows_);
-    for (const auto& row : init_list) {
-        data_.emplace_back(row);
-    }
-
+    assign_from_(init_list);
     return *this;
 }
 
-
 bool Matrix::operator==(const Matrix& mat) const {
-    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
-        return false;
-    }
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            if (abs(this->data_[row][col] - mat.data_[row][col]) > 1e-9) {
-                return false;
-            }
-        }
-    }
-    return true;
+    return equals(mat);
 }
 
 bool Matrix::operator==(const vector<vector<double>>& data) const {
-    if (data.empty()) {
-        return this->data_.empty();
-    }
-    if (this->rows_ != data.size() || this->cols_ != data[0].size()) {
-        return false;
-    }
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            if (abs(this->data_[row][col] - data[row][col]) > 1e-9) {
-                return false;
-            }
-        }
-    }
-    return true;
+    return equals(data);
 }
 
 bool Matrix::operator==(initializer_list<initializer_list<double>> init_list) const {
-    if (init_list.size() != rows_) {
-        return false;
-    }
-
-    // Case of empty init list and 0 rows
-    if (rows_ == 0) {
-        return cols_ == 0;
-    }
-
-    const size_t cols = init_list.begin()->size();
-    if (cols != cols_) {
-        return false;
-    }
-
-    size_t i = 0;
-    for (const auto& row : init_list) {
-        if (row.size() != cols) {
-            return false;
-        }
-        size_t j = 0;
-        for (double val : row) {
-            if (abs(data_[i][j] - val) > eps) {
-                return false;
-            }
-            ++j;
-        }
-        ++i;
-    }
-    
-    return true;
+    return equals(init_list);
 }
 
-
 bool Matrix::operator!=(const Matrix& mat) const {
-    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
-        return true;
-    }
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            if (abs(this->data_[row][col] - mat.data_[row][col]) > 1e-9) {
-                return true;
-            }
-        }
-    }
-    return false;
+    return !(*this == mat);
 }
 
 bool Matrix::operator!=(const vector<vector<double>>& data) const {
-    if (data.empty()) {
-        return !this->data_.empty();
-    }
-    if (this->rows_ != data.size() || this->cols_ != data[0].size()) {
-        return true;
-    }
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            if (abs(this->data_[row][col] - data[row][col]) > 1e-9) {
-                return true;
-            }
-        }
-    }
-    return false;
+    return !(*this == data);
 }
 
 bool Matrix::operator!=(initializer_list<initializer_list<double>> init_list) const {
-    if (init_list.size() != rows_) {
-        return true;
-    }
-
-    // Case of empty init list and 0 rows
-    if (rows_ == 0) {
-        return cols_ != 0;
-    }
-
-    const size_t cols = init_list.begin()->size();
-    if (cols != cols_) {
-        return true;
-    }
-
-    size_t i = 0;
-    for (const auto& row : init_list) {
-        if (row.size() != cols) {
-            return true;
-        }
-        size_t j = 0;
-        for (double val : row) {
-            if (abs(data_[i][j] - val) > eps) {
-                return true;
-            }
-            ++j;
-        }
-        ++i;
-    }
-    
-    return false;
+    return !(*this == init_list);
 }
 
 Matrix Matrix::operator+(double val) const {
-    Matrix result(this->rows_, this->cols_);
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            double v = this->data_[row][col] + val;
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            double v = data_[row][col] + val;
             if (!std::isfinite(v)) {
                 throw std::overflow_error("Addition overflowed!");
             }
@@ -319,13 +125,13 @@ Matrix Matrix::operator+(double val) const {
 }
 
 Matrix Matrix::operator+(const Matrix& mat) const {
-    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+    if (rows_ != mat.rows_ || cols_ != mat.cols_) {
         throw std::domain_error("Matrices can not be added!");
     }
-    Matrix result(this->rows_, this->cols_);
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            double v = this->data_[row][col] + mat.data_[row][col];
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            double v = data_[row][col] + mat.data_[row][col];
             if (!std::isfinite(v)) {
                 throw std::overflow_error("Addition overflowed!");
             }
@@ -336,10 +142,10 @@ Matrix Matrix::operator+(const Matrix& mat) const {
 }
 
 Matrix Matrix::operator-(double val) const {
-    Matrix result(this->rows_, this->cols_);
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            double v = this->data_[row][col] - val;
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            double v = data_[row][col] - val;
             if (!std::isfinite(v)) {
                 throw std::overflow_error("Subtraction overflowed!");
             }
@@ -350,13 +156,13 @@ Matrix Matrix::operator-(double val) const {
 }
 
 Matrix Matrix::operator-(const Matrix& mat) const {
-    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+    if (rows_ != mat.rows_ || cols_ != mat.cols_) {
         throw std::domain_error("Matrices can not be added!");
     }
-    Matrix result(this->rows_, this->cols_);
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            double v = this->data_[row][col] - mat.data_[row][col];
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            double v = data_[row][col] - mat.data_[row][col];
             if (!std::isfinite(v)) {
                 throw std::overflow_error("Subtraction overflowed!");
             }
@@ -367,11 +173,11 @@ Matrix Matrix::operator-(const Matrix& mat) const {
 }
 
 Matrix Matrix::operator*(double val) const {
-    Matrix result(this->rows_, this->cols_);
-    for (size_t row = 0; row < this->rows_; ++row) {
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
         long double v_ld = 0.0;
-        for (size_t col = 0; col < this->cols_; ++col) {
-            v_ld = static_cast<long double>(this->data_[row][col]) * 
+        for (size_t col = 0; col < cols_; ++col) {
+            v_ld = static_cast<long double>(data_[row][col]) * 
                    static_cast<long double>(val);
             double v_d = static_cast<double>(v_ld);
             if (!std::isfinite(v_d)) {
@@ -401,16 +207,16 @@ Matrix operator*(double val, const Matrix& mat) {
 }
 
 Matrix Matrix::operator*(const Matrix& mat) const {
-    if (this->cols_ != mat.rows_) {
+    if (cols_ != mat.rows_) {
         throw std::domain_error("Matrices can not be multiplied!");
     }
-    Matrix result(this->rows_, mat.cols_);
-    size_t common_dim = this->cols_; 
+    Matrix result(rows_, mat.cols_);
+    size_t common_dim = cols_; 
     for (size_t row = 0; row < result.rows_; ++row) {
         for (size_t col = 0; col < result.cols_; ++col) {
             long double v_ld = 0.0;
             for (size_t i = 0; i < common_dim; ++i) {
-                v_ld += static_cast<long double>(this->data_[row][i]) * 
+                v_ld += static_cast<long double>(data_[row][i]) * 
                        static_cast<long double>(mat.data_[i][col]);
             }
             double v_d = static_cast<double>(v_ld);
@@ -424,42 +230,42 @@ Matrix Matrix::operator*(const Matrix& mat) const {
 }
 
 Matrix Matrix::operator-() const {
-    Matrix result(this->rows_, this->cols_);
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            result[row][col] = -this->data_[row][col];
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            result[row][col] = -data_[row][col];
         }
     }
     return result;
 }
 
 double& Matrix::at(size_t row, size_t col) {
-    if (row >= this->rows_ || col >= this->cols_) {
+    if (row >= rows_ || col >= cols_) {
         throw std::out_of_range("Matrix indices out of bounds!");
     }
     return data_[row][col];
 }
 
 const double& Matrix::at(size_t row, size_t col) const {
-    if (row >= this->rows_ || col >= this->cols_) {
+    if (row >= rows_ || col >= cols_) {
         throw std::out_of_range("Matrix indices out of bounds!");
     }
     return data_[row][col];
 }
 
 void Matrix::fill(double val) {
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            this->data_[row][col] = val;
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            data_[row][col] = val;
         }
     }
 }
 
 Matrix Matrix::transpose() const {
-    Matrix mat(this->cols_, this->rows_);
-    for (size_t i = 0; i < this->cols_; ++i) {
-        for (size_t j = 0; j < this->rows_; ++j) {
-            mat[i][j] = this->data_[j][i];
+    Matrix mat(cols_, rows_);
+    for (size_t i = 0; i < cols_; ++i) {
+        for (size_t j = 0; j < rows_; ++j) {
+            mat[i][j] = data_[j][i];
         }
     }
     return mat;
@@ -614,13 +420,13 @@ Matrix Matrix::inverse() const {
     return Matrix(std::move(inv_data));
 }
 
-bool Matrix::equals(const Matrix& mat, double epsilon) const {
-    if (this->rows_ != mat.rows_ || this->cols_ != mat.cols_) {
+bool Matrix::equals(const Matrix& mat) const {
+    if (rows_ != mat.rows_ || cols_ != mat.cols_) {
         return false;
     }
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            if (abs(this->data_[row][col] - mat.data_[row][col]) > epsilon) {
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            if (abs(data_[row][col] - mat.data_[row][col]) > eps) {
                 return false;
             }
         }
@@ -628,20 +434,53 @@ bool Matrix::equals(const Matrix& mat, double epsilon) const {
     return true;
 }
 
-bool Matrix::equals(const vector<vector<double>>& data, double epsilon) const {
+bool Matrix::equals(const vector<vector<double>>& data) const {
     if (data.empty()) {
-        return this->data_.empty();
+        return data_.empty();
     }
-    if (this->rows_ != data.size() || this->cols_ != data[0].size()) {
+    if (rows_ != data.size() || cols_ != data[0].size()) {
         return false;
     }
-    for (size_t row = 0; row < this->rows_; ++row) {
-        for (size_t col = 0; col < this->cols_; ++col) {
-            if (abs(this->data_[row][col] - data[row][col]) > epsilon) {
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            if (abs(data_[row][col] - data[row][col]) > eps) {
                 return false;
             }
         }
     }
+    return true;
+}
+
+bool Matrix::equals(initializer_list<initializer_list<double>> init_list) const {
+    if (init_list.size() != rows_) {
+        return false;
+    }
+
+    // Case of empty init list and 0 rows
+    if (rows_ == 0) {
+        return cols_ == 0;
+    }
+
+    const size_t cols = init_list.begin()->size();
+    if (cols != cols_) {
+        return false;
+    }
+
+    size_t i = 0;
+    for (const auto& row : init_list) {
+        if (row.size() != cols) {
+            return false;
+        }
+        size_t j = 0;
+        for (double val : row) {
+            if (abs(data_[i][j] - val) > eps) {
+                return false;
+            }
+            ++j;
+        }
+        ++i;
+    }
+    
     return true;
 }
 
@@ -678,4 +517,44 @@ Matrix Matrix::zeros(size_t rows, size_t cols) {
 
 Matrix Matrix::ones(size_t rows, size_t cols) {
     return Matrix(rows, cols, 1.0);
+}
+
+void Matrix::validate_and_set_shape_(const vector<vector<double>>& vec) {
+    if (vec.empty()) {
+        rows_ = 0;
+        cols_ = 0;
+        return;
+    }
+    cols_ = vec[0].size();
+    for (const auto& row : vec) {
+        if (row.size() != cols_) {
+            throw std::invalid_argument("All rows must have the same number of columns!");
+        }
+    }
+    rows_ = vec.size();
+}
+
+void Matrix::assign_from_(const vector<vector<double>>& vec) {
+    validate_and_set_shape_(vec);
+    data_ = vec;
+}
+
+void Matrix::assign_from_(const vector<vector<double>>&& vec) {
+    validate_and_set_shape_(vec);
+    data_ = std::move(vec);
+}
+
+void Matrix::assign_from_(initializer_list<initializer_list<double>> init_list) {
+    rows_ = init_list.size();
+    cols_ = rows_ ? init_list.begin()->size() : 0;
+    for (const auto& row : init_list) {
+        if (row.size() != cols_) {
+            throw std::invalid_argument("All rows must have the same number of columns!");
+        }
+    }
+    data_.clear();
+    data_.reserve(rows_);
+    for (const auto& row : init_list) {
+        data_.emplace_back(row);
+    }
 }

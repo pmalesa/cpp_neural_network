@@ -609,6 +609,30 @@ TEST_F(MatrixTest, EqualsMethodVec) {
     EXPECT_EQ(matrix.equals(data_4), false);
 }
 
+TEST_F(MatrixTest, EqualsMethodInitList) {
+    vector<vector<double>> data_1 = { {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} };
+    vector<vector<double>> data_2 = { {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} };
+    vector<vector<double>> data_3 = { {1.0} };
+    vector<vector<double>> data_4 = { {} };
+    vector<vector<double>> data_5 = {};
+    Matrix matrix_1(data_1);
+    Matrix matrix_2(data_2);
+    Matrix matrix_3(data_3);
+    Matrix matrix_4(data_4);
+    Matrix matrix_5(data_5);
+
+    EXPECT_TRUE((matrix_1 == il{ {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} }));
+    EXPECT_TRUE((matrix_2 == il{ {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} }));
+    EXPECT_TRUE((matrix_3 == il{ {1.0} }));
+    EXPECT_TRUE((matrix_4 == il{ {} }));
+    EXPECT_TRUE((matrix_5 == il{ }));
+    EXPECT_TRUE((il{ {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0}, {5.0, 5.0, 5.0} } == matrix_1));
+    EXPECT_TRUE((il{ {1.777, 2.66}, {1.11, 2.222}, {1.0, 2.333} } == matrix_2));
+    EXPECT_TRUE((il{ {1.0} } == matrix_3));
+    EXPECT_TRUE((il{ {} } == matrix_4));
+    EXPECT_TRUE((il{ } == matrix_5));
+}
+
 TEST_F(MatrixTest, IdentityMethodTest) {
     Matrix matrix = Matrix::identity(5);
     EXPECT_EQ(matrix.get_rows() == 5, true);
