@@ -76,6 +76,7 @@ public:
     
 private:
     static constexpr double eps = 1e-9;
+    static constexpr size_t PARALLEL_THRESHOLD = 256;
 
     vector<vector<double>> data_;
     size_t rows_;
@@ -85,10 +86,13 @@ private:
     void assign_from_(const vector<vector<double>>& vec);
     void assign_from_(const vector<vector<double>>&& vec);
     void assign_from_(initializer_list<initializer_list<double>> init_list);
+    void multiply_sequentially_(const Matrix& mat, Matrix& result) const;
+    void multiply_concurrently_(const Matrix& mat, Matrix& result) const;
 };
 
 /*
 TODO:
-- REFACTOR
 - Concurrent calculations
+- overflow protection in concurrent Matrix multiplication method
+- write class to benchmark time computations, and compare concurrent vs sequential on big matrices
 */

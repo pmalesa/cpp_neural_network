@@ -539,8 +539,8 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     Matrix matrix_1(2, 3, 1.0);
     Matrix matrix_2(3, 4, 2.0);
     EXPECT_THROW(matrix_2 * matrix_1, std::domain_error);
-    Matrix result(matrix_1.get_rows(), matrix_2.get_cols(), 6.0);
-    EXPECT_EQ(matrix_1 * matrix_2 == result, true);
+    Matrix result_1(matrix_1.get_rows(), matrix_2.get_cols(), 6.0);
+    EXPECT_EQ(matrix_1 * matrix_2 == result_1, true);
     Matrix matrix_3(5, 5, DOUBLE_MAX);
     Matrix matrix_4(5, 5, DOUBLE_MIN);
     EXPECT_THROW(matrix_3 * matrix_3, std::overflow_error);
@@ -551,6 +551,12 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     EXPECT_THROW(matrix_4 * matrix_4, std::overflow_error);
     EXPECT_THROW(matrix_4 * Matrix(5, 5, 4.0), std::overflow_error);
     EXPECT_THROW(matrix_4 * Matrix(5, 5, -4.0), std::overflow_error);
+
+    // Concurrent computation
+    Matrix matrix_5(500, 500, 2.0);
+    Matrix matrix_6(500, 500, 3.0);
+    Matrix result_2(500, 500, 3000.0);
+    EXPECT_TRUE(matrix_5 * matrix_6 == result_2);
 }
 
 TEST_F(MatrixTest, NegationOperatorTest) {

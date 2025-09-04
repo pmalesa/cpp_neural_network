@@ -1,6 +1,9 @@
 #include "matrix.h"
 #include <stdexcept>
+#include <thread>
 #include <cmath>
+
+using std::thread;
 
 Matrix::Matrix(size_t rows, size_t cols)
     : data_(vector<vector<double>>(rows, vector<double>(cols, 0.0))), rows_(rows), cols_(cols) {}
@@ -206,26 +209,20 @@ Matrix operator*(double val, const Matrix& mat) {
     return result;
 }
 
+#include <iostream>
+
 Matrix Matrix::operator*(const Matrix& mat) const {
     if (cols_ != mat.rows_) {
         throw std::domain_error("Matrices can not be multiplied!");
     }
+
     Matrix result(rows_, mat.cols_);
-    size_t common_dim = cols_; 
-    for (size_t row = 0; row < result.rows_; ++row) {
-        for (size_t col = 0; col < result.cols_; ++col) {
-            long double v_ld = 0.0;
-            for (size_t i = 0; i < common_dim; ++i) {
-                v_ld += static_cast<long double>(data_[row][i]) * 
-                       static_cast<long double>(mat.data_[i][col]);
-            }
-            double v_d = static_cast<double>(v_ld);
-            if (!std::isfinite(v_d)) {
-                throw std::overflow_error("Matrix multiplication overflowed!");
-            }
-            result[row][col] = v_d;
-        }
+    if (rows_ * mat.cols_ < PARALLEL_THRESHOLD * PARALLEL_THRESHOLD) {
+        multiply_sequentially_(mat, result);
+    } else {
+        multiply_concurrently_(mat, result);
     }
+
     return result;
 }
 
@@ -556,5 +553,55 @@ void Matrix::assign_from_(initializer_list<initializer_list<double>> init_list) 
     data_.reserve(rows_);
     for (const auto& row : init_list) {
         data_.emplace_back(row);
+    }
+}
+
+void Matrix::multiply_sequentially_(const Matrix& mat, Matrix& result) const {
+    size_t common_dim = cols_; 
+    for (size_t row = 0; row < result.rows_; ++row) {
+        for (size_t col = 0; col < result.cols_; ++col) {
+            long double v_ld = 0.0;
+            for (size_t i = 0; i < common_dim; ++i) {
+                v_ld += static_cast<long double>(data_[row][i]) * 
+                       static_cast<long double>(mat.data_[i][col]);
+            }
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Matrix multiplication overflowed!");
+            }
+            result[row][col] = v_d;
+        }
+    }
+}
+
+void Matrix::multiply_concurrently_(const Matrix& mat, Matrix& result) const {
+    size_t num_threads = std::thread::hardware_concurrency();
+    size_t chunk = (rows_ + num_threads - 1) / num_threads; // formula for ceil() math function on integers, adding the (divisor - 1) bumps the remainder fraction to 1
+
+    // Define lambda function to calculate cell value (division of calculations on rows)
+    auto worker = [&](size_t start, size_t end) {
+        size_t common_dim = cols_; 
+        for (size_t row = start; row < end && row < rows_; ++row) {
+            for (size_t col = 0; col < mat.cols_; ++col) {
+                long double sum = 0;
+                for (size_t i = 0; i < common_dim; ++i) {
+                    sum += static_cast<long double>(data_[row][i]) *
+                           static_cast<long double>(mat.data_[i][col]);
+                    result[row][col] = static_cast<double>(sum);
+                }
+            }
+        }
+    };
+
+    // Divide the calculations among threads
+    vector<thread> threads;
+    threads.reserve(num_threads);
+    for (size_t t = 0; t < num_threads; ++t) {
+        size_t start = t * chunk;
+        size_t end = start + chunk;
+        threads.emplace_back(worker, start, end);
+    }
+    for (auto& th : threads) {
+        th.join();
     }
 }
