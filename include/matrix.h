@@ -92,7 +92,6 @@ private:
 
 /*
 TODO:
-- Concurrent calculations
-- overflow protection in concurrent Matrix multiplication method
-- write class to benchmark time computations, and compare concurrent vs sequential on big matrices
+    - Concurrent addition/subtraction calculations
+    - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
 */

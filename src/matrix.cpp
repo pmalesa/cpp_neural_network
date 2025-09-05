@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <thread>
 #include <cmath>
+#include <future>
 
 using std::thread;
 
@@ -576,6 +577,9 @@ void Matrix::multiply_sequentially_(const Matrix& mat, Matrix& result) const {
 
 void Matrix::multiply_concurrently_(const Matrix& mat, Matrix& result) const {
     size_t num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) {
+        num_threads = 2;
+    }
     size_t chunk = (rows_ + num_threads - 1) / num_threads; // formula for ceil() math function on integers, adding the (divisor - 1) bumps the remainder fraction to 1
 
     // Define lambda function to calculate cell value (division of calculations on rows)
@@ -587,21 +591,27 @@ void Matrix::multiply_concurrently_(const Matrix& mat, Matrix& result) const {
                 for (size_t i = 0; i < common_dim; ++i) {
                     sum += static_cast<long double>(data_[row][i]) *
                            static_cast<long double>(mat.data_[i][col]);
-                    result[row][col] = static_cast<double>(sum);
                 }
+                double v = static_cast<double>(sum);
+                if (!std::isfinite(v)) {
+                    throw std::overflow_error("Matrix multiplication overflowed!");
+                }
+                result[row][col] = v;
             }
         }
     };
 
     // Divide the calculations among threads
-    vector<thread> threads;
-    threads.reserve(num_threads);
+    std::vector<std::future<void>> futures;
+    futures.reserve(num_threads);
     for (size_t t = 0; t < num_threads; ++t) {
         size_t start = t * chunk;
         size_t end = start + chunk;
-        threads.emplace_back(worker, start, end);
+        futures.push_back(std::async(std::launch::async, worker, start, end));
     }
-    for (auto& th : threads) {
-        th.join();
+    
+    // Propagate exceptions to the main thread, if any were thrown
+    for (auto& f : futures) {
+        f.get();
     }
 }

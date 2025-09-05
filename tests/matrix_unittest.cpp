@@ -557,6 +557,11 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     Matrix matrix_6(500, 500, 3.0);
     Matrix result_2(500, 500, 3000.0);
     EXPECT_TRUE(matrix_5 * matrix_6 == result_2);
+    Matrix matrix_7(500, 500, DOUBLE_MAX);
+    Matrix matrix_8(500, 500, DOUBLE_MIN);
+    EXPECT_THROW(matrix_7 * matrix_7, std::overflow_error);
+    EXPECT_THROW(matrix_7 * matrix_8, std::overflow_error);
+    EXPECT_THROW(matrix_8 * matrix_8, std::overflow_error);
 }
 
 TEST_F(MatrixTest, NegationOperatorTest) {
