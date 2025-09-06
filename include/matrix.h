@@ -86,7 +86,9 @@ private:
     void assign_from_(const vector<vector<double>>& vec);
     void assign_from_(const vector<vector<double>>&& vec);
     void assign_from_(initializer_list<initializer_list<double>> init_list);
+    void multiply_sequentially_(double val, Matrix& result) const;
     void multiply_sequentially_(const Matrix& mat, Matrix& result) const;
+    void multiply_concurrently_(double val, Matrix& result) const;
     void multiply_concurrently_(const Matrix& mat, Matrix& result) const;
 };
 
