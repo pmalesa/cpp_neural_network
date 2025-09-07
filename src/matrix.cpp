@@ -116,14 +116,10 @@ bool Matrix::operator!=(initializer_list<initializer_list<double>> init_list) co
 
 Matrix Matrix::operator+(double val) const {
     Matrix result(rows_, cols_);
-    for (size_t row = 0; row < rows_; ++row) {
-        for (size_t col = 0; col < cols_; ++col) {
-            double v = data_[row][col] + val;
-            if (!std::isfinite(v)) {
-                throw std::overflow_error("Addition overflowed!");
-            }
-            result[row][col] = v;
-        }
+    if (rows_ < PARALLEL_THRESHOLD) {
+        add_sequentially_(val, result);
+    } else {
+        add_concurrently_(val, result);
     }
     return result;
 }
@@ -133,14 +129,10 @@ Matrix Matrix::operator+(const Matrix& mat) const {
         throw std::domain_error("Matrices can not be added!");
     }
     Matrix result(rows_, cols_);
-    for (size_t row = 0; row < rows_; ++row) {
-        for (size_t col = 0; col < cols_; ++col) {
-            double v = data_[row][col] + mat.data_[row][col];
-            if (!std::isfinite(v)) {
-                throw std::overflow_error("Addition overflowed!");
-            }
-            result[row][col] = v;
-        }
+    if (rows_ < PARALLEL_THRESHOLD) {
+        add_sequentially_(mat, result);
+    } else {
+        add_concurrently_(mat, result);
     }
     return result;
 }
@@ -194,14 +186,12 @@ Matrix Matrix::operator*(const Matrix& mat) const {
     if (cols_ != mat.rows_) {
         throw std::domain_error("Matrices can not be multiplied!");
     }
-
     Matrix result(rows_, mat.cols_);
     if (rows_ * mat.cols_ < PARALLEL_THRESHOLD * PARALLEL_THRESHOLD) {
         multiply_sequentially_(mat, result);
     } else {
         multiply_concurrently_(mat, result);
     }
-
     return result;
 }
 
@@ -532,6 +522,112 @@ void Matrix::assign_from_(initializer_list<initializer_list<double>> init_list) 
     data_.reserve(rows_);
     for (const auto& row : init_list) {
         data_.emplace_back(row);
+    }
+}
+
+void Matrix::add_sequentially_(double val, Matrix& result) const {
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            long double v_ld = static_cast<long double>(data_[row][col]) +
+                               static_cast<long double>(val);
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Addition overflowed!");
+            }
+            result[row][col] = v_d;
+        }
+    }
+}
+
+void Matrix::add_sequentially_(const Matrix& mat, Matrix& result) const {
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            long double v_ld = static_cast<long double>(data_[row][col]) + 
+                               static_cast<long double>(mat.data_[row][col]);
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Addition overflowed!");
+            }
+            result[row][col] = v_d;
+        }
+    }
+}
+    
+void Matrix::add_concurrently_(double val, Matrix& result) const {
+    size_t num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) {
+        num_threads = 2;
+    }
+
+    // formula for ceil() math function on integers, adding the (divisor - 1) bumps the remainder fraction to 1
+    size_t chunk = (rows_ + num_threads - 1) / num_threads; 
+
+    // Define lambda function to calculate cell value (division of calculations on rows)
+    auto worker = [&](size_t start, size_t end) {
+        for (size_t row = 0; row < rows_; ++row) {
+            for (size_t col = 0; col < cols_; ++col) {
+                long double v_ld = static_cast<long double>(data_[row][col]) +
+                                   static_cast<long double>(val);
+                double v_d = static_cast<double>(v_ld);
+                if (!std::isfinite(v_d)) {
+                    throw std::overflow_error("Addition overflowed!");
+                }
+                result[row][col] = v_d;
+            }
+        }
+    };
+
+    // Divide the calculations among threads
+    std::vector<std::future<void>> futures;
+    futures.reserve(num_threads);
+    for (size_t t = 0; t < num_threads; ++t) {
+        size_t start = t * chunk;
+        size_t end = start + chunk;
+        futures.push_back(std::async(std::launch::async, worker, start, end));
+    }
+    
+    // Propagate exceptions to the main thread, if any were thrown
+    for (auto& f : futures) {
+        f.get();
+    }
+}
+
+void Matrix::add_concurrently_(const Matrix& mat, Matrix& result) const {
+    size_t num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) {
+        num_threads = 2;
+    }
+
+    // formula for ceil() math function on integers, adding the (divisor - 1) bumps the remainder fraction to 1
+    size_t chunk = (rows_ + num_threads - 1) / num_threads; 
+
+    // Define lambda function to calculate cell value (division of calculations on rows)
+    auto worker = [&](size_t start, size_t end) {
+        for (size_t row = 0; row < rows_; ++row) {
+            for (size_t col = 0; col < cols_; ++col) {
+                long double v_ld = static_cast<long double>(data_[row][col]) + 
+                                   static_cast<long double>(mat.data_[row][col]);
+                double v_d = static_cast<double>(v_ld);
+                if (!std::isfinite(v_d)) {
+                    throw std::overflow_error("Addition overflowed!");
+                }
+                result[row][col] = v_d;
+            }
+        }
+    };
+
+    // Divide the calculations among threads
+    std::vector<std::future<void>> futures;
+    futures.reserve(num_threads);
+    for (size_t t = 0; t < num_threads; ++t) {
+        size_t start = t * chunk;
+        size_t end = start + chunk;
+        futures.push_back(std::async(std::launch::async, worker, start, end));
+    }
+    
+    // Propagate exceptions to the main thread, if any were thrown
+    for (auto& f : futures) {
+        f.get();
     }
 }
 

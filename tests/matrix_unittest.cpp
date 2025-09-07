@@ -462,23 +462,42 @@ TEST_F(MatrixTest, InverseMethodTest){
 
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix_1(5, 5, 1.0);
-    Matrix result(5, 5, 5.0);
-    EXPECT_EQ(matrix_1 + 4.0 == result, true);
-    EXPECT_EQ(matrix_1 + 3.0 == result, false);
+    Matrix result_1(5, 5, 5.0);
+    EXPECT_EQ(matrix_1 + 4.0 == result_1, true);
+    EXPECT_EQ(matrix_1 + 3.0 == result_1, false);
     Matrix matrix_2(5, 5, DOUBLE_MAX);
     EXPECT_THROW(matrix_2 + DOUBLE_MAX, std::overflow_error);
+
+    // Concurrent computation
+    Matrix matrix_3(500, 500, 2.0);
+    Matrix result_2(500, 500, 4.0);
+    EXPECT_TRUE(matrix_3 + 2.0 == result_2);
+    Matrix matrix_5(500, 500, DOUBLE_MAX);
+    Matrix matrix_6(500, 500, DOUBLE_MIN);
+    EXPECT_THROW(matrix_5 + DOUBLE_MAX, std::overflow_error);
+    EXPECT_THROW(matrix_6 + DOUBLE_MIN, std::overflow_error);
 }
 
 TEST_F(MatrixTest, AdditionWithMatrixTest) {
     Matrix matrix_1(5, 5, 1.0);
     Matrix matrix_2(5, 5, 4.0);
     Matrix matrix_3(4, 4, 4.0);
-    Matrix result(5, 5, 5.0);
+    Matrix result_1(5, 5, 5.0);
     EXPECT_THROW(matrix_1 + matrix_3, std::domain_error);
-    EXPECT_EQ(matrix_1 + matrix_2 == result, true);
-    EXPECT_EQ(matrix_2 + matrix_1 == result, true);
+    EXPECT_EQ(matrix_1 + matrix_2 == result_1, true);
+    EXPECT_EQ(matrix_2 + matrix_1 == result_1, true);
     Matrix matrix_4(5, 5, DOUBLE_MAX);
     EXPECT_THROW(matrix_4 + matrix_4, std::overflow_error);
+
+    // Concurrent computation
+    Matrix matrix_5(500, 500, 2.0);
+    Matrix matrix_6(500, 500, 2.0);
+    Matrix result_2(500, 500, 4.0);
+    EXPECT_TRUE(matrix_5 + matrix_6 == result_2);
+    Matrix matrix_7(500, 500, DOUBLE_MAX);
+    Matrix matrix_8(500, 500, DOUBLE_MIN);
+    EXPECT_THROW(matrix_7 + matrix_7, std::overflow_error);
+    EXPECT_THROW(matrix_8 + matrix_8, std::overflow_error);
 }
 
 TEST_F(MatrixTest, SubtractionWithValueTest) {

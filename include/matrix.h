@@ -86,6 +86,13 @@ private:
     void assign_from_(const vector<vector<double>>& vec);
     void assign_from_(const vector<vector<double>>&& vec);
     void assign_from_(initializer_list<initializer_list<double>> init_list);
+
+    void add_sequentially_(double val, Matrix& result) const;
+    void add_sequentially_(const Matrix& mat, Matrix& result) const;
+    
+    void add_concurrently_(double val, Matrix& result) const;
+    void add_concurrently_(const Matrix& mat, Matrix& result) const;
+
     void multiply_sequentially_(double val, Matrix& result) const;
     void multiply_sequentially_(const Matrix& mat, Matrix& result) const;
     void multiply_concurrently_(double val, Matrix& result) const;
@@ -94,6 +101,7 @@ private:
 
 /*
 TODO:
-    - Concurrent addition/subtraction calculations
+    - Concurrent subtraction calculations
+    - Friend operator+ 
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
 */
