@@ -124,6 +124,10 @@ Matrix Matrix::operator+(double val) const {
     return result;
 }
 
+Matrix operator+(double val, const Matrix& mat) {
+    return mat + val;
+}
+
 Matrix Matrix::operator+(const Matrix& mat) const {
     if (rows_ != mat.rows_ || cols_ != mat.cols_) {
         throw std::domain_error("Matrices can not be added!");

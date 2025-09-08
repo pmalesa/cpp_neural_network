@@ -42,6 +42,7 @@ public:
     friend bool operator!=(initializer_list<initializer_list<double>> init_list, const Matrix& mat) { return mat != init_list; }
 
     Matrix operator+(double val) const;
+    friend Matrix operator+(double val, const Matrix& mat);
     Matrix operator+(const Matrix& mat) const;
     
     Matrix operator-(double val) const;
@@ -101,6 +102,5 @@ private:
 
 /*
 TODO:
-    - Friend operator+ 
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
 */
