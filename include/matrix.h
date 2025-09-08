@@ -101,7 +101,6 @@ private:
 
 /*
 TODO:
-    - Concurrent subtraction calculations
     - Friend operator+ 
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
 */

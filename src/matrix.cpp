@@ -138,34 +138,14 @@ Matrix Matrix::operator+(const Matrix& mat) const {
 }
 
 Matrix Matrix::operator-(double val) const {
-    Matrix result(rows_, cols_);
-    for (size_t row = 0; row < rows_; ++row) {
-        for (size_t col = 0; col < cols_; ++col) {
-            double v = data_[row][col] - val;
-            if (!std::isfinite(v)) {
-                throw std::overflow_error("Subtraction overflowed!");
-            }
-            result[row][col] = v;
-        }
-    }
-    return result;
+    return (*this) + (-val);
 }
 
 Matrix Matrix::operator-(const Matrix& mat) const {
     if (rows_ != mat.rows_ || cols_ != mat.cols_) {
-        throw std::domain_error("Matrices can not be added!");
+        throw std::domain_error("Matrices can not be subtracted!");
     }
-    Matrix result(rows_, cols_);
-    for (size_t row = 0; row < rows_; ++row) {
-        for (size_t col = 0; col < cols_; ++col) {
-            double v = data_[row][col] - mat.data_[row][col];
-            if (!std::isfinite(v)) {
-                throw std::overflow_error("Subtraction overflowed!");
-            }
-            result[row][col] = v;
-        }
-    }
-    return result;
+    return (*this) + (-mat);
 }
 
 Matrix Matrix::operator*(double val) const {
@@ -532,7 +512,7 @@ void Matrix::add_sequentially_(double val, Matrix& result) const {
                                static_cast<long double>(val);
             double v_d = static_cast<double>(v_ld);
             if (!std::isfinite(v_d)) {
-                throw std::overflow_error("Addition overflowed!");
+                throw std::overflow_error("Addition/subtraction overflowed!");
             }
             result[row][col] = v_d;
         }
@@ -546,7 +526,7 @@ void Matrix::add_sequentially_(const Matrix& mat, Matrix& result) const {
                                static_cast<long double>(mat.data_[row][col]);
             double v_d = static_cast<double>(v_ld);
             if (!std::isfinite(v_d)) {
-                throw std::overflow_error("Addition overflowed!");
+                throw std::overflow_error("Addition/subtraction overflowed!");
             }
             result[row][col] = v_d;
         }
@@ -570,7 +550,7 @@ void Matrix::add_concurrently_(double val, Matrix& result) const {
                                    static_cast<long double>(val);
                 double v_d = static_cast<double>(v_ld);
                 if (!std::isfinite(v_d)) {
-                    throw std::overflow_error("Addition overflowed!");
+                    throw std::overflow_error("Addition/subtraction overflowed!");
                 }
                 result[row][col] = v_d;
             }
@@ -609,7 +589,7 @@ void Matrix::add_concurrently_(const Matrix& mat, Matrix& result) const {
                                    static_cast<long double>(mat.data_[row][col]);
                 double v_d = static_cast<double>(v_ld);
                 if (!std::isfinite(v_d)) {
-                    throw std::overflow_error("Addition overflowed!");
+                    throw std::overflow_error("Addition/subtraction overflowed!");
                 }
                 result[row][col] = v_d;
             }
