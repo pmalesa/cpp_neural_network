@@ -1,16 +1,21 @@
 #include <chrono>
-#include <string>
 
 using namespace std::chrono;
-using std::string;
 
 class Timer {
 public:
-    Timer();
-    Timer(string method_name);
-    ~Timer();
+    Timer() = default;
+    ~Timer() = default;
+
+    void start();
+    void stop();
+
+    long long get_seconds();
+    long long get_milliseconds();
+    long long get_microseconds();
+    long long get_nanoseconds();
 
 private:
-    string method_name_;
     high_resolution_clock::time_point start_time_;
+    high_resolution_clock::time_point end_time_;
 };
