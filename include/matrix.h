@@ -63,6 +63,7 @@ public:
     double det() const;
     Matrix inverse() const;
     Matrix flatten() const;
+    void fill_random(double min = -1.0, double max = 1.0);
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
@@ -105,7 +106,5 @@ private:
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
     - reshape operation (rows_ * cols_ preserved)
-    - flatten
-    - randomize
     - maybe ravel method
 */

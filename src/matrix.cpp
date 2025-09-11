@@ -3,6 +3,7 @@
 #include <thread>
 #include <cmath>
 #include <future>
+#include <random>
 
 using std::thread;
 
@@ -389,6 +390,16 @@ Matrix Matrix::flatten() const {
     }
 
     return result;
+}
+
+void Matrix::fill_random(double min, double max) {
+    static thread_local std::mt19937 gen(std::random_device{}());
+    std::uniform_real_distribution<double> dist(min, max);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            data_[row][col] = dist(gen);
+        }
+    }
 }
 
 bool Matrix::equals(const Matrix& mat) const {
