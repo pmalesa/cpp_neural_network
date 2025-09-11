@@ -567,14 +567,9 @@ TEST_F(MatrixTest, MultiplyByValueTest) {
     EXPECT_THROW(matrix_5 * DOUBLE_MIN, std::overflow_error);
     EXPECT_THROW(matrix_6 * DOUBLE_MAX, std::overflow_error);
     EXPECT_THROW(matrix_6 * DOUBLE_MIN, std::overflow_error);
-}
 
-TEST_F(MatrixTest, MultiplyByValueFriendTest) {
-    Matrix matrix_1(5, 5, 1.0);
-    Matrix result_1(5, 5, 5.0);
+    // Friend operator*() method teests
     EXPECT_EQ(5 * matrix_1 == result_1, true);
-    Matrix matrix_2(5, 5, DOUBLE_MAX);
-    Matrix matrix_3(5, 5, DOUBLE_MIN);
     EXPECT_THROW(DOUBLE_MAX * matrix_2, std::overflow_error);
     EXPECT_THROW(DOUBLE_MIN * matrix_2, std::overflow_error);
     EXPECT_THROW(4.0 * matrix_2, std::overflow_error);
@@ -585,11 +580,7 @@ TEST_F(MatrixTest, MultiplyByValueFriendTest) {
     EXPECT_THROW(-4.0 * matrix_3, std::overflow_error);
 
     // Concurrent computation
-    Matrix matrix_4(500, 500, 2.0);
-    Matrix result_2(500, 500, 3000.0);
     EXPECT_TRUE(1500.0 * matrix_4 == result_2);
-    Matrix matrix_5(500, 500, DOUBLE_MAX);
-    Matrix matrix_6(500, 500, DOUBLE_MIN);
     EXPECT_THROW(DOUBLE_MAX * matrix_5, std::overflow_error);
     EXPECT_THROW(DOUBLE_MIN * matrix_5, std::overflow_error);
     EXPECT_THROW(DOUBLE_MAX * matrix_6, std::overflow_error);
