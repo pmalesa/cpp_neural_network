@@ -460,6 +460,20 @@ TEST_F(MatrixTest, InverseMethodTest){
     EXPECT_THROW(matrix_8.inverse(), std::runtime_error);
 }
 
+TEST_F(MatrixTest, FlattenTest) {
+    Matrix matrix_1 = { {1.0, -6.0, 4.0}, {2.0, -2.0, 2.0}, {-3.0, -5.0, 7.0} };
+    Matrix matrix_2 = { {1.0, -6.0, 4.0, 2.0, -2.0, 2.0, -3.0, -5.0, 7.0} };
+    Matrix matrix_3 = { {1.0}, {-6.0}, {4.0}, {2.0}, {-2.0}, {2.0}, {-3.0}, {-5.0}, {7.0} };
+    Matrix matrix_4 = { {1.0} };
+    Matrix matrix_5 = { };
+
+    EXPECT_TRUE((matrix_1.flatten() == il{ {1.0, -6.0, 4.0, 2.0, -2.0, 2.0, -3.0, -5.0, 7.0} }));
+    EXPECT_TRUE((matrix_2.flatten() == il{ {1.0, -6.0, 4.0, 2.0, -2.0, 2.0, -3.0, -5.0, 7.0} }));
+    EXPECT_TRUE((matrix_3.flatten() == il{ {1.0, -6.0, 4.0, 2.0, -2.0, 2.0, -3.0, -5.0, 7.0} }));
+    EXPECT_TRUE((matrix_4.flatten() == il{ {1.0} }));
+    EXPECT_TRUE((matrix_5.flatten() == il{ }));
+}
+
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix_1(5, 5, 1.0);
     Matrix result_1(5, 5, 5.0);

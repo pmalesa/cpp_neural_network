@@ -370,6 +370,27 @@ Matrix Matrix::inverse() const {
     return Matrix(std::move(inv_data));
 }
 
+Matrix Matrix::flatten() const {
+    if (rows_ == 0 || cols_ == 0) {
+        return {};
+    }
+
+    if (rows_ == 1) {
+        return *this;
+    }
+
+    Matrix result(1, rows_ * cols_);
+    size_t i = 0;
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            result[0][i] = data_[row][col];
+            ++i;
+        }
+    }
+
+    return result;
+}
+
 bool Matrix::equals(const Matrix& mat) const {
     if (rows_ != mat.rows_ || cols_ != mat.cols_) {
         return false;

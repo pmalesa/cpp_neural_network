@@ -62,6 +62,7 @@ public:
     void resize(size_t new_rows, size_t new_cols);
     double det() const;
     Matrix inverse() const;
+    Matrix flatten() const;
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
@@ -103,4 +104,8 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
+    - reshape operation (rows_ * cols_ preserved)
+    - flatten
+    - randomize
+    - maybe ravel method
 */
