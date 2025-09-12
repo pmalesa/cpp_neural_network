@@ -60,6 +60,7 @@ public:
     void fill(double val);
     Matrix transpose() const;
     void resize(size_t new_rows, size_t new_cols);
+    void reshape(size_t new_rows, size_t new_cols);
     double det() const;
     Matrix inverse() const;
     Matrix flatten() const;
@@ -105,6 +106,5 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-    - reshape operation (rows_ * cols_ preserved)
     - maybe ravel method
 */

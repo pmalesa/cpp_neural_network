@@ -231,6 +231,25 @@ void Matrix::resize(size_t new_rows, size_t new_cols) {
     cols_ = new_cols;
 }
 
+void Matrix::reshape(size_t new_rows, size_t new_cols) {
+    if (rows_ * cols_ != new_rows * new_cols) {
+        throw std::invalid_argument("Total number of elements after the reshape operation must be preserved!");
+    }
+    Matrix result(new_rows, new_cols);
+    size_t idx = 0;
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            size_t new_row = idx / new_cols;
+            size_t new_col = idx % new_cols;
+            result[new_row][new_col] = data_[row][col];
+            ++idx;
+        }
+    }
+    data_ = std::move(result.data_);
+    rows_ = new_rows;
+    cols_ = new_cols;
+}
+
 double Matrix::det() const {
     if (rows_ != cols_) {
         throw std::domain_error("Matrix has to be square in order to calculate determinant!");

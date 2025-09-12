@@ -396,6 +396,28 @@ TEST_F(MatrixTest, ResizeMethodTest) {
     EXPECT_EQ(matrix == expand_result, true);
 }
 
+TEST_F(MatrixTest, ReshapeMethodTest) {
+    Matrix matrix_1(3, 3, 1.0);
+    EXPECT_THROW(matrix_1.reshape(2, 3), std::invalid_argument);
+    matrix_1.reshape(1, 9);
+    EXPECT_TRUE((matrix_1 == il{ {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0} }));
+
+    Matrix matrix_2 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
+    EXPECT_THROW(matrix_2.reshape(7, 1), std::invalid_argument);
+    matrix_2.reshape(2, 3);
+    EXPECT_TRUE((matrix_2 == il{ {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0} }));
+
+    Matrix matrix_3 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}, {7.0, 8.0} };
+    EXPECT_THROW(matrix_3.reshape(3, 2), std::invalid_argument);
+    matrix_3.reshape(8, 1);
+    EXPECT_TRUE((matrix_3 == il{ {1.0}, {2.0}, {3.0}, {4.0}, {5.0}, {6.0}, {7.0}, {8.0} }));
+
+    Matrix matrix_4 = { {1.0, 2.0, 3.0, 4.0}, {5.0, 6.0, 7.0, 8.0}, {9.0, 10.0, 11.0, 12.0} };
+    EXPECT_THROW(matrix_4.reshape(2, 7), std::invalid_argument);
+    matrix_4.reshape(2, 6);
+    EXPECT_TRUE((matrix_4 == il{ {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}, {7.0, 8.0, 9.0, 10.0, 11.0, 12.0} }));
+}
+
 TEST_F(MatrixTest, DeterminantMethodTest) {
     Matrix matrix = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
     EXPECT_NEAR(matrix.det(), 0.0, 1e-9);
