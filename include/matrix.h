@@ -72,6 +72,7 @@ public:
     bool equals(const Matrix& mat) const;
     bool equals(const vector<vector<double>>& data) const;
     bool equals(initializer_list<initializer_list<double>> init_list) const;
+    double trace() const; // Sum of diagonal elements
     friend ostream& operator<<(ostream&, const Matrix& matrix);
 
     static Matrix identity(size_t size);
@@ -106,5 +107,7 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-    - maybe ravel method
+    - overflow protection for trace()
+    - min()
+    - max()
 */

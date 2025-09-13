@@ -485,6 +485,17 @@ bool Matrix::equals(initializer_list<initializer_list<double>> init_list) const 
     return true;
 }
 
+double Matrix::trace() const {
+    if (rows_ != cols_ || rows_ == 0) {
+        throw std::domain_error("Trace requires a non-empty square matrix!");
+    }
+    double result = 0.0;
+    for (size_t i = 0; i < rows_; ++i) {
+        result += data_[i][i];
+    }
+    return result;
+}
+
 ostream& operator<<(ostream& os, const Matrix& mat) {
     os << "\n[";
     for (size_t row = 0; row < mat.get_rows(); ++row) {

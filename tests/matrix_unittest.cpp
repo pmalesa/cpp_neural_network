@@ -718,6 +718,22 @@ TEST_F(MatrixTest, EqualsMethodInitList) {
     EXPECT_TRUE((il{ } == matrix_5));
 }
 
+TEST_F(MatrixTest, TraceMethodTest) {
+    Matrix matrix_1 = Matrix::ones(5, 5);
+    Matrix matrix_2 = Matrix::zeros(5, 5);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4(4, 5);
+    Matrix matrix_5 = { {} };
+    Matrix matrix_6 = { };
+
+    EXPECT_NEAR(matrix_1.trace(), 5.0, 1e-9);
+    EXPECT_NEAR(matrix_2.trace(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_3.trace(), 15.0, 1e-9);
+    EXPECT_THROW(matrix_4.trace(), std::domain_error);
+    EXPECT_THROW(matrix_5.trace(), std::domain_error);
+    EXPECT_THROW(matrix_6.trace(), std::domain_error);
+}
+
 TEST_F(MatrixTest, IdentityMethodTest) {
     Matrix matrix = Matrix::identity(5);
     EXPECT_EQ(matrix.get_rows() == 5, true);
