@@ -62,6 +62,9 @@ public:
     void resize(size_t new_rows, size_t new_cols);
     void reshape(size_t new_rows, size_t new_cols);
     double det() const;
+    double trace() const; // Sum of diagonal elements
+    double min() const;
+    double max() const;
     Matrix inverse() const;
     Matrix flatten() const;
     void fill_random(double min = -1.0, double max = 1.0);
@@ -72,7 +75,6 @@ public:
     bool equals(const Matrix& mat) const;
     bool equals(const vector<vector<double>>& data) const;
     bool equals(initializer_list<initializer_list<double>> init_list) const;
-    double trace() const; // Sum of diagonal elements
     friend ostream& operator<<(ostream&, const Matrix& matrix);
 
     static Matrix identity(size_t size);
@@ -107,7 +109,6 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-    - overflow protection for trace()
     - min()
     - max()
 */

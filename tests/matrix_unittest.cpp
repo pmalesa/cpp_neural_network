@@ -439,6 +439,58 @@ TEST_F(MatrixTest, DeterminantMethodTest) {
     EXPECT_THROW(matrix.det(), std::domain_error);
 }
 
+TEST_F(MatrixTest, TraceMethodTest) {
+    Matrix matrix_1 = Matrix::ones(5, 5);
+    Matrix matrix_2 = Matrix::zeros(5, 5);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4(4, 5);
+    Matrix matrix_5 = { {} };
+    Matrix matrix_6 = { };
+    Matrix matrix_7(5, 5, DOUBLE_MAX);
+    Matrix matrix_8(5, 5, DOUBLE_MIN);
+
+    EXPECT_NEAR(matrix_1.trace(), 5.0, 1e-9);
+    EXPECT_NEAR(matrix_2.trace(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_3.trace(), 15.0, 1e-9);
+    EXPECT_THROW(matrix_4.trace(), std::domain_error);
+    EXPECT_THROW(matrix_5.trace(), std::domain_error);
+    EXPECT_THROW(matrix_6.trace(), std::domain_error);
+    EXPECT_THROW(matrix_7.trace(), std::overflow_error);
+    EXPECT_THROW(matrix_8.trace(), std::overflow_error);
+}
+
+TEST_F(MatrixTest, MinMethodTest) {
+    Matrix matrix_1 = Matrix::ones(5, 5);
+    Matrix matrix_2 = Matrix::zeros(5, 5);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    Matrix matrix_5 = { {} };
+    Matrix matrix_6 = { };
+
+    EXPECT_NEAR(matrix_1.min(), 1.0, 1e-9);
+    EXPECT_NEAR(matrix_2.min(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_3.min(), 1.0, 1e-9);
+    EXPECT_NEAR(matrix_4.min(), -90.0, 1e-9);
+    EXPECT_THROW(matrix_5.min(), std::domain_error);
+    EXPECT_THROW(matrix_6.min(), std::domain_error);
+}
+
+TEST_F(MatrixTest, MaxMethodTest) {
+    Matrix matrix_1 = Matrix::ones(5, 5);
+    Matrix matrix_2 = Matrix::zeros(5, 5);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    Matrix matrix_5 = { {} };
+    Matrix matrix_6 = { };
+
+    EXPECT_NEAR(matrix_1.max(), 1.0, 1e-9);
+    EXPECT_NEAR(matrix_2.max(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_3.max(), 9.0, 1e-9);
+    EXPECT_NEAR(matrix_4.max(), 123.0, 1e-9);
+    EXPECT_THROW(matrix_5.max(), std::domain_error);
+    EXPECT_THROW(matrix_6.max(), std::domain_error);
+}
+
 TEST_F(MatrixTest, InverseMethodTest){
     Matrix matrix_1 = {};
     Matrix result_1 = {};
@@ -716,26 +768,6 @@ TEST_F(MatrixTest, EqualsMethodInitList) {
     EXPECT_TRUE((il{ {1.0} } == matrix_3));
     EXPECT_TRUE((il{ {} } == matrix_4));
     EXPECT_TRUE((il{ } == matrix_5));
-}
-
-TEST_F(MatrixTest, TraceMethodTest) {
-    Matrix matrix_1 = Matrix::ones(5, 5);
-    Matrix matrix_2 = Matrix::zeros(5, 5);
-    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
-    Matrix matrix_4(4, 5);
-    Matrix matrix_5 = { {} };
-    Matrix matrix_6 = { };
-    Matrix matrix_7(5, 5, DOUBLE_MAX);
-    Matrix matrix_8(5, 5, DOUBLE_MIN);
-
-    EXPECT_NEAR(matrix_1.trace(), 5.0, 1e-9);
-    EXPECT_NEAR(matrix_2.trace(), 0.0, 1e-9);
-    EXPECT_NEAR(matrix_3.trace(), 15.0, 1e-9);
-    EXPECT_THROW(matrix_4.trace(), std::domain_error);
-    EXPECT_THROW(matrix_5.trace(), std::domain_error);
-    EXPECT_THROW(matrix_6.trace(), std::domain_error);
-    EXPECT_THROW(matrix_7.trace(), std::overflow_error);
-    EXPECT_THROW(matrix_8.trace(), std::overflow_error);
 }
 
 TEST_F(MatrixTest, IdentityMethodTest) {

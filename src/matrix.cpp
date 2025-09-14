@@ -4,6 +4,7 @@
 #include <cmath>
 #include <future>
 #include <random>
+#include <algorithm>
 
 using std::thread;
 
@@ -317,6 +318,45 @@ double Matrix::det() const {
     return det * sign;
 }
 
+double Matrix::trace() const {
+    if (rows_ != cols_ || rows_ == 0) {
+        throw std::domain_error("Trace requires a non-empty square matrix!");
+    }
+    long double v_ld = 0.0;
+    for (size_t i = 0; i < rows_; ++i) {
+        v_ld += static_cast<long double>(data_[i][i]);
+    }
+    double result = static_cast<double>(v_ld);
+    if (!std::isfinite(result)) {
+        throw std::overflow_error("Addition/subtraction overflowed!");
+    }
+    return result;
+}
+
+double Matrix::min() const {
+    if (rows_ == 0 || cols_ == 0) {
+        throw std::domain_error("Matrix can not be empty!");
+    }
+    double min = data_[0][0];
+    for (auto& row : data_) {
+        double row_min = *std::min_element(row.begin(), row.end());
+        min = std::min(min, row_min);
+    }
+    return min;
+}
+
+double Matrix::max() const {
+    if (rows_ == 0 || cols_ == 0) {
+        throw std::domain_error("Matrix can not be empty!");
+    }
+    double max = data_[0][0];
+    for (auto& row : data_) {
+        double row_max = *std::max_element(row.begin(), row.end());
+        max = std::max(max, row_max);
+    }
+    return max;
+}
+
 Matrix Matrix::inverse() const {
     if (rows_ != cols_) {
         throw std::invalid_argument("Inverse requires a square matrix!");
@@ -483,21 +523,6 @@ bool Matrix::equals(initializer_list<initializer_list<double>> init_list) const 
     }
     
     return true;
-}
-
-double Matrix::trace() const {
-    if (rows_ != cols_ || rows_ == 0) {
-        throw std::domain_error("Trace requires a non-empty square matrix!");
-    }
-    long double v_ld = 0.0;
-    for (size_t i = 0; i < rows_; ++i) {
-        v_ld += static_cast<long double>(data_[i][i]);
-    }
-    double result = static_cast<double>(v_ld);
-    if (!std::isfinite(result)) {
-        throw std::overflow_error("Addition/subtraction overflowed!");
-    }
-    return result;
 }
 
 ostream& operator<<(ostream& os, const Matrix& mat) {
