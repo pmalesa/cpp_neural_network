@@ -489,9 +489,13 @@ double Matrix::trace() const {
     if (rows_ != cols_ || rows_ == 0) {
         throw std::domain_error("Trace requires a non-empty square matrix!");
     }
-    double result = 0.0;
+    long double v_ld = 0.0;
     for (size_t i = 0; i < rows_; ++i) {
-        result += data_[i][i];
+        v_ld += static_cast<long double>(data_[i][i]);
+    }
+    double result = static_cast<double>(v_ld);
+    if (!std::isfinite(result)) {
+        throw std::overflow_error("Addition/subtraction overflowed!");
     }
     return result;
 }

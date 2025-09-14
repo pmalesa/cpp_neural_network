@@ -725,6 +725,8 @@ TEST_F(MatrixTest, TraceMethodTest) {
     Matrix matrix_4(4, 5);
     Matrix matrix_5 = { {} };
     Matrix matrix_6 = { };
+    Matrix matrix_7(5, 5, DOUBLE_MAX);
+    Matrix matrix_8(5, 5, DOUBLE_MIN);
 
     EXPECT_NEAR(matrix_1.trace(), 5.0, 1e-9);
     EXPECT_NEAR(matrix_2.trace(), 0.0, 1e-9);
@@ -732,6 +734,8 @@ TEST_F(MatrixTest, TraceMethodTest) {
     EXPECT_THROW(matrix_4.trace(), std::domain_error);
     EXPECT_THROW(matrix_5.trace(), std::domain_error);
     EXPECT_THROW(matrix_6.trace(), std::domain_error);
+    EXPECT_THROW(matrix_7.trace(), std::overflow_error);
+    EXPECT_THROW(matrix_8.trace(), std::overflow_error);
 }
 
 TEST_F(MatrixTest, IdentityMethodTest) {
