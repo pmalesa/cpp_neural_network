@@ -560,6 +560,14 @@ Matrix Matrix::ones(size_t rows, size_t cols) {
     return Matrix(rows, cols, 1.0);
 }
 
+Matrix Matrix::diagonal(size_t size, double val) {
+    Matrix mat(size, size);
+    for (size_t i = 0; i < mat.rows_; ++i) {
+        mat[i][i] = val;
+    }
+    return mat;
+}
+
 void Matrix::validate_and_set_shape_(const vector<vector<double>>& vec) {
     if (vec.empty()) {
         rows_ = 0;

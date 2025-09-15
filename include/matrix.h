@@ -80,6 +80,7 @@ public:
     static Matrix identity(size_t size);
     static Matrix zeros(size_t rows, size_t cols);
     static Matrix ones(size_t rows, size_t cols);
+    static Matrix diagonal(size_t size, double val);
     
 private:
     static constexpr double eps = 1e-9;
@@ -109,6 +110,4 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-    - min()
-    - max()
 */

@@ -811,3 +811,11 @@ TEST_F(MatrixTest, OnesMethodTest) {
     }
 }
 
+TEST_F(MatrixTest, DiagonalMethodTest) {
+    Matrix matrix_1 = Matrix::diagonal(3, 1.0);
+    Matrix matrix_2 = Matrix::diagonal(1, 5.0);
+    Matrix matrix_3 = Matrix::diagonal(4, 666.0);
+    EXPECT_TRUE((matrix_1 == il{ {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0} }));
+    EXPECT_TRUE((matrix_2 == il{ {5.0} }));
+    EXPECT_TRUE((matrix_3 == il{ {666.0, 0.0, 0.0, 0.0}, {0.0, 666.0, 0.0, 0.0}, {0.0, 0.0, 666.0, 0.0}, {0.0, 0.0, 0.0, 666.0} }));
+}
