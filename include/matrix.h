@@ -54,6 +54,8 @@ public:
 
     Matrix operator-() const;
 
+    Matrix elementwise_mul(const Matrix& mat) const;
+
     double& at(size_t row, size_t col);
     const double& at(size_t row, size_t col) const;
     

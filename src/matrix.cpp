@@ -191,6 +191,25 @@ Matrix Matrix::operator-() const {
     return result;
 }
 
+Matrix Matrix::elementwise_mul(const Matrix& mat) const {
+    if (rows_ != mat.rows_ || cols_ != mat.cols_) {
+        throw std::domain_error("Matrices can not be multiplied!");
+    }
+    Matrix result(rows_, cols_);
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            long double v_ld = static_cast<long double>(data_[row][col]) *
+                               static_cast<long double>(mat[row][col]);
+            double v_d = static_cast<double>(v_ld);
+            if (!std::isfinite(v_d)) {
+                throw std::overflow_error("Multiplication overflowed!");
+            }
+            result[row][col] = v_d;
+        }
+    }    
+    return result;
+}
+
 double& Matrix::at(size_t row, size_t col) {
     if (row >= rows_ || col >= cols_) {
         throw std::out_of_range("Matrix indices out of bounds!");

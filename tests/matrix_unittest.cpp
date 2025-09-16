@@ -696,6 +696,25 @@ TEST_F(MatrixTest, NegationOperatorTest) {
     EXPECT_EQ(-matrix == result, true);
 }
 
+TEST_F(MatrixTest, ElementwiseMultiplyMethodTest) {
+    Matrix matrix_1(5, 5, 1.0);
+    Matrix matrix_2(5, 5, 0.0);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4 = { {-5.0, -6.0}, {-20.0, -30.0} };
+    Matrix matrix_5(5, 5, DOUBLE_MAX);
+    Matrix matrix_6(5, 5, DOUBLE_MIN);
+    EXPECT_TRUE(matrix_1.elementwise_mul(matrix_1) == Matrix::ones(5, 5));
+    EXPECT_TRUE(matrix_1.elementwise_mul(matrix_2) == Matrix::zeros(5, 5));
+    EXPECT_TRUE(matrix_2.elementwise_mul(matrix_2) == Matrix::zeros(5, 5));
+    EXPECT_TRUE((matrix_3.elementwise_mul(matrix_3) == il{ {1.0, 4.0, 9.0}, {16.0, 25.0, 36.0}, {49.0, 64.0, 81.0} }));
+    EXPECT_TRUE((matrix_4.elementwise_mul(matrix_4) == il{ {25.0, 36.0}, {400.0, 900.0} }));
+    EXPECT_THROW(matrix_3.elementwise_mul(matrix_4), std::domain_error);
+    EXPECT_THROW(matrix_5.elementwise_mul(matrix_5), std::overflow_error);
+    EXPECT_THROW(matrix_5.elementwise_mul(matrix_6), std::overflow_error);
+    EXPECT_THROW(matrix_6.elementwise_mul(matrix_5), std::overflow_error);
+    EXPECT_THROW(matrix_6.elementwise_mul(matrix_6), std::overflow_error);
+}
+
 TEST_F(MatrixTest, IsEmptyMethodTest) {
     Matrix matrix_1(0, 5);
     Matrix matrix_2(5, 0);
