@@ -17,6 +17,15 @@ Matrix::Matrix(size_t rows, size_t cols, double val)
 Matrix::Matrix(const Matrix& mat)
     : data_(mat.data_), rows_(mat.rows_), cols_(mat.cols_) {} 
 
+Matrix::Matrix(const vector<double>& vec)
+    : data_(vector<vector<double>>(1, vec)), rows_(1), cols_(vec.size()) {
+    if (vec.empty()) {
+        rows_ = 0;
+        cols_ = 0;
+        data_ = {};
+    }
+}
+
 Matrix::Matrix(const vector<vector<double>>& data) {
     assign_from_(data);
 }
@@ -179,6 +188,16 @@ Matrix Matrix::operator*(const Matrix& mat) const {
         multiply_concurrently_(mat, result);
     }
     return result;
+}
+
+Matrix Matrix::operator*(const vector<double>& vec) const {
+    Matrix row_matrix(vec); // size 1 x vec.size()
+    return (*this) * row_matrix;
+}
+
+Matrix operator*(const vector<double>& vec, const Matrix& mat) {
+    Matrix row_matrix(vec); // size 1 x vec.size()
+    return row_matrix * mat;
 }
 
 Matrix Matrix::operator-() const {

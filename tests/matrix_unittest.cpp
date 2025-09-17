@@ -149,6 +149,19 @@ TEST_F(MatrixTest, CopyConstructorTest) {
     EXPECT_EQ(matrix_1 == matrix_2, true);
 }
 
+TEST_F(MatrixTest, CopyConstructorRowVecTest) {
+    vector<double> vec_1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
+    vector<double> vec_2 = {};
+    Matrix matrix_1(vec_1);
+    EXPECT_TRUE(matrix_1.get_rows() == 1);
+    EXPECT_TRUE(matrix_1.get_cols() == vec_1.size());
+    EXPECT_TRUE((matrix_1 == il{ { 1.0, 2.0, 3.0, 4.0, 5.0 } }));
+    Matrix matrix_2(vec_2);
+    EXPECT_TRUE(matrix_2.get_rows() == 0);
+    EXPECT_TRUE(matrix_2.get_cols() == 0);
+    EXPECT_TRUE(matrix_2.is_empty());
+}
+
 TEST_F(MatrixTest, CopyConstructorVecTest) {
     vector<vector<double>> data_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
     Matrix matrix_1(data_1);
@@ -688,6 +701,17 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     EXPECT_THROW(matrix_7 * matrix_7, std::overflow_error);
     EXPECT_THROW(matrix_7 * matrix_8, std::overflow_error);
     EXPECT_THROW(matrix_8 * matrix_8, std::overflow_error);
+}
+
+TEST_F(MatrixTest, MultiplyByRowVecTest) {
+    Matrix matrix_1 = { {3.0}, {4.0}, {5.0} };
+    vector<double> vec_1 = {2.0, 4.0, 6.0, 8.0};
+    EXPECT_THROW(vec_1 * matrix_1, std::domain_error);
+    EXPECT_TRUE((matrix_1 * vec_1 == il{ {6.0, 12.0, 18.0, 24.0}, {8.0, 16.0, 24.0, 32.0}, {10.0, 20.0, 30.0, 40.0} }));
+    Matrix matrix_2 = { {1.0, 2.0, 3.0, 4.0}, {5.0, 6.0, 7.0, 8.0}, {9.0, 10.0, 11.0, 12.0} };
+    vector<double> vec_2 = {2.0, 4.0, 6.0};
+    EXPECT_THROW(matrix_2 * vec_2, std::domain_error);
+    EXPECT_TRUE((vec_2 * matrix_2 == il{ {76.0, 88.0, 100.0, 112.0} }));
 }
 
 TEST_F(MatrixTest, NegationOperatorTest) {

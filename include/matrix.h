@@ -13,6 +13,7 @@ public:
     Matrix(size_t rows, size_t cols);
     Matrix(size_t rows, size_t cols, double val);
     Matrix(const Matrix& mat);
+    Matrix(const vector<double>& data); // Create 1 x N matrix (row vector)
     Matrix(const vector<vector<double>>& data);
     Matrix(Matrix&& mat) noexcept;
     Matrix(vector<vector<double>>&& data);
@@ -51,6 +52,8 @@ public:
     Matrix operator*(double val) const;
     friend Matrix operator*(double val, const Matrix& mat);
     Matrix operator*(const Matrix& mat) const;
+    Matrix operator*(const vector<double>& vec) const;
+    friend Matrix operator*(const vector<double>& vec, const Matrix& mat);
 
     Matrix operator-() const;
 
@@ -112,4 +115,5 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
+    - Add possibility to multiply the matrix by a vector (this vector represents either column or row vector)
 */
