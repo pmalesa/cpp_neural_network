@@ -22,10 +22,10 @@ TEST_F(MatrixTest, EqualsOperatorMat) {
     Matrix matrix_2(5, 5, 6.66);
     Matrix matrix_3(4, 4, 6.66);
     Matrix matrix_4(5, 5, 1.00);
-    EXPECT_EQ(matrix_1 == matrix_2, true);
-    EXPECT_EQ(matrix_2 == matrix_3, false);
-    EXPECT_EQ(matrix_3 == matrix_4, false);
-    EXPECT_EQ(matrix_4 == matrix_1, false);
+    EXPECT_TRUE(matrix_1 == matrix_2);
+    EXPECT_FALSE(matrix_2 == matrix_3);
+    EXPECT_FALSE(matrix_3 == matrix_4);
+    EXPECT_FALSE(matrix_4 == matrix_1);
 }
 
 TEST_F(MatrixTest, EqualsOperatorVec) {
@@ -34,10 +34,10 @@ TEST_F(MatrixTest, EqualsOperatorVec) {
     vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0} };
     vector<vector<double>> data_3 = { {5.0, 5.0}, {5.0, 5.0} };
     vector<vector<double>> data_4 = {};
-    EXPECT_EQ(matrix == data_1, true);
-    EXPECT_EQ(matrix == data_2, false);
-    EXPECT_EQ(matrix == data_3, false);
-    EXPECT_EQ(matrix == data_4, false);
+    EXPECT_TRUE(matrix == data_1);
+    EXPECT_FALSE(matrix == data_2);
+    EXPECT_FALSE(matrix == data_3);
+    EXPECT_FALSE(matrix == data_4);
 }
 
 TEST_F(MatrixTest, EqualsOperatorInitList) {
@@ -69,10 +69,10 @@ TEST_F(MatrixTest, NotEqualsOperatorMat) {
     Matrix matrix_2(5, 5, 6.66);
     Matrix matrix_3(4, 4, 6.66);
     Matrix matrix_4(5, 5, 1.00);
-    EXPECT_EQ(matrix_1 != matrix_2, false);
-    EXPECT_EQ(matrix_2 != matrix_3, true);
-    EXPECT_EQ(matrix_3 != matrix_4, true);
-    EXPECT_EQ(matrix_4 != matrix_1, true);
+    EXPECT_FALSE(matrix_1 != matrix_2);
+    EXPECT_TRUE(matrix_2 != matrix_3);
+    EXPECT_TRUE(matrix_3 != matrix_4);
+    EXPECT_TRUE(matrix_4 != matrix_1);
 }
 
 TEST_F(MatrixTest, NotEqualsOperatorVec) {
@@ -81,10 +81,10 @@ TEST_F(MatrixTest, NotEqualsOperatorVec) {
     vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0} };
     vector<vector<double>> data_3 = { {5.0, 5.0}, {5.0, 5.0} };
     vector<vector<double>> data_4 = {};
-    EXPECT_EQ(matrix != data_1, false);
-    EXPECT_EQ(matrix != data_2, true);
-    EXPECT_EQ(matrix != data_3, true);
-    EXPECT_EQ(matrix != data_4, true);
+    EXPECT_FALSE(matrix != data_1);
+    EXPECT_TRUE(matrix != data_2);
+    EXPECT_TRUE(matrix != data_3);
+    EXPECT_TRUE(matrix != data_4);
 }
 
 TEST_F(MatrixTest, NotEqualsOperatorInitList) {
@@ -115,8 +115,8 @@ TEST_F(MatrixTest, MainConstructorTest) {
     size_t rows = 5;
     size_t cols = 5;
     Matrix matrix(rows, cols);
-    ASSERT_EQ(matrix.get_rows(), rows);
-    ASSERT_EQ(matrix.get_cols(), cols);
+    EXPECT_TRUE(matrix.get_rows() == rows);
+    EXPECT_TRUE(matrix.get_cols() == cols);
     for (size_t row = 0; row < rows; ++row) {
         for (size_t col = 0; col < cols; ++col) {
             EXPECT_NEAR(matrix[row][col], 0.0, 1e-9);
@@ -129,8 +129,8 @@ TEST_F(MatrixTest, MainConstructorValTest) {
     size_t cols = 5;
     double val = 666.0;
     Matrix matrix(rows, cols, val);
-    ASSERT_EQ(matrix.get_rows(), rows);
-    ASSERT_EQ(matrix.get_cols(), cols);
+    EXPECT_TRUE(matrix.get_rows() == rows);
+    EXPECT_TRUE(matrix.get_cols() == cols);
     for (size_t row = 0; row < rows; ++row) {
         for (size_t col = 0; col < cols; ++col) {
             EXPECT_NEAR(matrix[row][col], val, 1e-9);
@@ -144,9 +144,9 @@ TEST_F(MatrixTest, CopyConstructorTest) {
     double val = 666.0;
     Matrix matrix_1(rows, cols, val);
     Matrix matrix_2(matrix_1);
-    EXPECT_EQ(matrix_1.get_rows(), matrix_2.get_rows());
-    EXPECT_EQ(matrix_1.get_cols(), matrix_2.get_cols());
-    EXPECT_EQ(matrix_1 == matrix_2, true);
+    EXPECT_TRUE(matrix_1.get_rows() == matrix_2.get_rows());
+    EXPECT_TRUE(matrix_1.get_cols() == matrix_2.get_cols());
+    EXPECT_TRUE(matrix_1 == matrix_2);
 }
 
 TEST_F(MatrixTest, CopyConstructorRowVecTest) {
@@ -165,9 +165,9 @@ TEST_F(MatrixTest, CopyConstructorRowVecTest) {
 TEST_F(MatrixTest, CopyConstructorVecTest) {
     vector<vector<double>> data_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
     Matrix matrix_1(data_1);
-    EXPECT_EQ(matrix_1.get_rows(), data_1.size());
-    EXPECT_EQ(matrix_1.get_cols(), data_1[0].size());
-    EXPECT_EQ(matrix_1 == data_1, true);
+    EXPECT_TRUE(matrix_1.get_rows() == data_1.size());
+    EXPECT_TRUE(matrix_1.get_cols() == data_1[0].size());
+    EXPECT_TRUE(matrix_1 == data_1);
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     EXPECT_THROW(Matrix matrix_2(data_2), std::invalid_argument);
     vector<vector<double>> data_3 = { {} };
@@ -188,16 +188,16 @@ TEST_F(MatrixTest, MoveConstructorTest) {
     double val = 666.0;
     Matrix matrix_1(rows, cols, val);
     Matrix matrix_2(std::move(matrix_1));
-    ASSERT_EQ(matrix_2.get_rows(), rows);
-    ASSERT_EQ(matrix_2.get_cols(), cols);
+    EXPECT_TRUE(matrix_2.get_rows() == rows);
+    EXPECT_TRUE(matrix_2.get_cols() == cols);
     for (size_t row = 0; row < rows; ++row) {
         for (size_t col = 0; col < cols; ++col) {
             EXPECT_NEAR(matrix_2[row][col], val, 1e-9);
         }
     }
-    EXPECT_EQ(matrix_1.get_rows(), 0);
-    EXPECT_EQ(matrix_1.get_cols(), 0);
-    EXPECT_EQ(matrix_1.is_empty(), true);
+    EXPECT_TRUE(matrix_1.get_rows() == 0);
+    EXPECT_TRUE(matrix_1.get_cols() == 0);
+    EXPECT_TRUE(matrix_1.is_empty());
 }
 
 TEST_F(MatrixTest, MoveConstructorVecTest) {
@@ -205,9 +205,9 @@ TEST_F(MatrixTest, MoveConstructorVecTest) {
     size_t cols = 5;
     vector<vector<double>> data_1(rows, vector<double>(5, 1.0));
     Matrix matrix_1(std::move(data_1));
-    EXPECT_EQ(matrix_1.get_rows(), rows);
-    EXPECT_EQ(matrix_1.get_cols(), cols);
-    EXPECT_EQ(matrix_1 == vector<vector<double>>(rows, vector<double>(5, 1.0)), true);
+    EXPECT_TRUE(matrix_1.get_rows() == rows);
+    EXPECT_TRUE(matrix_1.get_cols() == cols);
+    EXPECT_TRUE(matrix_1 == vector<vector<double>>(rows, vector<double>(5, 1.0)));
     vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {4.0, 5.0}, {6.0} };
     EXPECT_THROW(Matrix matrix_2(std::move(data_2)), std::invalid_argument);
     vector<vector<double>> data_3 = { {} };
@@ -249,9 +249,9 @@ TEST_F(MatrixTest, CopyAssignmentOperatorMatrixTest) {
     Matrix matrix_1(5, 5, 666.0);
     Matrix matrix_2(1, 1, 1.0);
     matrix_2 = matrix_1;
-    EXPECT_EQ(matrix_1.get_rows(), matrix_2.get_rows());
-    EXPECT_EQ(matrix_1.get_cols(), matrix_2.get_cols());
-    EXPECT_EQ(matrix_1 == matrix_2, true);
+    EXPECT_TRUE(matrix_1.get_rows() == matrix_2.get_rows());
+    EXPECT_TRUE(matrix_1.get_cols() == matrix_2.get_cols());
+    EXPECT_TRUE(matrix_1 == matrix_2);
 }
 
 TEST_F(MatrixTest, MoveAssignmentOperatorMatrixTest) {
@@ -261,25 +261,25 @@ TEST_F(MatrixTest, MoveAssignmentOperatorMatrixTest) {
     Matrix matrix_1(rows, cols, val);
     Matrix matrix_2(1, 1, 1.0);
     matrix_2 = std::move(matrix_1);
-    ASSERT_EQ(matrix_2.get_rows(), rows);
-    ASSERT_EQ(matrix_2.get_cols(), cols);
+    EXPECT_TRUE(matrix_2.get_rows() == rows);
+    EXPECT_TRUE(matrix_2.get_cols() == cols);
     for (size_t row = 0; row < rows; ++row) {
         for (size_t col = 0; col < cols; ++col) {
             EXPECT_NEAR(matrix_2[row][col], val, 1e-9);
         }
     }
-    EXPECT_EQ(matrix_1.get_rows(), 0);
-    EXPECT_EQ(matrix_1.get_cols(), 0);
-    EXPECT_EQ(matrix_1.is_empty(), true);
+    EXPECT_TRUE(matrix_1.get_rows() == 0);
+    EXPECT_TRUE(matrix_1.get_cols() == 0);
+    EXPECT_TRUE(matrix_1.is_empty());
 }
 
 TEST_F(MatrixTest, CopyAssignmentOperatorVecTest) {
     vector<vector<double>> data_1 = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
     Matrix matrix_1(1, 1, 1.0);
     matrix_1 = data_1;
-    EXPECT_EQ(matrix_1.get_rows(), data_1.size());
-    EXPECT_EQ(matrix_1.get_cols(), data_1[0].size());
-    EXPECT_EQ(matrix_1 == data_1, true);
+    EXPECT_TRUE(matrix_1.get_rows() == data_1.size());
+    EXPECT_TRUE(matrix_1.get_cols() == data_1[0].size());
+    EXPECT_TRUE(matrix_1 == data_1);
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     Matrix matrix_2(1, 1, 1.0);
     EXPECT_THROW(matrix_2 = data_2, std::invalid_argument);
@@ -304,9 +304,9 @@ TEST_F(MatrixTest, MoveAssignmentOperatorVecTest) {
     size_t rows = data_1.size();
     size_t cols = data_1[0].size();
     matrix_1 = std::move(data_1);
-    EXPECT_EQ(matrix_1.get_rows(), rows);
-    EXPECT_EQ(matrix_1.get_cols(), cols);
-    EXPECT_EQ(matrix_1 == result_1, true);
+    EXPECT_TRUE(matrix_1.get_rows() == rows);
+    EXPECT_TRUE(matrix_1.get_cols() == cols);
+    EXPECT_TRUE(matrix_1 == result_1);
     vector<vector<double>> data_2 = { {1.0, 2.0}, {3.0, 4.0, 11.0, 12.0}, {5.0, 6.0, 7.0} };
     Matrix matrix_2(1, 1, 1.0);
     EXPECT_THROW(matrix_2 = std::move(data_2), std::invalid_argument);
@@ -385,16 +385,16 @@ TEST_F(MatrixTest, FillMethodTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, 5.0);
     matrix.fill(5.0);
-    EXPECT_EQ(matrix == result, true);
+    EXPECT_TRUE(matrix == result);
 }
 
 TEST_F(MatrixTest, TransposeMethodTest) {
     vector<vector<double>> data = { {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0} };
     vector<vector<double>> result = { {1.0, 3.0, 5.0}, {2.0, 4.0, 6.0} };
     Matrix matrix(data);
-    EXPECT_EQ(matrix.transpose() == result, true);
-    EXPECT_EQ(matrix.transpose().transpose() == data, true);
-    EXPECT_EQ(matrix.transpose().transpose() == matrix, true);
+    EXPECT_TRUE(matrix.transpose() == result);
+    EXPECT_TRUE(matrix.transpose().transpose() == data);
+    EXPECT_TRUE(matrix.transpose().transpose() == matrix);
 }
 
 TEST_F(MatrixTest, ResizeMethodTest) {
@@ -403,10 +403,10 @@ TEST_F(MatrixTest, ResizeMethodTest) {
     vector<vector<double>> expand_result = { {1.0, 2.0, 0.0}, {3.0, 4.0, 0.0}, {5.0, 6.0, 0.0}, {0.0, 0.0, 0.0} };
     Matrix matrix(data);
     matrix.resize(shrink_result.size(), shrink_result[0].size());
-    EXPECT_EQ(matrix == shrink_result, true);
+    EXPECT_TRUE(matrix == shrink_result);
     matrix = data;
     matrix.resize(expand_result.size(), expand_result[0].size());
-    EXPECT_EQ(matrix == expand_result, true);
+    EXPECT_TRUE(matrix == expand_result);
 }
 
 TEST_F(MatrixTest, ReshapeMethodTest) {
@@ -564,10 +564,10 @@ TEST_F(MatrixTest, FlattenTest) {
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix_1(5, 5, 1.0);
     Matrix result_1(5, 5, 5.0);
-    EXPECT_EQ(matrix_1 + 4.0 == result_1, true);
-    EXPECT_EQ(4.0 + matrix_1 == result_1, true);
-    EXPECT_EQ(matrix_1 + 3.0 == result_1, false);
-    EXPECT_EQ(3.0 + matrix_1 == result_1, false);
+    EXPECT_TRUE(matrix_1 + 4.0 == result_1);
+    EXPECT_TRUE(4.0 + matrix_1 == result_1);
+    EXPECT_FALSE(matrix_1 + 3.0 == result_1);
+    EXPECT_FALSE(3.0 + matrix_1 == result_1);
     Matrix matrix_2(5, 5, DOUBLE_MAX);
     Matrix matrix_3(5, 5, DOUBLE_MIN);
     EXPECT_THROW(matrix_2 + DOUBLE_MAX, std::overflow_error);
@@ -591,8 +591,8 @@ TEST_F(MatrixTest, AdditionWithMatrixTest) {
     Matrix matrix_3(4, 4, 4.0);
     Matrix result_1(5, 5, 5.0);
     EXPECT_THROW(matrix_1 + matrix_3, std::domain_error);
-    EXPECT_EQ(matrix_1 + matrix_2 == result_1, true);
-    EXPECT_EQ(matrix_2 + matrix_1 == result_1, true);
+    EXPECT_TRUE(matrix_1 + matrix_2 == result_1);
+    EXPECT_TRUE(matrix_2 + matrix_1 == result_1);
     Matrix matrix_4(5, 5, DOUBLE_MAX);
     EXPECT_THROW(matrix_4 + matrix_4, std::overflow_error);
 
@@ -610,8 +610,8 @@ TEST_F(MatrixTest, AdditionWithMatrixTest) {
 TEST_F(MatrixTest, SubtractionWithValueTest) {
     Matrix matrix_1(5, 5, 5.0);
     Matrix result(5, 5, 1.0);
-    EXPECT_EQ(matrix_1 - 4.0 == result, true);
-    EXPECT_EQ(matrix_1 - 3.0 == result, false);
+    EXPECT_TRUE(matrix_1 - 4.0 == result);
+    EXPECT_FALSE(matrix_1 - 3.0 == result);
     Matrix matrix_2(5, 5, DOUBLE_MIN);
     EXPECT_THROW(matrix_2 - DOUBLE_MAX, std::overflow_error);
 }
@@ -622,7 +622,7 @@ TEST_F(MatrixTest, SubtractionWithMatrixTest) {
     Matrix matrix_3(4, 4, 1.0);
     Matrix result(5, 5, 4.0);
     EXPECT_THROW(matrix_1 - matrix_3, std::domain_error);
-    EXPECT_EQ(matrix_1 - matrix_2 == result, true);
+    EXPECT_TRUE(matrix_1 - matrix_2 == result);
     Matrix matrix_4(5, 5, DOUBLE_MIN);
     Matrix matrix_5(5, 5, DOUBLE_MAX);
     EXPECT_THROW(matrix_4 - matrix_5, std::overflow_error);
@@ -632,7 +632,7 @@ TEST_F(MatrixTest, SubtractionWithMatrixTest) {
 TEST_F(MatrixTest, MultiplyByValueTest) {
     Matrix matrix_1(5, 5, 1.0);
     Matrix result_1(5, 5, 5.0);
-    EXPECT_EQ(matrix_1 * 5 == result_1, true);
+    EXPECT_TRUE(matrix_1 * 5 == result_1);
     Matrix matrix_2(5, 5, DOUBLE_MAX);
     Matrix matrix_3(5, 5, DOUBLE_MIN);
     EXPECT_THROW(matrix_2 * DOUBLE_MAX, std::overflow_error);
@@ -656,7 +656,7 @@ TEST_F(MatrixTest, MultiplyByValueTest) {
     EXPECT_THROW(matrix_6 * DOUBLE_MIN, std::overflow_error);
 
     // Friend operator*() method teests
-    EXPECT_EQ(5 * matrix_1 == result_1, true);
+    EXPECT_TRUE(5 * matrix_1 == result_1);
     EXPECT_THROW(DOUBLE_MAX * matrix_2, std::overflow_error);
     EXPECT_THROW(DOUBLE_MIN * matrix_2, std::overflow_error);
     EXPECT_THROW(4.0 * matrix_2, std::overflow_error);
@@ -679,7 +679,7 @@ TEST_F(MatrixTest, MultiplyByMatrixTest) {
     Matrix matrix_2(3, 4, 2.0);
     EXPECT_THROW(matrix_2 * matrix_1, std::domain_error);
     Matrix result_1(matrix_1.get_rows(), matrix_2.get_cols(), 6.0);
-    EXPECT_EQ(matrix_1 * matrix_2 == result_1, true);
+    EXPECT_TRUE(matrix_1 * matrix_2 == result_1);
     Matrix matrix_3(5, 5, DOUBLE_MAX);
     Matrix matrix_4(5, 5, DOUBLE_MIN);
     EXPECT_THROW(matrix_3 * matrix_3, std::overflow_error);
@@ -717,7 +717,7 @@ TEST_F(MatrixTest, MultiplyByRowVecTest) {
 TEST_F(MatrixTest, NegationOperatorTest) {
     Matrix matrix(5, 5, 1.0);
     Matrix result(5, 5, -1.0);
-    EXPECT_EQ(-matrix == result, true);
+    EXPECT_TRUE(-matrix == result);
 }
 
 TEST_F(MatrixTest, ElementwiseMultiplyMethodTest) {
@@ -771,10 +771,10 @@ TEST_F(MatrixTest, EqualsMethodMat) {
     Matrix matrix_2(5, 5, 6.66);
     Matrix matrix_3(4, 4, 6.66);
     Matrix matrix_4(5, 5, 1.00);
-    EXPECT_EQ(matrix_1.equals(matrix_2), true);
-    EXPECT_EQ(matrix_2.equals(matrix_3), false);
-    EXPECT_EQ(matrix_3.equals(matrix_4), false);
-    EXPECT_EQ(matrix_4.equals(matrix_1), false);
+    EXPECT_TRUE(matrix_1.equals(matrix_2));
+    EXPECT_FALSE(matrix_2.equals(matrix_3));
+    EXPECT_FALSE(matrix_3.equals(matrix_4));
+    EXPECT_FALSE(matrix_4.equals(matrix_1));
 }
 
 TEST_F(MatrixTest, EqualsMethodVec) {
@@ -783,10 +783,10 @@ TEST_F(MatrixTest, EqualsMethodVec) {
     vector<vector<double>> data_2 = { {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0}, {1.0, 2.0, 3.0} };
     vector<vector<double>> data_3 = { {5.0, 5.0}, {5.0, 5.0} };
     vector<vector<double>> data_4 = {};
-    EXPECT_EQ(matrix.equals(data_1), true);
-    EXPECT_EQ(matrix.equals(data_2), false);
-    EXPECT_EQ(matrix.equals(data_3), false);
-    EXPECT_EQ(matrix.equals(data_4), false);
+    EXPECT_TRUE(matrix.equals(data_1));
+    EXPECT_FALSE(matrix.equals(data_2));
+    EXPECT_FALSE(matrix.equals(data_3));
+    EXPECT_FALSE(matrix.equals(data_4));
 }
 
 TEST_F(MatrixTest, EqualsMethodInitList) {
@@ -815,8 +815,8 @@ TEST_F(MatrixTest, EqualsMethodInitList) {
 
 TEST_F(MatrixTest, IdentityMethodTest) {
     Matrix matrix = Matrix::identity(5);
-    EXPECT_EQ(matrix.get_rows() == 5, true);
-    EXPECT_EQ(matrix.get_cols() == 5, true);
+    EXPECT_TRUE(matrix.get_rows() == 5);
+    EXPECT_TRUE(matrix.get_cols() == 5);
     for (size_t row = 0; row < matrix.get_rows(); ++row) {
         for (size_t col = 0; col < matrix.get_cols(); ++col) {
             if (row == col) {
@@ -832,8 +832,8 @@ TEST_F(MatrixTest, ZerosMethodTest) {
     size_t rows = 5;
     size_t cols = 7;
     Matrix matrix = Matrix::zeros(rows, cols);
-    EXPECT_EQ(matrix.get_rows() == rows, true);    
-    EXPECT_EQ(matrix.get_cols() == cols, true);
+    EXPECT_TRUE(matrix.get_rows() == rows);    
+    EXPECT_TRUE(matrix.get_cols() == cols);
     for (size_t row = 0; row < matrix.get_rows(); ++row) {
         for (size_t col = 0; col < matrix.get_cols(); ++col) {
             EXPECT_NEAR(matrix[row][col], 0.0, 1e-9);
@@ -845,8 +845,8 @@ TEST_F(MatrixTest, OnesMethodTest) {
     size_t rows = 5;
     size_t cols = 7;
     Matrix matrix = Matrix::ones(rows, cols);
-    EXPECT_EQ(matrix.get_rows() == rows, true);    
-    EXPECT_EQ(matrix.get_cols() == cols, true);
+    EXPECT_TRUE(matrix.get_rows() == rows);    
+    EXPECT_TRUE(matrix.get_cols() == cols);
     for (size_t row = 0; row < matrix.get_rows(); ++row) {
         for (size_t col = 0; col < matrix.get_cols(); ++col) {
             EXPECT_NEAR(matrix[row][col], 1.0, 1e-9);

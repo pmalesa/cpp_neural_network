@@ -115,5 +115,4 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-    - Add possibility to multiply the matrix by a vector (this vector represents either column or row vector)
 */
