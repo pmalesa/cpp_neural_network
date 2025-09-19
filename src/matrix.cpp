@@ -395,6 +395,23 @@ double Matrix::max() const {
     return max;
 }
 
+double Matrix::sum() const {
+    if (rows_ == 0 || cols_ == 0) {
+        return 0.0;
+    }
+    long double v_ld = 0.0;
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            v_ld += static_cast<long double>(data_[row][col]);
+        }
+    }
+    double result = static_cast<double>(v_ld);
+    if (!std::isfinite(result)) {
+        throw std::overflow_error("Addition/subtraction overflowed!");
+    }
+    return result;
+}
+
 Matrix Matrix::inverse() const {
     if (rows_ != cols_) {
         throw std::invalid_argument("Inverse requires a square matrix!");

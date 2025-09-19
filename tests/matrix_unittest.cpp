@@ -504,6 +504,26 @@ TEST_F(MatrixTest, MaxMethodTest) {
     EXPECT_THROW(matrix_6.max(), std::domain_error);
 }
 
+TEST_F(MatrixTest, SumMethodTest) {
+    Matrix matrix_1 = Matrix::ones(5, 5);
+    Matrix matrix_2 = Matrix::zeros(5, 5);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    Matrix matrix_5 = { {} };
+    Matrix matrix_6 = { };
+    Matrix matrix_7 = Matrix::ones(5, 5) * DOUBLE_MAX;
+    Matrix matrix_8 = Matrix::ones(5, 5) * DOUBLE_MIN;
+
+    EXPECT_NEAR(matrix_1.sum(), 25.0, 1e-9);
+    EXPECT_NEAR(matrix_2.sum(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_3.sum(), 45.0, 1e-9);
+    EXPECT_NEAR(matrix_4.sum(),  32.0, 1e-9);
+    EXPECT_NEAR(matrix_5.sum(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_6.sum(), 0.0, 1e-9);
+    EXPECT_THROW(matrix_7.sum(), std::overflow_error);
+    EXPECT_THROW(matrix_8.sum(), std::overflow_error);
+}
+
 TEST_F(MatrixTest, InverseMethodTest){
     Matrix matrix_1 = {};
     Matrix result_1 = {};
