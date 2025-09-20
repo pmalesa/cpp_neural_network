@@ -71,6 +71,7 @@ public:
     double min() const;
     double max() const;
     double sum() const;
+    double mean() const;
     Matrix inverse() const;
     Matrix flatten() const;
     void fill_random(double min = -1.0, double max = 1.0);
@@ -116,6 +117,4 @@ private:
 /*
 TODO:
     - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-    - sum()
-    - mean()
 */

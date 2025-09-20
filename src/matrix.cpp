@@ -407,7 +407,21 @@ double Matrix::sum() const {
     }
     double result = static_cast<double>(v_ld);
     if (!std::isfinite(result)) {
-        throw std::overflow_error("Addition/subtraction overflowed!");
+        throw std::overflow_error("Sum operation overflowed!");
+    }
+    return result;
+}
+
+double Matrix::mean() const {
+    if (rows_ == 0 || cols_ == 0) {
+        return 0.0;
+    }
+    size_t n = rows_ * cols_;
+    double result = 0.0;
+    for (size_t row = 0; row < rows_; ++row) {
+        for (size_t col = 0; col < cols_; ++col) {
+            result += static_cast<long double>(data_[row][col] / n);
+        }
     }
     return result;
 }

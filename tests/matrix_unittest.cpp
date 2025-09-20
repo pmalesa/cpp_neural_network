@@ -524,6 +524,22 @@ TEST_F(MatrixTest, SumMethodTest) {
     EXPECT_THROW(matrix_8.sum(), std::overflow_error);
 }
 
+TEST_F(MatrixTest, MeanMethodTest) {
+    Matrix matrix_1 = Matrix::ones(5, 5);
+    Matrix matrix_2 = Matrix::zeros(5, 5);
+    Matrix matrix_3 = { {1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0} };
+    Matrix matrix_4 = { {1.0, -2.0, -3.0, 123.0}, {-4.0, 0.0, -6.0, 7.0}, {-7.0, 8.0, 15.0, -9.0}, {-70.0, 80.0, -90.0, -11.0} };
+    Matrix matrix_5 = { {} };
+    Matrix matrix_6 = { };
+
+    EXPECT_NEAR(matrix_1.mean(), 1.0, 1e-9);
+    EXPECT_NEAR(matrix_2.mean(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_3.mean(), 5.0, 1e-9);
+    EXPECT_NEAR(matrix_4.mean(), 2.0, 1e-9);
+    EXPECT_NEAR(matrix_5.mean(), 0.0, 1e-9);
+    EXPECT_NEAR(matrix_6.mean(), 0.0, 1e-9);
+}
+
 TEST_F(MatrixTest, InverseMethodTest){
     Matrix matrix_1 = {};
     Matrix result_1 = {};
