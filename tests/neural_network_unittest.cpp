@@ -9,4 +9,6 @@ protected:
     NeuralNetwork neural_network_;
 };
 
-TEST_F(NeuralNetworkTest, ExampleTest) { ASSERT_TRUE(true); }
+TEST_F(NeuralNetworkTest, ExampleTest) { 
+    ASSERT_TRUE(true); 
+}

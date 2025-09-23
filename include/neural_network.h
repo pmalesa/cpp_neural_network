@@ -10,9 +10,9 @@ enum class LossFunction { MSE, CrossEntropy };
 
 class NeuralNetwork {
 public:
-    NeuralNetwork();
+    NeuralNetwork() = default;
     NeuralNetwork(const vector<size_t>& network_shape); // Network layer's sizes including input and output layers
-    ~NeuralNetwork();
+    ~NeuralNetwork() = default;
 
     NeuralNetwork& erase(); // Erases all layers, sizes and weights (state as after default constructor)
     NeuralNetwork& init(size_t input_size, ActivationFunction activation_function = ActivationFunction::ReLU); // Calls erase()
@@ -32,7 +32,7 @@ private:
     void backward_(const Matrix& input, const Matrix& target, double learning_rate);
 
     size_t n_layers_;
-    vector<size_t> newtork_shape_;
+    vector<size_t> network_shape_;
     vector<ActivationFunction> activation_functions_;
     vector<Matrix> layer_weights_;
     bool classification_;
