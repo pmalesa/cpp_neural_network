@@ -25,6 +25,12 @@ public:
     Matrix predict(const Matrix& input) const;
     void save(const string& filename) const;
     void load(const string& filename);
+
+    vector<size_t> get_shape() const { return network_shape_; }
+    vector<ActivationFunction> get_activation_functions() const { return activation_functions_; }
+    vector<Matrix> get_weights() const { return layer_weights_; }
+    bool is_classifier() const { return classification_; }
+    bool is_built() const { return built_; }
     
 private:
     void randomize_weights_();
