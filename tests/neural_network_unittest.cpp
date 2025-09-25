@@ -26,5 +26,11 @@ TEST_F(NeuralNetworkTest, InitMethodTest) {
 }
 
 TEST_F(NeuralNetworkTest, EraseMethodTest) { 
-    ASSERT_TRUE(true); 
+    NeuralNetwork nn({10, 20, 30});
+    nn.erase();
+    EXPECT_TRUE(nn.get_shape().empty());
+    EXPECT_TRUE(nn.get_activation_functions().empty());
+    EXPECT_TRUE(nn.get_weights().empty());
+    EXPECT_TRUE(not nn.is_classifier());
+    EXPECT_TRUE(not nn.is_built());    
 }
