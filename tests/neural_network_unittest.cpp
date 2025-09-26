@@ -22,7 +22,13 @@ TEST_F(NeuralNetworkTest, ConstructorTest) {
 }
 
 TEST_F(NeuralNetworkTest, InitMethodTest) { 
-    ASSERT_TRUE(true); 
+    NeuralNetwork nn;
+    nn.init(5);
+    EXPECT_TRUE(nn.get_shape().size() == 1);
+    EXPECT_TRUE(nn.get_activation_functions().size() == 1);
+    EXPECT_TRUE(nn.get_weights().empty());
+    EXPECT_TRUE(not nn.is_classifier());
+    EXPECT_TRUE(not nn.is_built());    
 }
 
 TEST_F(NeuralNetworkTest, EraseMethodTest) { 
