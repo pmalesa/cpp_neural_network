@@ -10,13 +10,13 @@ enum class LossFunction { MSE, CrossEntropy };
 
 class NeuralNetwork {
 public:
-    NeuralNetwork() = default;
+    NeuralNetwork();
     NeuralNetwork(const vector<size_t>& network_shape); // Network layer's sizes including input and output layers
     ~NeuralNetwork() = default;
 
     NeuralNetwork& erase(); // Erases all layers, sizes and weights (state as after default constructor)
     NeuralNetwork& init(size_t input_size, ActivationFunction activation_function = ActivationFunction::ReLU); // Calls erase()
-    NeuralNetwork& add_layer(size_t n_neurons, ActivationFunction activation_function = ActivationFunction::ReLU, bool output = false);
+    NeuralNetwork& add_layer(size_t n_neurons, ActivationFunction activation_function = ActivationFunction::ReLU);
     NeuralNetwork& build();
     NeuralNetwork& fit(const Matrix& X, const Matrix& y,
                        size_t epochs = 100, double learning_rate = 0.01,
@@ -42,5 +42,16 @@ private:
     vector<ActivationFunction> activation_functions_;
     vector<Matrix> layer_weights_;
     bool classification_;
+    bool initialized_;
     bool built_;
 };
+
+
+/*
+    TODO:
+    - Constructor that acepts the network shape should also accept the vector of activation functions,
+      because otherwise it will be impossible to then do this. This constructor assumes that after it and 
+      before build() method there will be no add_layer() calls.
+    - Think about whether is_classifier_ flag is necessary.
+
+*/

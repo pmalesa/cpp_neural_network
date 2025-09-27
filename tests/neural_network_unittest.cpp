@@ -1,5 +1,7 @@
 #include "neural_network.h"
 #include <gtest/gtest.h>
+#include "matrix.h"
+#include <stdexcept>
 
 class NeuralNetworkTest : public testing::Test {
 public:
@@ -39,4 +41,36 @@ TEST_F(NeuralNetworkTest, EraseMethodTest) {
     EXPECT_TRUE(nn.get_weights().empty());
     EXPECT_TRUE(not nn.is_classifier());
     EXPECT_TRUE(not nn.is_built());    
+}
+
+TEST_F(NeuralNetworkTest, AddLayerMethodTest) {
+    NeuralNetwork nn;
+    EXPECT_THROW(nn.add_layer(666), std::logic_error);
+    nn.init(10);
+    nn.add_layer(20);
+    nn.add_layer(30);
+    nn.add_layer(1);    
+    EXPECT_TRUE(nn.get_shape()[0] == 10);
+    EXPECT_TRUE(nn.get_shape()[1] == 20);
+    EXPECT_TRUE(nn.get_shape()[2] == 30);
+    EXPECT_TRUE(nn.get_shape()[3] == 1);
+    nn.build();
+    EXPECT_THROW(nn.add_layer(666), std::logic_error);
+}
+
+TEST_F(NeuralNetworkTest, BuildMethodTest) {
+    NeuralNetwork nn;
+    EXPECT_THROW(nn.build(), std::logic_error);
+    nn.init(10);
+    EXPECT_THROW(nn.build(), std::logic_error);
+    nn.add_layer(20);
+    nn.add_layer(30);
+    nn.add_layer(1); 
+    nn.build();
+    EXPECT_TRUE(nn.is_built());
+    for (size_t layer = 0; layer < nn.get_shape().size() - 1; ++layer) {
+        Matrix& weights = nn.get_weights()[layer];
+        EXPECT_TRUE(weights.get_rows() == nn.get_shape()[layer] + 1);
+        EXPECT_TRUE(weights.get_cols() == nn.get_shape()[layer + 1]);
+    }
 }
