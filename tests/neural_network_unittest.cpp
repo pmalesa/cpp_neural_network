@@ -12,14 +12,21 @@ protected:
 };
 
 TEST_F(NeuralNetworkTest, ConstructorTest) {
-    NeuralNetwork nn({10, 20, 30});
-    EXPECT_TRUE(nn.get_shape().size() == 3);
-    EXPECT_TRUE(nn.get_shape()[0] == 10);
-    EXPECT_TRUE(nn.get_shape()[1] == 20);
-    EXPECT_TRUE(nn.get_shape()[2] == 30);
-    EXPECT_TRUE(nn.get_activation_functions().empty());
-    EXPECT_TRUE(nn.get_weights().empty());
-    EXPECT_TRUE(not nn.is_built());
+    vector<size_t> network_shape_1 = {10, 20, 30};
+    vector<ActivationFunction> activation_functions_1 = {ActivationFunction::ReLU, ActivationFunction::ReLU, ActivationFunction::Softmax};
+    NeuralNetwork nn_1(network_shape_1, activation_functions_1);
+    EXPECT_TRUE(nn_1.get_shape().size() == 3);
+    EXPECT_TRUE(nn_1.get_shape()[0] == 10);
+    EXPECT_TRUE(nn_1.get_shape()[1] == 20);
+    EXPECT_TRUE(nn_1.get_shape()[2] == 30);
+    EXPECT_TRUE(nn_1.get_activation_functions()[0] == ActivationFunction::ReLU);
+    EXPECT_TRUE(nn_1.get_activation_functions()[1] == ActivationFunction::ReLU);
+    EXPECT_TRUE(nn_1.get_activation_functions()[2] == ActivationFunction::Softmax);
+    EXPECT_TRUE(nn_1.get_weights().empty());
+    EXPECT_TRUE(not nn_1.is_built());
+    vector<size_t> network_shape_2 = {10, 20, 30};
+    vector<ActivationFunction> activation_functions_2 = {ActivationFunction::ReLU, ActivationFunction::Softmax};
+    EXPECT_THROW(NeuralNetwork nn_2(network_shape_2, activation_functions_2), std::logic_error);
 }
 
 TEST_F(NeuralNetworkTest, InitMethodTest) { 
@@ -32,7 +39,9 @@ TEST_F(NeuralNetworkTest, InitMethodTest) {
 }
 
 TEST_F(NeuralNetworkTest, EraseMethodTest) { 
-    NeuralNetwork nn({10, 20, 30});
+    vector<size_t> network_shape = {10, 20, 30};
+    vector<ActivationFunction> activation_functions = {ActivationFunction::ReLU, ActivationFunction::ReLU, ActivationFunction::Softmax};
+    NeuralNetwork nn(network_shape, activation_functions);
     nn.erase();
     EXPECT_TRUE(nn.get_shape().empty());
     EXPECT_TRUE(nn.get_activation_functions().empty());

@@ -5,9 +5,19 @@ NeuralNetwork::NeuralNetwork()
     : n_layers_(0), network_shape_({}), activation_functions_({}),
       layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {}
 
-NeuralNetwork::NeuralNetwork(const vector<size_t>& network_shape) 
-    : n_layers_(network_shape.size()), network_shape_(network_shape), activation_functions_({}), 
-      layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {}
+NeuralNetwork::NeuralNetwork(const vector<size_t>& network_shape, const vector<ActivationFunction>& activation_functions) 
+    : n_layers_(network_shape.size()), network_shape_(network_shape), activation_functions_(activation_functions), 
+      layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {
+/*
+    Network layer's sizes including input and output layers
+*/
+    if (network_shape.size() != activation_functions.size()) {
+        n_layers_ = 0;
+        network_shape_.clear();
+        activation_functions_.clear();
+        throw std::logic_error("Number of layers and number of activation functions cannot be different!");
+    }
+}
 
 NeuralNetwork& NeuralNetwork::erase() {
     n_layers_ = 0;
