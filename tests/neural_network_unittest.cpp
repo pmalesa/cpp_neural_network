@@ -19,7 +19,6 @@ TEST_F(NeuralNetworkTest, ConstructorTest) {
     EXPECT_TRUE(nn.get_shape()[2] == 30);
     EXPECT_TRUE(nn.get_activation_functions().empty());
     EXPECT_TRUE(nn.get_weights().empty());
-    EXPECT_TRUE(not nn.is_classifier());
     EXPECT_TRUE(not nn.is_built());
 }
 
@@ -29,7 +28,6 @@ TEST_F(NeuralNetworkTest, InitMethodTest) {
     EXPECT_TRUE(nn.get_shape().size() == 1);
     EXPECT_TRUE(nn.get_activation_functions().size() == 1);
     EXPECT_TRUE(nn.get_weights().empty());
-    EXPECT_TRUE(not nn.is_classifier());
     EXPECT_TRUE(not nn.is_built());    
 }
 
@@ -39,7 +37,6 @@ TEST_F(NeuralNetworkTest, EraseMethodTest) {
     EXPECT_TRUE(nn.get_shape().empty());
     EXPECT_TRUE(nn.get_activation_functions().empty());
     EXPECT_TRUE(nn.get_weights().empty());
-    EXPECT_TRUE(not nn.is_classifier());
     EXPECT_TRUE(not nn.is_built());    
 }
 

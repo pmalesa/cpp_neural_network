@@ -6,7 +6,8 @@ using std::vector;
 using std::string;
 
 enum class ActivationFunction { ReLU, Tanh, Softmax };
-enum class LossFunction { MSE, CrossEntropy };
+enum class LossFunction { MSE, MAE, BinaryCrossEntropy, CategoricalCrossEntropy };
+enum class TaskType { Classification, Regression };
 
 class NeuralNetwork {
 public:
@@ -20,7 +21,7 @@ public:
     NeuralNetwork& build();
     NeuralNetwork& fit(const Matrix& X, const Matrix& y,
                        size_t epochs = 100, double learning_rate = 0.01,
-                       LossFunction loss = LossFunction::CrossEntropy);
+                       LossFunction loss = LossFunction::BinaryCrossEntropy);
 
     Matrix predict(const Matrix& input) const;
     void save(const string& filename) const;
@@ -29,7 +30,6 @@ public:
     vector<size_t> get_shape() const { return network_shape_; }
     vector<ActivationFunction> get_activation_functions() const { return activation_functions_; }
     vector<Matrix> get_weights() const { return layer_weights_; }
-    bool is_classifier() const { return classification_; }
     bool is_built() const { return built_; }
     
 private:
@@ -41,7 +41,7 @@ private:
     vector<size_t> network_shape_;
     vector<ActivationFunction> activation_functions_;
     vector<Matrix> layer_weights_;
-    bool classification_;
+    TaskType task_type_;
     bool initialized_;
     bool built_;
 };
@@ -49,9 +49,8 @@ private:
 
 /*
     TODO:
-    - Constructor that acepts the network shape should also accept the vector of activation functions,
+    - Constructor that accepts the network shape should also accept the vector of activation functions,
       because otherwise it will be impossible to then do this. This constructor assumes that after it and 
       before build() method there will be no add_layer() calls.
-    - Think about whether is_classifier_ flag is necessary.
 
 */

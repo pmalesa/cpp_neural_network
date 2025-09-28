@@ -3,18 +3,18 @@
 
 NeuralNetwork::NeuralNetwork()
     : n_layers_(0), network_shape_({}), activation_functions_({}),
-      layer_weights_({}), classification_(false), initialized_(false), built_(false) {}
+      layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {}
 
 NeuralNetwork::NeuralNetwork(const vector<size_t>& network_shape) 
     : n_layers_(network_shape.size()), network_shape_(network_shape), activation_functions_({}), 
-      layer_weights_({}), classification_(false), initialized_(false), built_(false) {}
+      layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {}
 
 NeuralNetwork& NeuralNetwork::erase() {
     n_layers_ = 0;
     network_shape_.clear();
     activation_functions_.clear();
     layer_weights_.clear();
-    classification_ = false;
+    task_type_ = TaskType::Classification;
     initialized_ = false;
     built_ = false;
     return *this;
@@ -61,11 +61,13 @@ NeuralNetwork& NeuralNetwork::build() {
     return *this;
 }
 
-/* ... */
-
-/* TODO */
 void NeuralNetwork::randomize_weights_() {
-
+    if (built_ == false) {
+        throw std::logic_error("Cannot randomize weights of an unbuilt network!"); 
+    }
+    for (Matrix& weights : layer_weights_) {
+        weights.fill_random();
+    }
 }
 
 /* TODO */
