@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MATRIX_H
+#define MATRIX_H
+
 #include <vector>
 #include <ostream>
 
@@ -114,7 +116,4 @@ private:
     void multiply_concurrently_(const Matrix& mat, Matrix& result) const;
 };
 
-/*
-TODO:
-    - write class to benchmark time computations, and compare concurrent vs sequential on big matrices
-*/
+#endif // MATRIX_H

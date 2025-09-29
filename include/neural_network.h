@@ -1,3 +1,6 @@
+#ifndef NEURAL_NETWORK_H
+#define NEURAL_NETWORK_H
+
 #include <vector>
 #include <string>
 #include "matrix.h"
@@ -5,7 +8,7 @@
 using std::vector;
 using std::string;
 
-enum class ActivationFunction { ReLU, Tanh, Softmax };
+enum class ActivationFunction { ReLU, Tanh, Softmax, Sigmoid };
 enum class LossFunction { MSE, MAE, BinaryCrossEntropy, CategoricalCrossEntropy };
 enum class TaskType { Classification, Regression };
 
@@ -45,6 +48,8 @@ private:
     bool initialized_;
     bool built_;
 };
+
+#endif // NEURAL_NETWORK_H
 
 /*
     TODO:

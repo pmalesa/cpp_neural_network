@@ -1,3 +1,6 @@
+#ifndef TIMER_H
+#define TIMER_H
+
 #include <chrono>
 
 using namespace std::chrono;
@@ -19,3 +22,5 @@ private:
     high_resolution_clock::time_point start_time_;
     high_resolution_clock::time_point end_time_;
 };
+
+#endif // TIMER_H
