@@ -26,11 +26,17 @@ Matrix softmax(const Matrix& mat) {
 }
 
 double tanh(double x) {
-    return 0.0;
+    return std::tanh(x);
 }
 
 Matrix tanh(const Matrix& mat) {
-    return Matrix();
+    Matrix result(mat.get_rows(), mat.get_cols());
+    for (size_t row = 0; row < result.get_rows(); ++row) {
+        for (size_t col = 0; col < result.get_cols(); ++col) {
+            result[row][col] = tanh(mat[row][col]);
+        }
+    }
+    return result;
 }
 
 double sigmoid(double x) {
