@@ -1,4 +1,5 @@
 #include "activation.h"
+#include <cmath>
 
 namespace Activation {
 
@@ -33,11 +34,17 @@ Matrix tanh(const Matrix& mat) {
 }
 
 double sigmoid(double x) {
-    return 0.0;
+    return 1.0 / (1.0 + std::exp(-x));
 }
 
 Matrix sigmoid(const Matrix& mat) {
-    return Matrix();
+    Matrix result(mat.get_rows(), mat.get_cols());
+    for (size_t row = 0; row < result.get_rows(); ++row) {
+        for (size_t col = 0; col < result.get_cols(); ++col) {
+            result[row][col] = sigmoid(mat[row][col]);
+        }
+    }
+    return result;
 }
 
 } // namespace Activation

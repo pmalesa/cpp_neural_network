@@ -22,3 +22,19 @@ TEST_F(ActivationTest, ReluTest) {
     Matrix mat = { {-1.0, -2.0, -3.0}, {0.0, 0.0, 0.0}, {1.0, 2.0, 3.0} };
     EXPECT_TRUE((Activation::relu(mat) == il{ {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {1.0, 2.0, 3.0} }));
 }
+
+TEST_F(ActivationTest, SigmoidTest) {
+    EXPECT_NEAR(Activation::sigmoid(-3.0), 0.04742587317751919, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid(-2.0), 0.11920292202204383, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid(-1.0), 0.26894142136992605, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid(0.0), 0.5, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid(1.0), 0.731058578630074, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid(2.0), 0.8807970779779563, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid(3.0), 0.9525741268224809, 1e-9);
+    Matrix mat = { {-1.0, -2.0, -3.0}, {0.0, 0.0, 0.0}, {1.0, 2.0, 3.0} };
+    EXPECT_TRUE((Activation::sigmoid(mat) == il{ 
+        {0.04742587317751919, 0.11920292202204383, 0.26894142136992605},
+        {0.5, 0.5, 0.5}, 
+        {0.731058578630074, 0.8807970779779563, 0.9525741268224809} 
+    }));
+}
