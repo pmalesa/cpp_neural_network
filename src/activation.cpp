@@ -26,7 +26,7 @@ Matrix softmax(const Matrix& mat) {
 }
 
 double tanh(double x) {
-    return std::tanh(x);
+    return (std::exp(x) - std::exp(-x)) / (std::exp(x) + std::exp(-x));
 }
 
 Matrix tanh(const Matrix& mat) {
