@@ -7,7 +7,6 @@ namespace Activation {
     double relu(double x);
     Matrix relu(const Matrix& mat);
 
-    double softmax(double x);
     Matrix softmax(const Matrix& mat);
 
     double tanh(double x);

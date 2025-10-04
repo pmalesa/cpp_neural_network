@@ -54,3 +54,19 @@ TEST_F(ActivationTest, TanhTest) {
         {0.76159415595, 0.96402758007, 0.99505475368} 
     }));
 }
+
+TEST_F(ActivationTest, SoftmaxTest) {
+    EXPECT_THROW(Activation::softmax(Matrix(0, 5)), std::domain_error);
+    EXPECT_THROW(Activation::softmax(Matrix(5, 0)), std::domain_error);
+
+    Matrix matrix = { {2.0, 1.0, 0.1} };
+    Matrix result = { {0.659, 0.242, 0.099} };
+    EXPECT_TRUE(Activation::softmax(matrix) == result);
+    
+    // Sum should be 1.0
+    double sum = 0.0;
+    for (size_t col = 0; col < result.get_cols(); ++col) {
+        sum += result[0][col];
+    }
+    EXPECT_NEAR(sum, 1.0, 1e-9);
+}

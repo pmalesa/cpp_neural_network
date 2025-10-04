@@ -17,12 +17,61 @@ Matrix relu(const Matrix& mat) {
     return result;
 }
 
-double softmax(double x) {
-    return 0.0;
-}
-
 Matrix softmax(const Matrix& mat) {
-    return Matrix();
+    if (mat.get_rows() == 0 || mat.get_cols() == 0) {
+        throw std::domain_error("Softmax input cannot be empty!");
+    }
+
+    Matrix result(mat.get_rows(), mat.get_cols());
+
+    // Single vector case (1xN or Nx1)
+    if (mat.get_rows() == 1 || mat.get_cols() == 1) {
+        
+        // Find maximal value
+        double max_val = mat[0][0];
+        for (size_t row = 0; row < mat.get_rows(); ++row) {
+            for (size_t col = 0; col < mat.get_cols(); ++col) {
+                max_val = std::max(max_val, mat[row][col]);
+            }
+        }
+
+        double sum = 0.0;
+        for (size_t row = 0; row < mat.get_rows(); ++row) {
+            for (size_t col = 0; col < mat.get_cols(); ++col) {
+                // Subtract max_val to prevent numerical overflow (it makes all exponents <= 0)
+                // Softmax depends only on relative differences, not on absolute values
+                result[row][col] = std::exp(mat[row][col] - max_val);
+                sum += result[row][col];
+            }
+        }
+
+        for (size_t row = 0; row < mat.get_rows(); ++row) {
+            for (size_t col = 0; col < mat.get_cols(); ++col) {
+                result[row][col] /= sum;
+            }
+        }
+    } else { // Batch case (apply column-wise softmax)
+        for (size_t col = 0; col < mat.get_cols(); ++col) {
+            double max_val = mat[0][col];
+            for (size_t row = 1; row < mat.get_rows(); ++row) {
+                max_val = std::max(max_val, mat[row][col]);
+            }
+
+            double sum = 0.0;
+            for (size_t row = 0; row < mat.get_rows(); ++row) {
+                // Subtract max_val to prevent numerical overflow (it makes all exponents <= 0)
+                // Softmax depends only on relative differences, not on absolute values
+                result[row][col] = std::exp(mat[row][col] - max_val);
+                sum += result[row][col];
+            }
+
+            for (size_t row = 0; row < mat.get_rows(); ++row) {
+                result[row][col] /= sum;
+            }
+        }
+    }
+
+    return result;
 }
 
 double tanh(double x) {
