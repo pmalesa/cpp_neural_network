@@ -59,14 +59,26 @@ TEST_F(ActivationTest, SoftmaxTest) {
     EXPECT_THROW(Activation::softmax(Matrix(0, 5)), std::domain_error);
     EXPECT_THROW(Activation::softmax(Matrix(5, 0)), std::domain_error);
 
-    Matrix matrix = { {2.0, 1.0, 0.1} };
-    Matrix result = { {0.659, 0.242, 0.099} };
-    EXPECT_TRUE(Activation::softmax(matrix) == result);
+    Matrix matrix_1 = { {2.0, 1.0, 0.1} };
+    Matrix result_1 = { {0.659, 0.242, 0.099} };
+    EXPECT_TRUE(Activation::softmax(matrix_1) == result_1);
+
+    Matrix matrix_2 = { {-2.0, -1.0, 0.0, 1.0, 2.0} };
+    Matrix result_2 = { {0.012, 0.032, 0.086, 0.234, 0.636} };
+    EXPECT_TRUE(Activation::softmax(matrix_2) == result_2);
     
     // Sum should be 1.0
     double sum = 0.0;
-    for (size_t col = 0; col < result.get_cols(); ++col) {
-        sum += result[0][col];
+    for (size_t col = 0; col < result_1.get_cols(); ++col) {
+        sum += result_1[0][col];
     }
     EXPECT_NEAR(sum, 1.0, 1e-9);
+
+    sum = 0.0;
+    for (size_t col = 0; col < result_2.get_cols(); ++col) {
+        sum += result_2[0][col];
+    }
+    EXPECT_NEAR(sum, 1.0, 1e-9);
+
+    // TODO - column wise softmax
 }
