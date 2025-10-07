@@ -70,7 +70,11 @@ TEST_F(ActivationTest, SoftmaxTest) {
     Matrix matrix_3 = { {-1.0, 0.0, 1.0}, {-2.0, -0.5, 2.0}, {-3.0, 0.5, 3.0} };
     Matrix result_3 = { {0.665241, 0.307196, 0.090031}, {0.244728, 0.186324, 0.244728}, {0.090031, 0.50648, 0.665241} };
     EXPECT_TRUE(Activation::softmax(matrix_3) == result_3);
-    
+
+    Matrix matrix_4 = { {1.0} };
+    Matrix result_4 = { {1.0} };
+    EXPECT_TRUE(Activation::softmax(matrix_4) == result_4);
+
     // Sum should be 1.0
     double sum = 0.0;
     for (size_t col = 0; col < result_1.get_cols(); ++col) {
