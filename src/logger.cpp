@@ -20,8 +20,9 @@ void Logger::log(string message, Level level) {
     string log_line = construct_log_line_(level, message);
     append_log_file_(log_line);
 
-    // TODO - print only these that are above or equal the print_level
-    cout << log_line << '\n';
+    if (print_level_ >= level) {
+        cout << log_line << '\n';
+    }
 }
 
 void Logger::generate_log_filename_() {

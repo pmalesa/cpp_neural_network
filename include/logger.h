@@ -9,7 +9,7 @@ using std::unordered_map;
 
 class Logger {
 public:
-    enum class Level { Critical, Error, Warning, Debug, Info };
+    enum class Level { Critical = 4, Error = 3, Warning = 2, Debug = 1, Info = 0 };
 
     Logger(Level print_level = Level::Info);
     ~Logger() = default;
