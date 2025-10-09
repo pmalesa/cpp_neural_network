@@ -1,11 +1,20 @@
 #include "neural_network.h"
 #include <gtest/gtest.h>
 #include "matrix.h"
+#include "logger.h"
 #include <stdexcept>
+
+static Logger& logger = Logger::instance();
 
 class NeuralNetworkTest : public testing::Test {
 public:
-    NeuralNetworkTest() {}
+    NeuralNetworkTest() {
+        logger.set_printing_enabled(false);
+    }
+
+    ~NeuralNetworkTest() {
+        logger.set_printing_enabled(true);
+    }
 
 protected:
     NeuralNetwork neural_network_;

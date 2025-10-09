@@ -1,9 +1,14 @@
 #include "neural_network.h"
+#include "logger.h"
 #include <stdexcept>
+
+static Logger& logger = Logger::instance();
 
 NeuralNetwork::NeuralNetwork()
     : n_layers_(0), network_shape_({}), activation_functions_({}),
-      layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {}
+      layer_weights_({}), task_type_(TaskType::Classification), initialized_(false), built_(false) {
+    logger.set_level(Logger::Level::Error);
+}
 
 NeuralNetwork::NeuralNetwork(const vector<size_t>& network_shape, const vector<ActivationFunction>& activation_functions) 
     : n_layers_(network_shape.size()), network_shape_(network_shape), activation_functions_(activation_functions), 
@@ -11,6 +16,7 @@ NeuralNetwork::NeuralNetwork(const vector<size_t>& network_shape, const vector<A
 /*
     Network layer's sizes including input and output layers
 */
+    logger.set_level(Logger::Level::Error);
     if (network_shape.size() != activation_functions.size()) {
         n_layers_ = 0;
         network_shape_.clear();
@@ -36,6 +42,7 @@ NeuralNetwork& NeuralNetwork::init(size_t input_size, ActivationFunction activat
     network_shape_.push_back(input_size);
     activation_functions_.push_back(activation_function);
     initialized_ = true;
+    logger.log("Neural network initialized successfully.", Logger::Level::Info);
     return *this;
 }
 
@@ -68,6 +75,7 @@ NeuralNetwork& NeuralNetwork::build() {
         layer_weights_.push_back(weights); 
     }
     built_ = true;
+    logger.log("Neural network built successfully.", Logger::Level::Info);
     return *this;
 }
 
