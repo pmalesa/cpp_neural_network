@@ -1,6 +1,7 @@
 #include "neural_network.h"
 #include "logger.h"
 #include <stdexcept>
+#include <sstream>
 
 static Logger& logger = Logger::instance();
 
@@ -75,7 +76,19 @@ NeuralNetwork& NeuralNetwork::build() {
         layer_weights_.push_back(weights); 
     }
     built_ = true;
+
     logger.log("Neural network built successfully.", Logger::Level::Info);
+    std::ostringstream log_msg_oss;
+    log_msg_oss << "Number of hidden layers: " << (n_layers_ > 2 ? n_layers_ - 2 : 0) << " | Network structure: [";
+    for (size_t layer = 0; layer < network_shape_.size(); ++layer) {
+        log_msg_oss << network_shape_[layer];
+        if (layer < network_shape_.size() - 1) {
+            log_msg_oss << ", ";
+        }
+    }
+    log_msg_oss << "]";
+    logger.log(log_msg_oss.str(), Logger::Level::Info);
+
     return *this;
 }
 
