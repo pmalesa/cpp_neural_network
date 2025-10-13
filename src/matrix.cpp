@@ -530,6 +530,50 @@ void Matrix::fill_random(double min, double max) {
     }
 }
 
+Matrix Matrix::add_bias_row(double val, bool prepend) const {
+    if (rows_ == 0 || cols_ == 0) {
+        return {};
+    }
+    Matrix result(rows_ + 1, cols_);
+    if (prepend) {
+        for (size_t col = 0; col < cols_; ++col) {
+            result[0][col] = val;
+        }
+        for (size_t row = 0; row < rows_; ++row) {
+            result[row + 1] = data_[row];
+        }
+    } else {
+        for (size_t row = 0; row < rows_; ++row) {
+            result[row] = data_[row];
+        }
+        for (size_t col = 0; col < cols_; ++col) {
+            result[rows_][col] = val;
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::add_bias_column(double val, bool prepend) const {
+    if (rows_ == 0 || cols_ == 0) {
+        return {};
+    }
+    Matrix result(rows_, cols_ + 1);
+    for (size_t row = 0; row < rows_; ++row) {
+        if (prepend) {
+            result[row][0] = val;
+            for (size_t col = 0; col < cols_; ++col) {
+                result[row][col + 1] = data_[row][col];
+            }    
+        } else {
+            for (size_t col = 0; col < cols_; ++col) {
+                result[row][col] = data_[row][col];
+            }    
+            result[row][cols_] = val;
+        }
+    }
+    return result;
+}
+
 bool Matrix::equals(const Matrix& mat) const {
     if (rows_ != mat.rows_ || cols_ != mat.cols_) {
         return false;

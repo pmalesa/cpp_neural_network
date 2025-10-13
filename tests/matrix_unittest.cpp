@@ -597,6 +597,44 @@ TEST_F(MatrixTest, FlattenTest) {
     EXPECT_TRUE((matrix_5.flatten() == il{ }));
 }
 
+TEST_F(MatrixTest, AddBiasRowMethod) {
+    Matrix matrix_1 = { {1.0, -6.0, 4.0}, {2.0, -2.0, 2.0}, {-3.0, -5.0, 7.0} };
+    Matrix matrix_2 = { {2.0} };
+    Matrix matrix_3 = { {1.5, 2.5, 7.9, -1.2}, {-4.5, -2.5, 4.0, 4.0}, {-11.2, -11.3, -1.5, 1.5}, {6.6, 7.7, -8.8, -9.9} };
+    Matrix matrix_4 = { };
+
+    // Append
+    EXPECT_TRUE((matrix_1.add_bias_row(1.0, false) == il{ {1.0, -6.0, 4.0}, {2.0, -2.0, 2.0}, {-3.0, -5.0, 7.0}, {1.0, 1.0, 1.0} }));
+    EXPECT_TRUE((matrix_2.add_bias_row(2.0, false) == il{ {2.0}, {2.0} }));
+    EXPECT_TRUE((matrix_3.add_bias_row(3.0, false) == il{ {1.5, 2.5, 7.9, -1.2}, {-4.5, -2.5, 4.0, 4.0}, {-11.2, -11.3, -1.5, 1.5}, {6.6, 7.7, -8.8, -9.9}, {3.0, 3.0, 3.0, 3.0} }));
+    EXPECT_TRUE((matrix_4.add_bias_row(1.0, false) == il{ }));
+
+    // Prepend
+    EXPECT_TRUE((matrix_1.add_bias_row() == il{ {1.0, 1.0, 1.0}, {1.0, -6.0, 4.0}, {2.0, -2.0, 2.0}, {-3.0, -5.0, 7.0} }));
+    EXPECT_TRUE((matrix_2.add_bias_row(2.0) == il{ {2.0}, {2.0} }));
+    EXPECT_TRUE((matrix_3.add_bias_row(3.0) == il{ {3.0, 3.0, 3.0, 3.0}, {1.5, 2.5, 7.9, -1.2}, {-4.5, -2.5, 4.0, 4.0}, {-11.2, -11.3, -1.5, 1.5}, {6.6, 7.7, -8.8, -9.9} }));
+    EXPECT_TRUE((matrix_4.add_bias_row() == il{ }));
+}
+
+TEST_F(MatrixTest, AddBiasColumnMethod) {
+    Matrix matrix_1 = { {1.0, -6.0, 4.0}, {2.0, -2.0, 2.0}, {-3.0, -5.0, 7.0} };
+    Matrix matrix_2 = { {2.0} };
+    Matrix matrix_3 = { {1.5, 2.5, 7.9, -1.2}, {-4.5, -2.5, 4.0, 4.0}, {-11.2, -11.3, -1.5, 1.5}, {6.6, 7.7, -8.8, -9.9} };
+    Matrix matrix_4 = { };
+
+    // Append
+    EXPECT_TRUE((matrix_1.add_bias_column(1.0, false) == il{ {1.0, -6.0, 4.0, 1.0}, {2.0, -2.0, 2.0, 1.0}, {-3.0, -5.0, 7.0, 1.0} }));
+    EXPECT_TRUE((matrix_2.add_bias_column(2.0, false) == il{ {2.0, 2.0} }));
+    EXPECT_TRUE((matrix_3.add_bias_column(3.0, false) == il{ {1.5, 2.5, 7.9, -1.2, 3.0}, {-4.5, -2.5, 4.0, 4.0, 3.0}, {-11.2, -11.3, -1.5, 1.5, 3.0}, {6.6, 7.7, -8.8, -9.9, 3.0} }));
+    EXPECT_TRUE((matrix_4.add_bias_column(1.0, false) == il{ }));
+
+    // Prepend
+    EXPECT_TRUE((matrix_1.add_bias_column() == il{ {1.0, 1.0, -6.0, 4.0}, {1.0, 2.0, -2.0, 2.0}, {1.0, -3.0, -5.0, 7.0} }));
+    EXPECT_TRUE((matrix_2.add_bias_column(2.0) == il{ {2.0, 2.0} }));
+    EXPECT_TRUE((matrix_3.add_bias_column(3.0) == il{ {3.0, 1.5, 2.5, 7.9, -1.2}, {3.0, -4.5, -2.5, 4.0, 4.0}, {3.0, -11.2, -11.3, -1.5, 1.5}, {3.0, 6.6, 7.7, -8.8, -9.9} }));
+    EXPECT_TRUE((matrix_4.add_bias_column() == il{ }));
+}
+
 TEST_F(MatrixTest, AdditionWithValueTest) {
     Matrix matrix_1(5, 5, 1.0);
     Matrix result_1(5, 5, 5.0);
