@@ -8,8 +8,8 @@
 using std::vector;
 using std::string;
 
-enum class ActivationFunction { ReLU, Tanh, Softmax, Sigmoid };
 enum class LossFunction { MSE, MAE, BinaryCrossEntropy, CategoricalCrossEntropy };
+enum class ActivationFunction { ReLU, Tanh, Softmax, Sigmoid };
 enum class TaskType { Classification, Regression };
 
 class NeuralNetwork {
@@ -55,7 +55,7 @@ private:
     TODO:
     - DataSet representation 
       (CSV, maybe create some class to process CSV files, but it will be used by some trainer class, not the nn itself, nn uses Matrices)
-    - forward()
+    - forward_() unit test
     - backward()
     - fit()
     - predict()

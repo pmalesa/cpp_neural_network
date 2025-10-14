@@ -1,5 +1,7 @@
 #include "neural_network.h"
 #include "logger.h"
+#include "activation.h"
+
 #include <stdexcept>
 #include <sstream>
 
@@ -101,15 +103,39 @@ void NeuralNetwork::randomize_weights_() {
     }
 }
 
-/* TODO */
 Matrix NeuralNetwork::forward_(const Matrix& input) const {
-/* It takes batch of column vectors on input.
-   If one of the dimensions is equal to 1, then
-   the matrix is converted to column vector
-   if it is necessary.
+/*
+It takes batch of column vectors on input.
 */
+    if (!built_) {
+        throw std::logic_error("Network must be built before forward pass!");
+    }
 
-    return Matrix();
+    Matrix X = input;
+    for (size_t layer = 0; layer < layer_weights_.size(); ++layer) {
+        Matrix X_bias = X.add_bias_row();
+        const Matrix& W = layer_weights_[layer];
+        Matrix Z = W.transpose() * X_bias;
+
+        switch (activation_functions_[layer]) {
+            case ActivationFunction::ReLU:
+                X = Activation::relu(Z);
+                break;
+            case ActivationFunction::Tanh:
+                X = Activation::tanh(Z);
+                break;
+            case ActivationFunction::Sigmoid:
+                X = Activation::sigmoid(Z);
+                break;
+            case ActivationFunction::Softmax:
+                X = Activation::softmax(Z);
+                break;
+            default:
+                throw std::logic_error("Unknown activation function!");
+        }
+    }
+
+    return X;
 }
 
 /* TODO */
