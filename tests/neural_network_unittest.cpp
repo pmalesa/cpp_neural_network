@@ -17,7 +17,6 @@ public:
     }
 
 protected:
-    NeuralNetwork neural_network_;
 };
 
 TEST_F(NeuralNetworkTest, ConstructorTest) {
@@ -88,4 +87,18 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
         EXPECT_TRUE(weights.get_rows() == nn.get_shape()[layer] + 1);
         EXPECT_TRUE(weights.get_cols() == nn.get_shape()[layer + 1]);
     }
+}
+
+TEST_F(NeuralNetworkTest, ForwardMethodTest) {
+    NeuralNetwork nn;
+    nn.init(3);
+    nn.add_layer(2, ActivationFunction::Sigmoid);
+    nn.build();
+
+    Matrix input(3, 1);
+    input.fill(0.5);
+
+    Matrix output = nn.forward_(input);
+    EXPECT_EQ(output.get_rows(), 2);
+    EXPECT_EQ(output.get_cols(), 1);
 }

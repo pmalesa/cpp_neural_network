@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <gtest/gtest.h>
 #include "matrix.h"
 
 using std::vector;
@@ -47,6 +48,12 @@ private:
     TaskType task_type_;
     bool initialized_;
     bool built_;
+
+    friend class NeuralNetworkTest;
+
+    // Make the class a friend of all gtest-generated subclasses
+    friend class ::testing::Test;
+    friend class NeuralNetworkTest_ForwardMethodTest_Test;
 };
 
 #endif // NEURAL_NETWORK_H

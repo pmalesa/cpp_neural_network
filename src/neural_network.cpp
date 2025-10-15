@@ -72,7 +72,7 @@ NeuralNetwork& NeuralNetwork::build() {
     if (n_layers_ < 2) {
         throw std::logic_error("Cannot build a network with fewer than 2 layers!"); 
     }
-    for (size_t layer = 0; layer < n_layers_ + 1; ++layer) {
+    for (size_t layer = 0; layer < n_layers_ - 1; ++layer) {
         Matrix weights(network_shape_[layer] + 1, network_shape_[layer + 1]);
         weights.fill_random();
         layer_weights_.push_back(weights); 
