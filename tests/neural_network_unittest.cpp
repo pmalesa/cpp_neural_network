@@ -90,15 +90,32 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
 }
 
 TEST_F(NeuralNetworkTest, ForwardMethodTest) {
-    NeuralNetwork nn;
-    nn.init(3);
-    nn.add_layer(2, ActivationFunction::Sigmoid);
-    nn.build();
+    // Test case 1
+    NeuralNetwork nn_1;
+    nn_1.init(3);
+    nn_1.add_layer(2, ActivationFunction::Sigmoid);
+    nn_1.build();
 
-    Matrix input(3, 1);
-    input.fill(0.5);
+    Matrix input_1(3, 1);
+    input_1.fill(0.5);
 
-    Matrix output = nn.forward_(input);
-    EXPECT_EQ(output.get_rows(), 2);
-    EXPECT_EQ(output.get_cols(), 1);
+    Matrix output_1 = nn_1.forward_(input_1);
+    EXPECT_EQ(output_1.get_rows(), 2);
+    EXPECT_EQ(output_1.get_cols(), 1);
+
+    // Test case 2
+    NeuralNetwork nn_2;
+    nn_2.init(100);
+    nn_2.add_layer(500);
+    nn_2.add_layer(1000);
+    nn_2.add_layer(500);
+    nn_2.add_layer(4);
+    nn_2.build();
+
+    Matrix input_2(100, 15);
+    input_2.fill(0.5);
+
+    Matrix output_2 = nn_2.forward_(input_2);
+    EXPECT_EQ(output_2.get_rows(), 4);
+    EXPECT_EQ(output_2.get_cols(), 15);
 }
