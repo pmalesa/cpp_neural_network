@@ -4,6 +4,8 @@
 #include "logger.h"
 #include <stdexcept>
 
+using il = std::initializer_list<std::initializer_list<double>>;
+
 static Logger& logger = Logger::instance();
 
 class NeuralNetworkTest : public testing::Test {
@@ -90,7 +92,7 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
 }
 
 TEST_F(NeuralNetworkTest, ForwardMethodTest) {
-    // Test case 1
+    // Test case 1 - output shape check (single)
     NeuralNetwork nn_1;
     nn_1.init(3);
     nn_1.add_layer(2, ActivationFunction::Sigmoid);
@@ -100,10 +102,10 @@ TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     input_1.fill(0.5);
 
     Matrix output_1 = nn_1.forward_(input_1);
-    EXPECT_EQ(output_1.get_rows(), 2);
-    EXPECT_EQ(output_1.get_cols(), 1);
+    EXPECT_TRUE(output_1.get_rows() == 2);
+    EXPECT_TRUE(output_1.get_cols() == 1);
 
-    // Test case 2
+    // Test case 2 - output shape check (batch)
     NeuralNetwork nn_2;
     nn_2.init(100);
     nn_2.add_layer(500);
@@ -116,6 +118,28 @@ TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     input_2.fill(0.5);
 
     Matrix output_2 = nn_2.forward_(input_2);
-    EXPECT_EQ(output_2.get_rows(), 4);
-    EXPECT_EQ(output_2.get_cols(), 15);
+    EXPECT_TRUE(output_2.get_rows() == 4);
+    EXPECT_TRUE(output_2.get_cols() == 15);
+
+    // Test case 3 - output values check (single)
+    NeuralNetwork nn_3;
+    nn_3.init(4);
+    nn_3.add_layer(8);
+    nn_3.add_layer(16);
+    nn_3.add_layer(2);
+    nn_3.build();
+
+    nn_3.layer_weights_[0].fill(2.0);
+    nn_3.layer_weights_[1].fill(4.0);
+    nn_3.layer_weights_[2].fill(8.0);
+
+    Matrix input_3(4, 1);
+    input_3.fill(0.5);
+    Matrix output_3 = nn_3.forward_(input_3);
+    EXPECT_TRUE(output_3.get_rows() == 2);
+    EXPECT_TRUE(output_3.get_cols() == 1);
+    EXPECT_TRUE((output_3 == il{ {25096.0}, {25096.0} }));
+
+    // Test case 4 - output values check (batch)
+    // TODO ...
 }
