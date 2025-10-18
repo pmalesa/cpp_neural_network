@@ -141,5 +141,21 @@ TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     EXPECT_TRUE((output_3 == il{ {25096.0}, {25096.0} }));
 
     // Test case 4 - output values check (batch)
-    // TODO ...
+    NeuralNetwork nn_4;
+    nn_4.init(4, ActivationFunction::Sigmoid);
+    nn_4.add_layer(8, ActivationFunction::Sigmoid);
+    nn_4.add_layer(16, ActivationFunction::Sigmoid);
+    nn_4.add_layer(2, ActivationFunction::Sigmoid);
+    nn_4.build();
+
+    nn_4.layer_weights_[0].fill(2.0);
+    nn_4.layer_weights_[1].fill(4.0);
+    nn_4.layer_weights_[2].fill(8.0);
+
+    Matrix input_4(4, 5);
+    input_4.fill(0.5);
+    Matrix output_4 = nn_4.forward_(input_4);
+    EXPECT_TRUE(output_4.get_rows() == 2);
+    EXPECT_TRUE(output_4.get_cols() == 5);
+    EXPECT_TRUE((output_4 == il{ {1.0, 1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0, 1.0} }));
 }
