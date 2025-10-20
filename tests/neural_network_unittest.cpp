@@ -65,7 +65,7 @@ TEST_F(NeuralNetworkTest, AddLayerMethodTest) {
     nn.init(10);
     nn.add_layer(20);
     nn.add_layer(30);
-    nn.add_layer(1);    
+    nn.add_layer(1, LayerType::Output);    
     EXPECT_TRUE(nn.get_shape()[0] == 10);
     EXPECT_TRUE(nn.get_shape()[1] == 20);
     EXPECT_TRUE(nn.get_shape()[2] == 30);
@@ -81,7 +81,7 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
     EXPECT_THROW(nn.build(), std::logic_error);
     nn.add_layer(20);
     nn.add_layer(30);
-    nn.add_layer(1); 
+    nn.add_layer(1, LayerType::Output); 
     nn.build();
     EXPECT_TRUE(nn.is_built());
     for (size_t layer = 0; layer < nn.get_shape().size() - 1; ++layer) {
@@ -94,8 +94,8 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
 TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     // Test case 1 - output shape check (single)
     NeuralNetwork nn_1;
-    nn_1.init(3);
-    nn_1.add_layer(2, ActivationFunction::Sigmoid);
+    nn_1.init(3, ActivationFunction::Sigmoid);
+    nn_1.add_layer(2, LayerType::Output);
     nn_1.build();
 
     Matrix input_1(3, 1);
@@ -111,7 +111,7 @@ TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     nn_2.add_layer(500);
     nn_2.add_layer(1000);
     nn_2.add_layer(500);
-    nn_2.add_layer(4);
+    nn_2.add_layer(4, LayerType::Output);
     nn_2.build();
 
     Matrix input_2(100, 15);
@@ -126,7 +126,7 @@ TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     nn_3.init(4);
     nn_3.add_layer(8);
     nn_3.add_layer(16);
-    nn_3.add_layer(2);
+    nn_3.add_layer(2, LayerType::Output);
     nn_3.build();
 
     nn_3.layer_weights_[0].fill(2.0);
@@ -145,7 +145,7 @@ TEST_F(NeuralNetworkTest, ForwardMethodTest) {
     nn_4.init(4, ActivationFunction::Sigmoid);
     nn_4.add_layer(8, ActivationFunction::Sigmoid);
     nn_4.add_layer(16, ActivationFunction::Sigmoid);
-    nn_4.add_layer(2, ActivationFunction::Sigmoid);
+    nn_4.add_layer(2, LayerType::Output);
     nn_4.build();
 
     nn_4.layer_weights_[0].fill(2.0);

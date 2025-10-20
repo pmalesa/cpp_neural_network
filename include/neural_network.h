@@ -12,6 +12,7 @@ using std::string;
 enum class LossFunction { MSE, MAE, BinaryCrossEntropy, CategoricalCrossEntropy };
 enum class ActivationFunction { ReLU, Tanh, Softmax, Sigmoid };
 enum class TaskType { Classification, Regression };
+enum class LayerType { Hidden, Output };
 
 class NeuralNetwork {
 public:
@@ -21,7 +22,18 @@ public:
 
     NeuralNetwork& erase(); // Erases all layers, sizes and weights (state as after default constructor)
     NeuralNetwork& init(size_t input_size, ActivationFunction activation_function = ActivationFunction::ReLU);
-    NeuralNetwork& add_layer(size_t n_neurons, ActivationFunction activation_function = ActivationFunction::ReLU);
+    
+    NeuralNetwork& add_layer(
+        size_t n_neurons, 
+        LayerType layer_type, 
+        ActivationFunction activation_function); 
+    // If layer_type is equal to LayerType::Output, then activation_function parameter can be ommitted (it will not be used)
+
+    // Overloads for "Python-like" parameter passing
+    NeuralNetwork& add_layer(size_t n_neurons);
+    NeuralNetwork& add_layer(size_t n_neurons, LayerType layer_type);
+    NeuralNetwork& add_layer(size_t n_neurons, ActivationFunction activation_function);
+
     NeuralNetwork& build();
     NeuralNetwork& fit(const Matrix& X, const Matrix& y,
                        size_t epochs = 100, double learning_rate = 0.01,

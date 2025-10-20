@@ -49,7 +49,7 @@ NeuralNetwork& NeuralNetwork::init(size_t input_size, ActivationFunction activat
     return *this;
 }
 
-NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, ActivationFunction activation_function) {
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type, ActivationFunction activation_function) {
     if (built_) {
         throw std::logic_error("Cannot add a layer to an already built network!");
     }
@@ -61,8 +61,22 @@ NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, ActivationFunction act
     }
     ++n_layers_;
     network_shape_.push_back(n_neurons);
-    activation_functions_.push_back(activation_function);
+    if (layer_type != LayerType::Output) {
+        activation_functions_.push_back(activation_function);
+    }
     return *this;
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons) {
+    return add_layer(n_neurons, LayerType::Hidden, ActivationFunction::ReLU);
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type) {
+    return add_layer(n_neurons, layer_type, ActivationFunction::ReLU);
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, ActivationFunction activation_function) {
+    return add_layer(n_neurons, LayerType::Hidden, activation_function);
 }
 
 NeuralNetwork& NeuralNetwork::build() {
