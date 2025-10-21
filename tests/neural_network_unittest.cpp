@@ -89,6 +89,7 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
         EXPECT_TRUE(weights.get_rows() == nn.get_shape()[layer] + 1);
         EXPECT_TRUE(weights.get_cols() == nn.get_shape()[layer + 1]);
     }
+    EXPECT_TRUE(nn.get_weights().size() == nn.get_activation_functions().size());
 }
 
 TEST_F(NeuralNetworkTest, ForwardMethodTest) {

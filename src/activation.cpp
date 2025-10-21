@@ -17,6 +17,20 @@ Matrix relu(const Matrix& mat) {
     return result;
 }
 
+double relu_derivative(double x) {
+    return x > 0.0 ? 1.0 : 0.0;
+}
+
+Matrix relu_derivative(const Matrix& mat) {
+    Matrix result(mat.get_rows(), mat.get_cols());
+    for (size_t row = 0; row < result.get_rows(); ++row) {
+        for (size_t col = 0; col < result.get_cols(); ++col) {
+            result[row][col] = mat[row][col] > 0.0 ? 1.0 : 0.0;
+        }
+    }
+    return result;
+}
+
 Matrix softmax(const Matrix& mat) {
     if (mat.get_rows() == 0 || mat.get_cols() == 0) {
         throw std::domain_error("Softmax input cannot be empty!");
@@ -88,6 +102,14 @@ Matrix tanh(const Matrix& mat) {
     return result;
 }
 
+// double tanh_derivative(double x) {
+
+// }
+
+// Matrix tanh_derivative(const Matrix& mat) {
+
+// }
+
 double sigmoid(double x) {
     return 1.0 / (1.0 + std::exp(-x));
 }
@@ -101,5 +123,13 @@ Matrix sigmoid(const Matrix& mat) {
     }
     return result;
 }
+
+// double sigmoid_derivative(double x) {
+
+// }
+
+// Matrix sigmoid_derivative(const Matrix& mat) {
+
+// }
 
 } // namespace Activation

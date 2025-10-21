@@ -74,8 +74,11 @@ private:
     TODO:
     - DataSet representation 
       (CSV, maybe create some class to process CSV files, but it will be used by some trainer class, not the nn itself, nn uses Matrices)
-    - forward_() unit test
-    - backward()
+    - backward():
+        - Derivatives of activation functions
+        - LossFunction class, similar to activations
+        - Store A values and Z values (post and pre activation values) in a private variable
+        
     - fit()
     - predict()
     - save() and load()
