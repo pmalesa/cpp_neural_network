@@ -102,13 +102,21 @@ Matrix tanh(const Matrix& mat) {
     return result;
 }
 
-// double tanh_derivative(double x) {
+double tanh_derivative(double x) {
+    double t = tanh(x);
+    return 1.0 - t * t;
+}
 
-// }
-
-// Matrix tanh_derivative(const Matrix& mat) {
-
-// }
+Matrix tanh_derivative(const Matrix& mat) {
+    Matrix result(mat.get_rows(), mat.get_cols());
+    for (size_t row = 0; row < result.get_rows(); ++row) {
+        for (size_t col = 0; col < result.get_cols(); ++col) {
+            double t = tanh(mat[row][col]);
+            result[row][col] = 1.0 - t * t;
+        }
+    }
+    return result;
+}
 
 double sigmoid(double x) {
     return 1.0 / (1.0 + std::exp(-x));
@@ -124,12 +132,21 @@ Matrix sigmoid(const Matrix& mat) {
     return result;
 }
 
-// double sigmoid_derivative(double x) {
+double sigmoid_derivative(double x) {
+    double d_sqrt = (std::exp(-x) + 1);
+    return std::exp(-x) / (d_sqrt * d_sqrt); 
+}
 
-// }
-
-// Matrix sigmoid_derivative(const Matrix& mat) {
-
-// }
+Matrix sigmoid_derivative(const Matrix& mat) {
+    Matrix result(mat.get_rows(), mat.get_cols());
+    for (size_t row = 0; row < result.get_rows(); ++row) {
+        for (size_t col = 0; col < result.get_cols(); ++col) {
+            double e = std::exp(-mat[row][col]);
+            double d_sqrt = (e + 1);
+            result[row][col] = e / (d_sqrt * d_sqrt);
+        }
+    }
+    return result;
+}
 
 } // namespace Activation

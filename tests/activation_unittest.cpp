@@ -51,6 +51,22 @@ TEST_F(ActivationTest, SigmoidTest) {
     }));
 }
 
+TEST_F(ActivationTest, SigmoidDerivativeTest) {
+    EXPECT_NEAR(Activation::sigmoid_derivative(-3.0), 0.04517665973, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid_derivative(-2.0), 0.1049935854, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid_derivative(-1.0), 0.19661193324, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid_derivative(0.0), 0.25, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid_derivative(1.0), 0.19661193324, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid_derivative(2.0), 0.1049935854, 1e-9);
+    EXPECT_NEAR(Activation::sigmoid_derivative(3.0), 0.04517665973, 1e-9);
+    Matrix mat = { {-1.0, -2.0, -3.0}, {0.0, 0.0, 0.0}, {1.0, 2.0, 3.0} };
+    EXPECT_TRUE((Activation::sigmoid_derivative(mat) == il{ 
+        {0.19661193324, 0.1049935854, 0.04517665973},
+        {0.25, 0.25, 0.25}, 
+        {0.19661193324, 0.1049935854, 0.04517665973} 
+    }));
+}
+
 TEST_F(ActivationTest, TanhTest) {
     EXPECT_NEAR(Activation::tanh(-3.0), -0.99505475368, 1e-9);
     EXPECT_NEAR(Activation::tanh(-2.0), -0.96402758007, 1e-9);
@@ -64,6 +80,22 @@ TEST_F(ActivationTest, TanhTest) {
         {-0.99505475368, -0.96402758007, -0.76159415595},
         {0.0, 0.0, 0.0}, 
         {0.76159415595, 0.96402758007, 0.99505475368} 
+    }));
+}
+
+TEST_F(ActivationTest, TanhDerivativeTest) {
+    EXPECT_NEAR(Activation::tanh_derivative(-3.0), 0.00986603716, 1e-9);
+    EXPECT_NEAR(Activation::tanh_derivative(-2.0), 0.07065082485, 1e-9);
+    EXPECT_NEAR(Activation::tanh_derivative(-1.0), 0.41997434161 , 1e-9);
+    EXPECT_NEAR(Activation::tanh_derivative(0.0), 1.0, 1e-9);
+    EXPECT_NEAR(Activation::tanh_derivative(1.0), 0.41997434161, 1e-9);
+    EXPECT_NEAR(Activation::tanh_derivative(2.0), 0.07065082485 , 1e-9);
+    EXPECT_NEAR(Activation::tanh_derivative(3.0), 0.00986603716, 1e-9);
+    Matrix mat = { {-1.0, -2.0, -3.0}, {0.0, 0.0, 0.0}, {1.0, 2.0, 3.0} };
+    EXPECT_TRUE((Activation::tanh_derivative(mat) == il{ 
+        {0.41997434161, 0.07065082485, 0.00986603716},
+        {1.0, 1.0, 1.0}, 
+        {0.41997434161, 0.07065082485, 0.00986603716}
     }));
 }
 
