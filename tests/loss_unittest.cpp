@@ -107,3 +107,38 @@ TEST_F(LossTest, MAEDerivativeTest) {
     EXPECT_EQ(grad_2.get_cols(), 3);
     EXPECT_TRUE((grad_2 == il{ {0.1111111, 0.1111111, 0.1111111}, {-0.1111111, -0.1111111, -0.1111111}, {0.0, 0.0, 0.0} }));
 }
+
+TEST_F(LossTest, CategoricalCrossEntropyTest) {
+    Matrix y_incorrect = { {1.0}, {2.0} };
+    Matrix y_true = {
+        {1.0, 0.0},
+        {0.0, 0.0},
+        {0.0, 1.0}
+    };
+
+    Matrix y_pred = {
+        {0.7, 0.1},
+        {0.2, 0.3},
+        {0.1, 0.6}
+    };
+    EXPECT_THROW(Loss::categorical_cross_entropy(y_true, y_incorrect), std::invalid_argument);
+    EXPECT_NEAR(Loss::categorical_cross_entropy(y_true, y_pred), 0.43375, 1e-5);
+}
+
+TEST_F(LossTest, CategoricalCrossEntropyDerivativeTest) {
+    Matrix y_incorrect = { {1.0}, {2.0} };
+    Matrix y_true = {
+        {1.0, 0.0},
+        {0.0, 0.0},
+        {0.0, 1.0}
+    };
+
+    Matrix y_pred = {
+        {0.7, 0.1},
+        {0.2, 0.3},
+        {0.1, 0.6}
+    };
+    EXPECT_THROW(Loss::categorical_cross_entropy(y_true, y_incorrect), std::invalid_argument);
+    EXPECT_TRUE((Loss::categorical_cross_entropy_derivative(y_true, y_pred) == il{ {0.3, 0.05}, {0.1, 0.15}, {-0.45, 0.3} }));
+}
+

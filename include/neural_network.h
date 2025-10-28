@@ -61,10 +61,10 @@ private:
     bool initialized_;
     bool built_;
 
-    friend class NeuralNetworkTest;
-
+    
     // Make the class a friend of all gtest-generated subclasses
     friend class ::testing::Test;
+    friend class NeuralNetworkTest;
     friend class NeuralNetworkTest_ForwardMethodTest_Test;
 };
 
@@ -82,4 +82,6 @@ private:
     - fit()
     - predict()
     - save() and load()
+    - Either put the forward and backward calculations to some separate module to test it without friend classes,
+      or write unit tests only for fit() and predict() methods, and not backward and forward, whic hare private
 */

@@ -9,6 +9,10 @@ namespace Loss {
     
     double mae(const Matrix& y_true, const Matrix& y_pred);
     Matrix mae_derivative(const Matrix& y_true, const Matrix& y_pred);
+
+    double categorical_cross_entropy(const Matrix& y_true, const Matrix& y_pred);
+    Matrix categorical_cross_entropy_derivative(const Matrix& y_true, const Matrix& y_pred);
+    
 }
 
 #endif // LOSS_H
@@ -17,11 +21,8 @@ namespace Loss {
 
 /*
 TODO:
-    - MAE
     - BCCE
     - CCE
-    - MSE unittest
-    - MAE unittest
     - BCCE unittest
     - CCE unittest
 
