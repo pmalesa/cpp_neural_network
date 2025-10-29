@@ -142,3 +142,35 @@ TEST_F(LossTest, CategoricalCrossEntropyDerivativeTest) {
     EXPECT_TRUE((Loss::categorical_cross_entropy_derivative(y_true, y_pred) == il{ {0.3, 0.05}, {0.1, 0.15}, {-0.45, 0.3} }));
 }
 
+TEST_F(LossTest, BinaryCrossEntropyTest) {
+    Matrix y_incorrect = { {1.0}, {2.0} };
+    Matrix y_true = {
+        {1.0},
+        {0.0},
+        {1.0}, 
+        {0.0}
+    };
+    Matrix y_pred = {
+        {0.9},
+        {0.1},
+        {0.8}, 
+        {0.2}
+    };
+    EXPECT_THROW(Loss::binary_cross_entropy(y_true, y_incorrect), std::invalid_argument);
+    EXPECT_NEAR(Loss::binary_cross_entropy(y_true, y_pred), 0.16425, 1e-5);
+}
+
+TEST_F(LossTest, BinaryCrossEntropyDerivativeTest) {
+    Matrix y_incorrect = { {1.0}, {2.0}, {3.0} };
+    Matrix y_true = {
+        {1.0},
+        {0.0}
+    };
+    Matrix y_pred = {
+        {0.9},
+        {0.2}
+    };
+    EXPECT_THROW(Loss::binary_cross_entropy(y_true, y_incorrect), std::invalid_argument);
+    EXPECT_TRUE((Loss::binary_cross_entropy_derivative(y_true, y_pred) == il{ {-0.5555}, {0.625} }));
+}
+

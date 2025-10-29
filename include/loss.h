@@ -13,6 +13,8 @@ namespace Loss {
     double categorical_cross_entropy(const Matrix& y_true, const Matrix& y_pred);
     Matrix categorical_cross_entropy_derivative(const Matrix& y_true, const Matrix& y_pred);
     
+    double binary_cross_entropy(const Matrix& y_true, const Matrix& y_pred);
+    Matrix binary_cross_entropy_derivative(const Matrix& y_true, const Matrix& y_pred);
 }
 
 #endif // LOSS_H

@@ -1,5 +1,6 @@
 #include "loss.h"
 #include <cmath>
+#include <bits/stdc++.h>
 
 namespace Loss {
 
@@ -79,7 +80,7 @@ double categorical_cross_entropy(const Matrix& y_true, const Matrix& y_pred) {
         throw std::invalid_argument("Shape mismatch in Categorical Cross Entropy calculation!");
     }
 
-    long double total_loss = 0.0;
+    long double total_loss = 0.0L;
     const size_t n_examples = y_true.get_cols();
     const size_t n_classes = y_true.get_rows();
 
@@ -105,6 +106,47 @@ Matrix categorical_cross_entropy_derivative(const Matrix& y_true, const Matrix& 
     for (size_t row = 0; row < grads.get_rows(); ++row) {
         for (size_t col = 0; col < grads.get_cols(); ++col) {
             grads[row][col] = scale * (y_pred[row][col] - y_true[row][col]);
+        }
+    }
+    return grads;
+}
+
+    
+double binary_cross_entropy(const Matrix& y_true, const Matrix& y_pred) {
+    if (y_true.get_rows() != y_pred.get_rows() ||
+        y_true.get_cols() != y_pred.get_cols()) {
+        throw std::invalid_argument("Shape mismatch in Binary Cross Entropy calculation!");
+    }
+
+    long double total_loss = 0.0L;
+    const size_t n_elements = y_true.get_rows() * y_true.get_cols();
+    const double eps = 1e-15;
+
+    for (size_t row = 0; row < y_true.get_rows(); ++row) {
+        for (size_t col = 0; col < y_true.get_cols(); ++col) {
+            double y_t = y_true[row][col];
+            double y_p = std::clamp(y_pred[row][col], eps, 1.0 - eps);
+            total_loss += static_cast<long double>( - (y_t * std::log(y_p) + (1.0 - y_t) * std::log(1.0 - y_p)) );
+        }
+    }
+
+    return static_cast<double>(total_loss / n_elements);
+}
+
+Matrix binary_cross_entropy_derivative(const Matrix& y_true, const Matrix& y_pred) {
+    if (y_true.get_rows() != y_pred.get_rows() ||
+        y_true.get_cols() != y_pred.get_cols()) {
+        throw std::invalid_argument("Shape mismatch in Binary Cross Entropy derivative calculation!");
+    }
+
+    const double scale = 1.0 / static_cast<double>(y_true.get_rows() * y_true.get_cols());
+    const double eps = 1e-15;
+    Matrix grads(y_true.get_rows(), y_true.get_cols());
+    for (size_t row = 0; row < grads.get_rows(); ++row) {
+        for (size_t col = 0; col < grads.get_cols(); ++col) {
+            double y_t = y_true[row][col];
+            double y_p = std::clamp(y_pred[row][col], eps, 1.0 - eps);
+            grads[row][col] = scale * ( (y_p - y_t) / (y_p * (1.0 - y_p)) );
         }
     }
     return grads;
