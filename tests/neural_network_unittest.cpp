@@ -1,4 +1,4 @@
-#include "neural_network.h"
+#include "model.h"
 #include <gtest/gtest.h>
 #include "matrix.h"
 #include "logger.h"
@@ -22,141 +22,195 @@ protected:
 };
 
 TEST_F(NeuralNetworkTest, ConstructorTest) {
-    vector<size_t> network_shape_1 = {10, 20, 30};
+    vector<size_t> shape_1 = {10, 20, 30};
     vector<ActivationFunction> activation_functions_1 = {ActivationFunction::ReLU, ActivationFunction::ReLU, ActivationFunction::Softmax};
-    NeuralNetwork nn_1(network_shape_1, activation_functions_1);
-    EXPECT_TRUE(nn_1.get_shape().size() == 3);
-    EXPECT_TRUE(nn_1.get_shape()[0] == 10);
-    EXPECT_TRUE(nn_1.get_shape()[1] == 20);
-    EXPECT_TRUE(nn_1.get_shape()[2] == 30);
-    EXPECT_TRUE(nn_1.get_activation_functions()[0] == ActivationFunction::ReLU);
-    EXPECT_TRUE(nn_1.get_activation_functions()[1] == ActivationFunction::ReLU);
-    EXPECT_TRUE(nn_1.get_activation_functions()[2] == ActivationFunction::Softmax);
-    EXPECT_TRUE(nn_1.get_weights().empty());
+    NeuralNetwork nn_1(shape_1, activation_functions_1);
+    EXPECT_TRUE(nn_1.shape.size() == 3);
+    EXPECT_TRUE(nn_1.shape[0] == 10);
+    EXPECT_TRUE(nn_1.shape[1] == 20);
+    EXPECT_TRUE(nn_1.shape[2] == 30);
+    EXPECT_TRUE(nn_1.activation_functions[0] == ActivationFunction::ReLU);
+    EXPECT_TRUE(nn_1.activation_functions[1] == ActivationFunction::ReLU);
+    EXPECT_TRUE(nn_1.activation_functions[2] == ActivationFunction::Softmax);
+    EXPECT_TRUE(nn_1.weights.empty());
     EXPECT_TRUE(not nn_1.is_built());
-    vector<size_t> network_shape_2 = {10, 20, 30};
+    vector<size_t> shape_2 = {10, 20, 30};
     vector<ActivationFunction> activation_functions_2 = {ActivationFunction::ReLU, ActivationFunction::Softmax};
-    EXPECT_THROW(NeuralNetwork nn_2(network_shape_2, activation_functions_2), std::logic_error);
-}
-
-TEST_F(NeuralNetworkTest, InitMethodTest) { 
-    NeuralNetwork nn;
-    nn.init(5);
-    EXPECT_TRUE(nn.get_shape().size() == 1);
-    EXPECT_TRUE(nn.get_activation_functions().size() == 1);
-    EXPECT_TRUE(nn.get_weights().empty());
-    EXPECT_TRUE(not nn.is_built());    
+    EXPECT_THROW(NeuralNetwork nn_2(shape_2, activation_functions_2), std::logic_error);
 }
 
 TEST_F(NeuralNetworkTest, EraseMethodTest) { 
-    vector<size_t> network_shape = {10, 20, 30};
+    vector<size_t> shape = {10, 20, 30};
     vector<ActivationFunction> activation_functions = {ActivationFunction::ReLU, ActivationFunction::ReLU, ActivationFunction::Softmax};
-    NeuralNetwork nn(network_shape, activation_functions);
+    NeuralNetwork nn(shape, activation_functions);
     nn.erase();
-    EXPECT_TRUE(nn.get_shape().empty());
-    EXPECT_TRUE(nn.get_activation_functions().empty());
-    EXPECT_TRUE(nn.get_weights().empty());
+    EXPECT_TRUE(nn.shape.empty());
+    EXPECT_TRUE(nn.activation_functions.empty());
+    EXPECT_TRUE(nn.weights.empty());
     EXPECT_TRUE(not nn.is_built());    
-}
-
-TEST_F(NeuralNetworkTest, AddLayerMethodTest) {
-    NeuralNetwork nn;
-    EXPECT_THROW(nn.add_layer(666), std::logic_error);
-    nn.init(10);
-    nn.add_layer(20);
-    nn.add_layer(30);
-    nn.add_layer(1, LayerType::Output);    
-    EXPECT_TRUE(nn.get_shape()[0] == 10);
-    EXPECT_TRUE(nn.get_shape()[1] == 20);
-    EXPECT_TRUE(nn.get_shape()[2] == 30);
-    EXPECT_TRUE(nn.get_shape()[3] == 1);
-    nn.build();
-    EXPECT_THROW(nn.add_layer(666), std::logic_error);
 }
 
 TEST_F(NeuralNetworkTest, BuildMethodTest) {
     NeuralNetwork nn;
+
+    // Try building with 0 layers
     EXPECT_THROW(nn.build(), std::logic_error);
-    nn.init(10);
+
+    // Test building with 1 layer
+    ++nn.n_layers;
+    nn.shape.push_back(10);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
     EXPECT_THROW(nn.build(), std::logic_error);
-    nn.add_layer(20);
-    nn.add_layer(30);
-    nn.add_layer(1, LayerType::Output); 
+
+    // Add second layer
+    ++nn.n_layers;
+    nn.shape.push_back(20);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
+
+    // Add third layer
+    ++nn.n_layers;
+    nn.shape.push_back(30);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
+
+    // Add output layer
+    ++nn.n_layers;
+    nn.shape.push_back(1);
+
     nn.build();
     EXPECT_TRUE(nn.is_built());
-    for (size_t layer = 0; layer < nn.get_shape().size() - 1; ++layer) {
-        Matrix& weights = nn.get_weights()[layer];
-        EXPECT_TRUE(weights.get_rows() == nn.get_shape()[layer] + 1);
-        EXPECT_TRUE(weights.get_cols() == nn.get_shape()[layer + 1]);
+    for (size_t layer = 0; layer < nn.shape.size() - 1; ++layer) {
+        Matrix& weights = nn.weights[layer];
+        EXPECT_TRUE(weights.get_rows() == nn.shape[layer] + 1);
+        EXPECT_TRUE(weights.get_cols() == nn.shape[layer + 1]);
     }
-    EXPECT_TRUE(nn.get_weights().size() == nn.get_activation_functions().size());
+    EXPECT_TRUE(nn.weights.size() == nn.activation_functions.size());
 }
 
-TEST_F(NeuralNetworkTest, ForwardMethodTest) {
-    // Test case 1 - output shape check (single)
-    NeuralNetwork nn_1;
-    nn_1.init(3, ActivationFunction::Sigmoid);
-    nn_1.add_layer(2, LayerType::Output);
-    nn_1.build();
+TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckSingleTest) {
+    NeuralNetwork nn;
 
-    Matrix input_1(3, 1);
-    input_1.fill(0.5);
+    // Add first layer
+    ++nn.n_layers;
+    nn.shape.push_back(3);
+    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
 
-    Matrix output_1 = nn_1.forward_(input_1);
-    EXPECT_TRUE(output_1.get_rows() == 2);
-    EXPECT_TRUE(output_1.get_cols() == 1);
+    // Add output layer
+    ++nn.n_layers;
+    nn.shape.push_back(2);
 
-    // Test case 2 - output shape check (batch)
-    NeuralNetwork nn_2;
-    nn_2.init(100);
-    nn_2.add_layer(500);
-    nn_2.add_layer(1000);
-    nn_2.add_layer(500);
-    nn_2.add_layer(4, LayerType::Output);
-    nn_2.build();
+    nn.build();
 
-    Matrix input_2(100, 15);
-    input_2.fill(0.5);
+    Matrix input(3, 1);
+    input.fill(0.5);
 
-    Matrix output_2 = nn_2.forward_(input_2);
-    EXPECT_TRUE(output_2.get_rows() == 4);
-    EXPECT_TRUE(output_2.get_cols() == 15);
+    Matrix output = nn.forward(input);
+    EXPECT_TRUE(output.get_rows() == 2);
+    EXPECT_TRUE(output.get_cols() == 1);
+}
 
-    // Test case 3 - output values check (single)
-    NeuralNetwork nn_3;
-    nn_3.init(4);
-    nn_3.add_layer(8);
-    nn_3.add_layer(16);
-    nn_3.add_layer(2, LayerType::Output);
-    nn_3.build();
+TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckBatchTest) {
+    NeuralNetwork nn;
 
-    nn_3.layer_weights_[0].fill(2.0);
-    nn_3.layer_weights_[1].fill(4.0);
-    nn_3.layer_weights_[2].fill(8.0);
+    // Add first layer
+    ++nn.n_layers;
+    nn.shape.push_back(100);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
 
-    Matrix input_3(4, 1);
-    input_3.fill(0.5);
-    Matrix output_3 = nn_3.forward_(input_3);
-    EXPECT_TRUE(output_3.get_rows() == 2);
-    EXPECT_TRUE(output_3.get_cols() == 1);
-    EXPECT_TRUE((output_3 == il{ {25096.0}, {25096.0} }));
+    // Add second layer
+    ++nn.n_layers;
+    nn.shape.push_back(500);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
 
-    // Test case 4 - output values check (batch)
-    NeuralNetwork nn_4;
-    nn_4.init(4, ActivationFunction::Sigmoid);
-    nn_4.add_layer(8, ActivationFunction::Sigmoid);
-    nn_4.add_layer(16, ActivationFunction::Sigmoid);
-    nn_4.add_layer(2, LayerType::Output);
-    nn_4.build();
+    // Add third layer
+    ++nn.n_layers;
+    nn.shape.push_back(1000);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
 
-    nn_4.layer_weights_[0].fill(2.0);
-    nn_4.layer_weights_[1].fill(4.0);
-    nn_4.layer_weights_[2].fill(8.0);
+    // Add fourth layer
+    ++nn.n_layers;
+    nn.shape.push_back(500);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
 
-    Matrix input_4(4, 5);
-    input_4.fill(0.5);
-    Matrix output_4 = nn_4.forward_(input_4);
-    EXPECT_TRUE(output_4.get_rows() == 2);
-    EXPECT_TRUE(output_4.get_cols() == 5);
-    EXPECT_TRUE((output_4 == il{ {1.0, 1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0, 1.0} }));
+    // Add output layer
+    ++nn.n_layers;
+    nn.shape.push_back(4);
+
+    nn.build();
+
+    Matrix input(100, 15);
+    input.fill(0.5);
+
+    Matrix output = nn.forward(input);
+    EXPECT_TRUE(output.get_rows() == 4);
+    EXPECT_TRUE(output.get_cols() == 15);
+}
+
+TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckSingleTest) {
+    NeuralNetwork nn;
+    // Add first layer
+    ++nn.n_layers;
+    nn.shape.push_back(4);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
+
+    // Add second layer
+    ++nn.n_layers;
+    nn.shape.push_back(8);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
+
+    // Add third layer
+    ++nn.n_layers;
+    nn.shape.push_back(16);
+    nn.activation_functions.push_back(ActivationFunction::ReLU);
+
+    // Add output layer
+    ++nn.n_layers;
+    nn.shape.push_back(2);
+
+    nn.build();
+
+    nn.weights[0].fill(2.0);
+    nn.weights[1].fill(4.0);
+    nn.weights[2].fill(8.0);
+
+    Matrix input(4, 1);
+    input.fill(0.5);
+    Matrix output = nn.forward(input);
+    EXPECT_TRUE(output.get_rows() == 2);
+    EXPECT_TRUE(output.get_cols() == 1);
+    EXPECT_TRUE((output == il{ {25096.0}, {25096.0} }));
+}
+
+TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckBatchTest) {
+    NeuralNetwork nn;
+    // Add first layer
+    ++nn.n_layers;
+    nn.shape.push_back(4);
+    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
+
+    // Add second layer
+    ++nn.n_layers;
+    nn.shape.push_back(8);
+    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
+
+    // Add third layer
+    ++nn.n_layers;
+    nn.shape.push_back(16);
+    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
+
+    // Add output layer
+    ++nn.n_layers;
+    nn.shape.push_back(2);
+
+    nn.build();
+
+    nn.weights[0].fill(2.0);
+    nn.weights[1].fill(4.0);
+    nn.weights[2].fill(8.0);
+
+    Matrix input(4, 5);
+    input.fill(0.5);
+    Matrix output = nn.forward(input);
+    EXPECT_TRUE(output.get_rows() == 2);
+    EXPECT_TRUE(output.get_cols() == 5);
+    EXPECT_TRUE((output == il{ {1.0, 1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0, 1.0} }));
 }
