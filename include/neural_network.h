@@ -39,5 +39,4 @@ private:
      - backward():
         - Derivatives of activation functions
         - Store A values and Z values (post and pre activation values) in a private variable
-    - divide forward test into four smaller ones
 */

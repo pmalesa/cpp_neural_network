@@ -54,12 +54,14 @@ Model& Model::add_layer(size_t n_neurons, ActivationFunction activation_function
 }
 
 Model& Model::fit(const Matrix& X, const Matrix& y, size_t epochs, double learning_rate, LossFunction loss) {
+    logger.log("Model training started.", Logger::Level::Info);
     fit_ = true;
     if (!nn_.is_built()) {
         nn_.build();
     }
     // calls forward() and backward()
 
+    logger.log("Model training finished.", Logger::Level::Info);
     return *this;
 }
 
@@ -75,9 +77,17 @@ Model& Model::clear() {
 }
 
 void Model::save(const string& filename) const {
+    // ...
 
+    std::ostringstream log_msg_oss;
+    log_msg_oss << "Model saved to: '" << filename << "'.";
+    logger.log(log_msg_oss.str(), Logger::Level::Info);
 }
 
 void Model::load(const string& filename) {
+    // ...
 
+    std::ostringstream log_msg_oss;
+    log_msg_oss << "Model loaded from: '" << filename << "'.";
+    logger.log(log_msg_oss.str(), Logger::Level::Info);
 }

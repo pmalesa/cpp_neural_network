@@ -38,8 +38,11 @@ NeuralNetwork& NeuralNetwork::erase() {
 }
 
 NeuralNetwork& NeuralNetwork::build() {
+    logger.log("Building neural network...", Logger::Level::Info);
     if (n_layers < 2) {
-        throw std::logic_error("Cannot build a network with fewer than 2 layers!"); 
+        string err_msg = "Cannot build a network with fewer than 2 layers!.";
+        logger.log(err_msg, Logger::Level::Error);
+        throw std::logic_error(err_msg); 
     }
     for (size_t layer = 0; layer < n_layers - 1; ++layer) {
         Matrix layer_weights(shape[layer] + 1, shape[layer + 1]);
