@@ -18,7 +18,7 @@ public:
     NeuralNetwork& build();
 
     void randomize_weights_();
-    Matrix forward(const Matrix& input) const;
+    Matrix forward(const Matrix& input, bool learning = false);
     void backward(const Matrix& input, const Matrix& target, double learning_rate);
     bool is_built() const { return built_; }
 
@@ -29,6 +29,8 @@ public:
 
 private:
     bool built_;
+    vector<Matrix> A_values_;
+    vector<Matrix> Z_values_;
 };
 
 

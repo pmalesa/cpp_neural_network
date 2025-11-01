@@ -9,13 +9,13 @@ static Logger& logger = Logger::instance();
 
 NeuralNetwork::NeuralNetwork()
     : n_layers(0), shape({}), activation_functions({}),
-      weights({}), built_(false) {
+      weights({}), built_(false), A_values_({}), Z_values_({}) {
     logger.set_level(Logger::Level::Error);
 }
 
 NeuralNetwork::NeuralNetwork(const vector<size_t>& new_shape, const vector<ActivationFunction>& new_activation_functions) 
     : n_layers(new_shape.size()), shape(new_shape), activation_functions(new_activation_functions), 
-      weights({}), built_(false) {
+      weights({}), built_(false), A_values_({}), Z_values_({}) {
 /*
     Network layer's sizes including input and output layers
 */
@@ -33,6 +33,8 @@ NeuralNetwork& NeuralNetwork::erase() {
     shape.clear();
     activation_functions.clear();
     weights.clear();
+    A_values_.clear();
+    Z_values_.clear();
     built_ = false;
     return *this;
 }
@@ -75,7 +77,7 @@ void NeuralNetwork::randomize_weights_() {
     }
 }
 
-Matrix NeuralNetwork::forward(const Matrix& input) const {
+Matrix NeuralNetwork::forward(const Matrix& input, bool learning) {
 /*
 It takes batch of column vectors on input.
 */
@@ -83,12 +85,20 @@ It takes batch of column vectors on input.
         throw std::logic_error("Network must be built before forward pass!");
     }
 
+    if (learning) {
+        Z_values_.clear();
+        A_values_.clear();
+    }
+
     Matrix X = input;
+
     for (size_t layer = 0; layer < weights.size(); ++layer) {
         Matrix X_bias = X.add_bias_row();
         const Matrix& W = weights[layer];
         Matrix Z = W.transpose() * X_bias;
-
+        if (learning) {
+            Z_values_.push_back(Z);
+        }
         switch (activation_functions[layer]) {
             case ActivationFunction::ReLU:
                 X = Activation::relu(Z);
@@ -107,10 +117,19 @@ It takes batch of column vectors on input.
         }
     }
 
+    if (learning) {
+        A_values_.push_back(X);
+    }
+
     return X;
 }
 
 /* TODO */
 void NeuralNetwork::backward(const Matrix& input, const Matrix& target, double learning_rate) {
+    if (A_values_.empty() || Z_values_.empty()) {
+        throw std::logic_error("Can not perform backward pass before the forward pass!");
+    }
+
+
 
 }
