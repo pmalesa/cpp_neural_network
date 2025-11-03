@@ -214,3 +214,9 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckBatchTest) {
     EXPECT_TRUE(output.get_cols() == 5);
     EXPECT_TRUE((output == il{ {1.0, 1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0, 1.0} }));
 }
+
+TEST_F(NeuralNetworkTest, BackwardMethodTest) {
+    NeuralNetwork nn;
+    EXPECT_THROW(nn.backward({}, {}, 1e-5), std::logic_error);
+    // ...
+}

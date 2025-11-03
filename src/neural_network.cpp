@@ -1,6 +1,7 @@
 #include "neural_network.h"
 #include "logger.h"
 #include "activation.h"
+#include "loss.h"
 
 #include <stdexcept>
 #include <sstream>
@@ -130,6 +131,11 @@ void NeuralNetwork::backward(const Matrix& input, const Matrix& target, double l
         throw std::logic_error("Can not perform backward pass before the forward pass!");
     }
 
+    // const size_t L = weights.size();
 
+    // 1) Compute loss derivative (dA[L])
+    Matrix dA = Loss::mse_derivative(target, A_values_.back());
+
+    // ...
 
 }

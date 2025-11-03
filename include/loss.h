@@ -18,14 +18,3 @@ namespace Loss {
 }
 
 #endif // LOSS_H
-
-
-
-/*
-TODO:
-    - BCCE
-    - CCE
-    - BCCE unittest
-    - CCE unittest
-
-*/
