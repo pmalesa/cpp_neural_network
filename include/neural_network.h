@@ -35,10 +35,3 @@ private:
 
 
 #endif // NEURAL_NETWORK_H
-
-/*
-    TODO:
-     - backward():
-        - Derivatives of activation functions
-        - Store A values and Z values (post and pre activation values) in a private variable
-*/

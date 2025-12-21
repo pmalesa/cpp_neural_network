@@ -49,13 +49,3 @@ private:
 };
 
 #endif // MODEL_H
-
-/*
-    TODO:
-    - DataSet representation 
-      (CSV, maybe create some class to process CSV files, but it will be used by some trainer class, not the nn itself, nn uses Matrices)
-    - fit() + test
-    - predict() + test
-    - save() and load()
-    - add logs
-*/
