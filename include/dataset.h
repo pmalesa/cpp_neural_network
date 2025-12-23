@@ -21,6 +21,7 @@ public:
     Matrix get_range(size_t start, size_t end) const;
     const string& get_row(size_t row) const;
     size_t size() const { return size_; }
+    bool empty() const { return size_ == 0; }
 
 private:
     Matrix data_;

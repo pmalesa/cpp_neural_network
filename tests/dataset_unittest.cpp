@@ -19,6 +19,7 @@ public:
 protected:
 };
 
-TEST_F(DatasetTest, ExampleTest) {
-    EXPECT_TRUE(true);
+TEST_F(DatasetTest, EmptyMethodTest) {
+    Dataset dataset;
+    EXPECT_TRUE(dataset.empty());
 }
