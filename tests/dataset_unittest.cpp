@@ -23,3 +23,16 @@ TEST_F(DatasetTest, EmptyMethodTest) {
     Dataset dataset;
     EXPECT_TRUE(dataset.empty());
 }
+
+TEST_F(DatasetTest, GetRangeMethodTest) {
+
+}
+
+TEST_F(DatasetTest, AccessOperatorTest) {
+
+}
+
+TEST_F(DatasetTest, SizeTest) {
+
+}
+

@@ -20,6 +20,7 @@ public:
     Matrix operator[](size_t row) const;
     Matrix get_range(size_t start, size_t end) const;
     const string& get_row(size_t row) const;
+    vector<string> get_headers() const { return header_names_; }
     size_t size() const { return size_; }
     bool empty() const { return size_ == 0; }
 
