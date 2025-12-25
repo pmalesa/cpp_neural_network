@@ -18,6 +18,7 @@ public:
     void save_csv(const string& filename);
 
     Matrix operator[](size_t row) const;
+    Matrix get_data() const { return data_; }
     Matrix get_range(size_t start, size_t end) const;
     const string& get_row(size_t row) const;
     vector<string> get_headers() const { return header_names_; }
