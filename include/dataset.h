@@ -23,6 +23,8 @@ public:
     const string& get_row(size_t row) const;
     vector<string> get_headers() const { return header_names_; }
     size_t size() const { return size_; }
+    size_t get_columns_count() const { return header_names_.size(); }
+    size_t get_features_count() const { return data_.get_cols(); }
     bool empty() const { return size_ == 0; }
 
 private:
@@ -30,6 +32,7 @@ private:
     vector<string> rows_;
     vector<string> header_names_;
     size_t size_;
+    size_t n_columns_;
     bool headers_;
     bool index_column_;
     bool categorical_;
