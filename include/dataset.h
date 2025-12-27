@@ -32,7 +32,6 @@ private:
     vector<string> rows_;
     vector<string> header_names_;
     size_t size_;
-    size_t n_columns_;
     bool headers_;
     bool index_column_;
     bool categorical_;
