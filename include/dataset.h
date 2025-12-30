@@ -19,20 +19,20 @@ public:
 
     void load_csv(
         const string& path, 
-        size_t target_column = -1, 
         bool headers = false, 
-        bool index_column = false
+        bool index_column = false,
+        size_t target_column = -1
     );
     void save_csv(const string& path);
 
     Matrix operator[](size_t row) const;
     Matrix get_data() const { return data_; }
     Matrix get_targets() const { return data_[data_.get_cols() - 1]; }
-    vector<vector<string>> get_raw_data() const { return raw_data_; }
-    vector<string> get_raw_targets() const { return raw_data_[target_column_]; }
+    const vector<vector<string>>& get_raw_data() const { return raw_data_; }
+    const vector<string>& get_raw_targets() const { return raw_data_[target_column_]; }
     Matrix get_range(size_t start, size_t end) const;
     const vector<string>& get_row(size_t row) const;
-    vector<string> get_headers() const { return header_names_; }
+    const vector<string>& get_headers() const { return header_names_; }
     size_t size() const { return size_; }
     size_t get_columns_count() const { return header_names_.size(); }
     size_t get_features_count() const { return data_.get_cols(); }
@@ -45,7 +45,8 @@ public:
 private:
     void process_data_();
     void convert_to_numerical_();
-    vector<string> split_csv_line(const string& line) const;
+    vector<string> split_csv_line_(const string& line) const;
+    void trim_(string& str) const;
 
     string path_;
     vector<vector<string>> raw_data_;

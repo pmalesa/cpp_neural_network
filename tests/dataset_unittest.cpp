@@ -17,11 +17,49 @@ public:
     }
 
 protected:
+    bool test_splitted_row_data_(const vector<string>& line_to_test, const vector<string>& correct_line) {
+        if (line_to_test.size() != correct_line.size()) {
+            return false;
+        }
+
+        for (size_t i = 0; i < line_to_test.size(); ++i) {
+            if (line_to_test[i] != correct_line[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 };
 
 TEST_F(DatasetTest, EmptyMethodTest) {
     Dataset dataset;
     EXPECT_TRUE(dataset.empty());
+}
+
+TEST_F(DatasetTest, LoadCSVTestOne) {
+    // Test on CSV data with header row and without index column
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test.csv", true);
+    vector<vector<string>> raw_data = dataset.get_raw_data();
+    
+    // Test header names
+    vector<string> headers = dataset.get_headers();
+    vector<string> headers_true = { "sepal.length", "sepal.width", "petal.length", "petal.width", "variety" };
+    EXPECT_TRUE(headers.size() == headers_true.size());
+    for (size_t i = 0; i < headers.size(); ++i) {
+        EXPECT_TRUE(headers[i] == headers_true[i]);
+    }
+
+    // Test raw data
+    EXPECT_TRUE(raw_data.size() == 150);
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
+    // TBC
+
+    // Test numerical data
+    // TODO
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {

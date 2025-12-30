@@ -2,12 +2,13 @@
 
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <stdexcept>
+#include <algorithm>
 
 using std::ifstream;
 using std::getline;
-using std::stringstream;
+using std::find_if;
+using std::isspace;
 
 Dataset::Dataset()
     : path_(""), size_(0), target_column_(-1), headers_(false), index_column_(false), categorical_(false) { }
@@ -17,9 +18,10 @@ Dataset::Dataset(const string& path)
     load_csv(path);
 }
 
-void Dataset::load_csv(const string& path, size_t target_column, bool headers, bool index_column) {
+void Dataset::load_csv(const string& path, bool headers, bool index_column, size_t target_column) {
     headers_ = headers;
     index_column_ = index_column;
+    path_ = path;
     process_data_();
     if (!raw_data_.empty() && (target_column < 0 || target_column > raw_data_[0].size() - 1)) {
         target_column_ = raw_data_[0].size() - 1;
@@ -76,19 +78,21 @@ void Dataset::set_headers(bool headers) {
     process_data_();
 }
 
-/* TODO */
 void Dataset::process_data_() {
-    size_t first_row = headers_ ? 1 : 0;
-    size_t first_col = index_column_ ? 1 : 0;
-
     ifstream file(path_);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open file: " + path_);
     }
 
     string line;
+    header_names_.clear();
     while (getline(file, line)) {
-
+        vector<string> line_splitted = split_csv_line_(line);
+        if (headers_ && header_names_.empty()) {
+            header_names_ = line_splitted;
+            continue;
+        }
+        raw_data_.push_back(line_splitted);
     }
 
     convert_to_numerical_();
@@ -102,7 +106,32 @@ void Dataset::convert_to_numerical_() {
 
 }
 
-/* TODO */
-vector<string> Dataset::split_csv_line(const string& line) const {
-    return {};
+vector<string> Dataset::split_csv_line_(const string& line) const {
+    vector<string> result;
+    string cell;
+    bool in_quotes;
+
+    for (char ch : line) {
+        if (ch == '"') {
+            in_quotes = !in_quotes;
+        } else if (ch == ',' && !in_quotes) {
+            trim_(cell);
+            result.push_back(cell);
+            cell.clear();
+        } else {
+            cell += ch;
+        }
+    }
+
+    trim_(cell);
+    result.push_back(cell);
+    return result;
+}
+
+void Dataset::trim_(string& str) const {
+    str.erase(str.begin(), find_if(str.begin(), str.end(), 
+        [](unsigned char ch) { return !isspace(ch); }));
+    str.erase(find_if(str.rbegin(), str.rend(),
+        [](unsigned char ch) { return !isspace(ch); }).base(),
+        str.end());
 }
