@@ -30,6 +30,20 @@ protected:
 
         return true;
     }
+
+    bool test_numerical_row_data_(const vector<double>& data_to_test, const vector<double>& true_data) {
+        if (data_to_test.size() != true_data.size()) {
+            return false;
+        }
+
+        for (size_t i = 0; i < data_to_test.size(); ++i) {
+            if (abs(data_to_test[i]- true_data[i]) < 1e9) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 };
 
 TEST_F(DatasetTest, EmptyMethodTest) {
