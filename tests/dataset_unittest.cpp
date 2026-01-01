@@ -37,7 +37,7 @@ protected:
         }
 
         for (size_t i = 0; i < data_to_test.size(); ++i) {
-            if (abs(data_to_test[i]- true_data[i]) < 1e9) {
+            if (abs(data_to_test[i] - true_data[i]) < 1e9) {
                 return false;
             }
         }
@@ -56,6 +56,7 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
     Dataset dataset;
     dataset.load_csv("./tests/data/dataset_test.csv", true);
     vector<vector<string>> raw_data = dataset.get_raw_data();
+    Matrix data = dataset.get_data();
     
     // Test header names
     vector<string> headers = dataset.get_headers();
@@ -73,7 +74,10 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
     // TBC
 
     // Test numerical data
-    // TODO
+    EXPECT_TRUE(data.get_rows() == 150);
+    EXPECT_TRUE(test_numerical_row_data_(data[0], { 5.1, 3.5, 1.4, 0.2, 0.0 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[75], { 6.6, 3, 4.4, 1.4, 1.0 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[149], { 5.9, 3, 5.1, 1.8, 2.0 }));
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {
