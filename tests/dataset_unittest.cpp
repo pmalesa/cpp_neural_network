@@ -54,7 +54,7 @@ TEST_F(DatasetTest, EmptyMethodTest) {
 TEST_F(DatasetTest, LoadCSVTestOne) {
     // Test on CSV data with header row and without index column
     Dataset dataset;
-    dataset.load_csv("./tests/data/dataset_test.csv", true);
+    dataset.load_csv("./tests/data/dataset_test.csv", true, false, 4);
     vector<vector<string>> raw_data = dataset.get_raw_data();
     Matrix data = dataset.get_data();
     

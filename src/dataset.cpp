@@ -104,6 +104,20 @@ void Dataset::convert_to_numerical_() {
         return;
     }
 
+    if (is_data_categorical_()) {
+        /*
+            1. Calculate the number of categorical columns (except  target column)
+            2. Determine the number of columns for each categorical columns
+            3. Initialize the data_ Matrix object with the correct number of rows and columns.
+        */
+    }
+
+    /* Convert raw data into numerical */
+
+
+    /* Convert the target column to mapped integer values (from N to N-1) */
+
+
 }
 
 vector<string> Dataset::split_csv_line_(const string& line) const {
@@ -134,4 +148,8 @@ void Dataset::trim_(string& str) const {
     str.erase(find_if(str.rbegin(), str.rend(),
         [](unsigned char ch) { return !isspace(ch); }).base(),
         str.end());
+}
+
+bool Dataset::is_data_categorical_() const {
+    return false;
 }
