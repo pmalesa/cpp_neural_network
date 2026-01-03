@@ -48,6 +48,7 @@ private:
     vector<string> split_csv_line_(const string& line) const;
     void trim_(string& str) const;
     bool is_data_categorical_() const;
+    bool is_float_(const string& float_str) const;
 
     string path_;
     vector<vector<string>> raw_data_;
