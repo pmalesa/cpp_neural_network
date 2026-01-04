@@ -27,9 +27,6 @@ void Dataset::load_csv(const string& path, bool headers, bool index_column, size
     index_column_ = index_column;
     target_column_ = target_column;
     process_data_();
-    if (!raw_data_.empty() && (target_column < 0 || target_column > raw_data_[0].size() - 1)) {
-        target_column_ = raw_data_[0].size() - 1;
-    }
 }
 
 /* TODO */
@@ -88,8 +85,12 @@ void Dataset::process_data_() {
         throw std::runtime_error("Failed to open file: " + path_);
     }
     
-    string line;
+    // Erase any existing data
     header_names_.clear();
+    raw_data_.clear();
+
+    // Obtain raw data
+    string line;
     while (getline(file, line)) {
         vector<string> line_splitted = split_csv_line_(line);
         if (headers_ && header_names_.empty()) {
@@ -98,34 +99,56 @@ void Dataset::process_data_() {
         }
         raw_data_.push_back(line_splitted);
     }
+
+    if (raw_data_.empty()) {
+        return;
+    }
+    if (target_column_ < 0 || target_column_ > raw_data_[0].size() - 1) {
+        target_column_ = raw_data_[0].size() - 1; // TODO - ADJUST WHEN INDEX COLUMN IS PRESENT
+    }
+
+    // Verify number of columns
+    size_t n_columns = raw_data_[0].size();
+    for (auto& row : raw_data_) {
+        if (row.size() != n_columns) {
+            string message = "Loaded CSV file is corrupted - different number of columns in rows.";
+            logger.log(message, Logger::Level::Error);
+            throw std::invalid_argument(message);
+        }
+    }
     logger.log("Raw data processed successfully.", Logger::Level::Info);
+
     convert_to_numerical_();
-    logger.log("Conversion to numerical data successful.", Logger::Level::Info);
 }
 
 /* TODO */
 void Dataset::convert_to_numerical_() {
-    if (raw_data_.empty()) {
-        return;
-    }
-
     if (is_data_categorical_()) {
-        logger.log("Categorical data found.", Logger::Level::Info);
-        /*
-            1. Calculate the number of categorical columns (except  target column)
-            2. Determine the number of columns for each categorical columns
-            3. Initialize the data_ Matrix object with the correct number of rows and columns.
-        */
-    } else {
-        logger.log("No categorical data found.", Logger::Level::Info);    
+        string message = "Categorical data procesing not supported!";
+        logger.log(message, Logger::Level::Error);
+        throw std::invalid_argument(message);
     }
 
     /* Convert raw data into numerical */
-
+    size_t n_features = raw_data_[0].size() - 1; 
+    size_t n_examples = raw_data_.size();
+    size_t current_column = 0;
+    data_ = Matrix(n_examples, n_features);
+    for (size_t col = 0; col < raw_data_[0].size(); ++col) {
+        if (col == target_column_) {
+            continue;
+        }
+        for (size_t row = 0; row < raw_data_.size(); ++row) {
+            data_[row][current_column] = std::stod(raw_data_[row][col]);
+        }
+        ++current_column;
+    }
 
     /* Convert the target column to mapped integer values (from N to N-1) */
+    targets_ = Matrix(n_examples, 1);
+    // ...
 
-
+    logger.log("Conversion to numerical data successful.", Logger::Level::Info);
 }
 
 vector<string> Dataset::split_csv_line_(const string& line) const {
@@ -169,6 +192,8 @@ bool Dataset::is_data_categorical_() const {
                 continue;
             }
             if (!is_float_(raw_data_[row][col])) {
+                std::cout << raw_data_[row][col] << std::endl;
+                std::cout << target_column_ << std::endl;
                 return true;
             }
         }
@@ -191,4 +216,4 @@ bool Dataset::is_float_(const string& float_str) const {
     } catch (const std::out_of_range&) {
         return false;
     }
-}
+} 

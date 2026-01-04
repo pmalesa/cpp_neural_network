@@ -3,6 +3,7 @@
 #include "matrix.h"
 #include "logger.h"
 #include <stdexcept>
+#include <iostream>
 
 static Logger& logger = Logger::instance();
 
@@ -37,7 +38,7 @@ protected:
         }
 
         for (size_t i = 0; i < data_to_test.size(); ++i) {
-            if (abs(data_to_test[i] - true_data[i]) < 1e9) {
+            if (abs(data_to_test[i] - true_data[i]) > 1e9) {
                 return false;
             }
         }
@@ -54,7 +55,7 @@ TEST_F(DatasetTest, EmptyMethodTest) {
 TEST_F(DatasetTest, LoadCSVTestOne) {
     // Test on CSV data with header row and without index column
     Dataset dataset;
-    dataset.load_csv("./tests/data/dataset_test.csv", true, false, 4);
+    dataset.load_csv("./tests/data/dataset_test.csv", true);
     vector<vector<string>> raw_data = dataset.get_raw_data();
     Matrix data = dataset.get_data();
     
@@ -71,13 +72,22 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
     EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
     EXPECT_TRUE(test_splitted_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
     EXPECT_TRUE(test_splitted_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
-    // TBC
 
     // Test numerical data
-    // EXPECT_TRUE(data.get_rows() == 150);
-    // EXPECT_TRUE(test_numerical_row_data_(data[0], { 5.1, 3.5, 1.4, 0.2, 0.0 }));
-    // EXPECT_TRUE(test_numerical_row_data_(data[75], { 6.6, 3, 4.4, 1.4, 1.0 }));
-    // EXPECT_TRUE(test_numerical_row_data_(data[149], { 5.9, 3, 5.1, 1.8, 2.0 }));
+    
+    EXPECT_TRUE(data.get_rows() == 150);
+    EXPECT_TRUE(test_numerical_row_data_(data[0], { 5.1, 3.5, 1.4, 0.2 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[75], { 6.6, 3, 4.4, 1.4 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[149], { 5.9, 3, 5.1, 1.8 }));
+
+    // Test numerical target values
+    // ...
+}
+
+TEST_F(DatasetTest, LoadCSVTestTwo) {
+    // Test on a corrupted CSV file.
+    Dataset dataset;
+    EXPECT_THROW(dataset.load_csv("./tests/data/dataset_test_corrupted.csv", true), std::invalid_argument);
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {

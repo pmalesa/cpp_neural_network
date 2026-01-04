@@ -115,6 +115,7 @@ private:
 
     void multiply_sequentially_(double val, Matrix& result) const;
     void multiply_sequentially_(const Matrix& mat, Matrix& result) const;
+    
     void multiply_concurrently_(double val, Matrix& result) const;
     void multiply_concurrently_(const Matrix& mat, Matrix& result) const;
 };

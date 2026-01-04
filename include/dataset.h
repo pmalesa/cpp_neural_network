@@ -11,6 +11,13 @@ using std::string;
 using std::vector;
 using std::unordered_map;
 
+/**
+ * Simple class for loading and saving data in CSV format.
+ * 
+ * [WARNING]
+ * Categorical data is not supported yet!
+ * This does not include column with target values.
+*/
 class Dataset {
 public:
     Dataset();
@@ -27,7 +34,7 @@ public:
 
     Matrix operator[](size_t row) const;
     Matrix get_data() const { return data_; }
-    Matrix get_targets() const { return data_[data_.get_cols() - 1]; }
+    Matrix get_targets() const { return targets_; }
     const vector<vector<string>>& get_raw_data() const { return raw_data_; }
     const vector<string>& get_raw_targets() const { return raw_data_[target_column_]; }
     Matrix get_range(size_t start, size_t end) const;
@@ -52,7 +59,8 @@ private:
 
     string path_;
     vector<vector<string>> raw_data_;
-    Matrix data_;
+    Matrix data_;       // Contains all numerical data (without target values)
+    Matrix targets_;    // Contains targets' numerical data
     vector<string> header_names_;
     unordered_map<string, int> label_to_int_map_;
     unordered_map<string, int> int_to_label_map_;
