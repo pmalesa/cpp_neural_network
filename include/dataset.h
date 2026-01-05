@@ -17,6 +17,9 @@ using std::unordered_map;
  * [WARNING]
  * Categorical data is not supported yet!
  * This does not include column with target values.
+ * 
+ * [EXCEPTIONS]
+ * 
 */
 class Dataset {
 public:
@@ -56,6 +59,7 @@ private:
     void trim_(string& str) const;
     bool is_data_categorical_() const;
     bool is_float_(const string& float_str) const;
+    bool is_target_column_categorical_() const;
 
     string path_;
     vector<vector<string>> raw_data_;
@@ -63,9 +67,9 @@ private:
     Matrix targets_;    // Contains targets' numerical data
     vector<string> header_names_;
     unordered_map<string, int> label_to_int_map_;
-    unordered_map<string, int> int_to_label_map_;
+    unordered_map<int, string> int_to_label_map_;
     size_t size_;
-    size_t target_column_;
+    long long target_column_;
     bool headers_;
     bool index_column_;
     bool categorical_;  // Does not concern the target column

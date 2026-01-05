@@ -5,11 +5,13 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <set>
 
 using std::ifstream;
 using std::getline;
 using std::find_if;
 using std::isspace;
+using std::set;
 
 static Logger& logger = Logger::instance();
 
@@ -56,10 +58,10 @@ void Dataset::print() const {
 }
 
 void Dataset::set_target_column(size_t target_column) {
-    if (target_column_ == target_column) {
+    if (target_column_ == static_cast<long long>(target_column)) {
         return;
     }
-    target_column_ = target_column;
+    target_column_ = static_cast<long long>(target_column);
     process_data_();
 }
 
@@ -103,8 +105,15 @@ void Dataset::process_data_() {
     if (raw_data_.empty()) {
         return;
     }
-    if (target_column_ < 0 || target_column_ > raw_data_[0].size() - 1) {
-        target_column_ = raw_data_[0].size() - 1; // TODO - ADJUST WHEN INDEX COLUMN IS PRESENT
+    
+    if (target_column_ < 0 || target_column_ > static_cast<long long>(raw_data_[0].size()) - 1) {
+        target_column_ = static_cast<long long>(raw_data_[0].size()) - 1; // TODO - ADJUST WHEN INDEX COLUMN IS PRESENT
+    }
+
+    if (target_column_ < 0) {
+        string message = "[ERROR] Target column could not be processed correctly.";
+        logger.log(message, Logger::Level::Error);
+        throw std::invalid_argument(message);
     }
 
     // Verify number of columns
@@ -121,7 +130,6 @@ void Dataset::process_data_() {
     convert_to_numerical_();
 }
 
-/* TODO */
 void Dataset::convert_to_numerical_() {
     if (is_data_categorical_()) {
         string message = "Categorical data procesing not supported!";
@@ -133,9 +141,10 @@ void Dataset::convert_to_numerical_() {
     size_t n_features = raw_data_[0].size() - 1; 
     size_t n_examples = raw_data_.size();
     size_t current_column = 0;
+    size_t target_column = static_cast<size_t>(target_column_);
     data_ = Matrix(n_examples, n_features);
     for (size_t col = 0; col < raw_data_[0].size(); ++col) {
-        if (col == target_column_) {
+        if (col == target_column) {
             continue;
         }
         for (size_t row = 0; row < raw_data_.size(); ++row) {
@@ -146,7 +155,27 @@ void Dataset::convert_to_numerical_() {
 
     /* Convert the target column to mapped integer values (from N to N-1) */
     targets_ = Matrix(n_examples, 1);
-    // ...
+    label_to_int_map_.clear();
+    int_to_label_map_.clear();
+    if (is_target_column_categorical_()) {
+        set<string> unique_labels;
+        for (size_t row = 0; row < raw_data_.size(); ++row) {
+            unique_labels.insert(raw_data_[row][target_column]);
+        }
+        int label = 0;
+        for (auto it = unique_labels.begin(); it != unique_labels.end(); ++it) {
+            label_to_int_map_.insert({*it, label});
+            int_to_label_map_.insert({label, *it});
+            ++label;
+        }
+        for (size_t row = 0; row < n_examples; ++row) {
+            targets_[row][0] = static_cast<double>(label_to_int_map_[raw_data_[row][target_column]]);
+        }
+    } else {
+        for (size_t row = 0; row < n_examples; ++row) {
+            targets_[row][0] = std::stod(raw_data_[row][target_column]);
+        }
+    }
 
     logger.log("Conversion to numerical data successful.", Logger::Level::Info);
 }
@@ -186,14 +215,13 @@ void Dataset::trim_(string& str) const {
  * any categorical data (excluding the target column).
 */
 bool Dataset::is_data_categorical_() const {
+    size_t target_column = static_cast<size_t>(target_column_);
     for (size_t row = 0; row < raw_data_.size(); ++row) {
         for (size_t col = 0; col < raw_data_[0].size(); ++col) {
-            if (col == target_column_) {
+            if (col == target_column) {
                 continue;
             }
             if (!is_float_(raw_data_[row][col])) {
-                std::cout << raw_data_[row][col] << std::endl;
-                std::cout << target_column_ << std::endl;
                 return true;
             }
         }
@@ -216,4 +244,15 @@ bool Dataset::is_float_(const string& float_str) const {
     } catch (const std::out_of_range&) {
         return false;
     }
-} 
+}
+
+bool Dataset::is_target_column_categorical_() const {
+    size_t target_column = static_cast<size_t>(target_column_);
+    for (size_t row = 0; row < raw_data_.size(); ++row) {
+        if (!is_float_(raw_data_[row][target_column])) {
+            return true;
+        }
+    }
+    return false;
+}
+

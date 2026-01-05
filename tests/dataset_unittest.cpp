@@ -81,13 +81,36 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
     EXPECT_TRUE(test_numerical_row_data_(data[149], { 5.9, 3, 5.1, 1.8 }));
 
     // Test numerical target values
-    // ...
+    Matrix targets = dataset.get_targets();
+    EXPECT_TRUE(static_cast<int>(targets[0][0]) == 0);
+    EXPECT_TRUE(static_cast<int>(targets[75][0]) == 1);
+    EXPECT_TRUE(static_cast<int>(targets[149][0]) == 2);
 }
 
 TEST_F(DatasetTest, LoadCSVTestTwo) {
     // Test on a corrupted CSV file.
     Dataset dataset;
     EXPECT_THROW(dataset.load_csv("./tests/data/dataset_test_corrupted.csv", true), std::invalid_argument);
+}
+
+TEST_F(DatasetTest, LoadCSVTestThree) {
+    // Test on data with numerical target values
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test_numerical_targets.csv", true);
+    Matrix targets = dataset.get_targets();
+    EXPECT_TRUE(static_cast<int>(targets[0][0]) == 444);
+    EXPECT_TRUE(static_cast<int>(targets[75][0]) == 555);
+    EXPECT_TRUE(static_cast<int>(targets[149][0]) == 666);
+}
+
+TEST_F(DatasetTest, LoadCSVTestFour) {
+    // Test on data with an index column
+    // ...
+}
+
+TEST_F(DatasetTest, LoadCSVTestFive) {
+    // Test on data without headers
+    // ...
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {
