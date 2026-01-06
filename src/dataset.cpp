@@ -107,7 +107,7 @@ void Dataset::process_data_() {
     }
     
     if (target_column_ < 0 || target_column_ > static_cast<long long>(raw_data_[0].size()) - 1) {
-        target_column_ = static_cast<long long>(raw_data_[0].size()) - 1; // TODO - ADJUST WHEN INDEX COLUMN IS PRESENT
+        target_column_ = static_cast<long long>(raw_data_[0].size()) - 1;
     }
 
     if (target_column_ < 0) {
@@ -139,12 +139,15 @@ void Dataset::convert_to_numerical_() {
 
     /* Convert raw data into numerical */
     size_t n_features = raw_data_[0].size() - 1; 
+    if (index_column_) {
+        --n_features;
+    }
     size_t n_examples = raw_data_.size();
     size_t current_column = 0;
     size_t target_column = static_cast<size_t>(target_column_);
     data_ = Matrix(n_examples, n_features);
     for (size_t col = 0; col < raw_data_[0].size(); ++col) {
-        if (col == target_column) {
+        if ((index_column_ && col == 0) || col == target_column) {
             continue;
         }
         for (size_t row = 0; row < raw_data_.size(); ++row) {

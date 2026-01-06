@@ -17,9 +17,6 @@ using std::unordered_map;
  * [WARNING]
  * Categorical data is not supported yet!
  * This does not include column with target values.
- * 
- * [EXCEPTIONS]
- * 
 */
 class Dataset {
 public:
@@ -32,7 +29,7 @@ public:
         bool headers = false, 
         bool index_column = false,
         size_t target_column = -1
-    );
+    );  // throws std::runtime_error and std::invalid_argument
     void save_csv(const string& path);
 
     Matrix operator[](size_t row) const;
@@ -48,9 +45,9 @@ public:
     size_t get_features_count() const { return data_.get_cols(); }
     bool empty() const { return size_ == 0; }
     void print() const;
-    void set_target_column(size_t target_column);
-    void set_index_column(bool index_column);
-    void set_headers(bool headers);
+    void set_target_column(size_t target_column);   // throws std::runtime_error and std::invalid_argument
+    void set_index_column(bool index_column);       // throws std::runtime_error and std::invalid_argument
+    void set_headers(bool headers);                 // throws std::runtime_error and std::invalid_argument
 
 private:
     void process_data_();

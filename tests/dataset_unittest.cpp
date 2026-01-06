@@ -74,7 +74,6 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
     EXPECT_TRUE(test_splitted_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
 
     // Test numerical data
-    
     EXPECT_TRUE(data.get_rows() == 150);
     EXPECT_TRUE(test_numerical_row_data_(data[0], { 5.1, 3.5, 1.4, 0.2 }));
     EXPECT_TRUE(test_numerical_row_data_(data[75], { 6.6, 3, 4.4, 1.4 }));
@@ -105,12 +104,58 @@ TEST_F(DatasetTest, LoadCSVTestThree) {
 
 TEST_F(DatasetTest, LoadCSVTestFour) {
     // Test on data with an index column
-    // ...
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test_index_column.csv", true, true);
+    vector<vector<string>> raw_data = dataset.get_raw_data();
+    Matrix data = dataset.get_data();
+
+    // Test raw data
+    EXPECT_TRUE(raw_data.size() == 12);
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "1", "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[4], { "5", "7", "3.2", "4.7", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[9], { "10", "7.2", "3", "5.8", "1.6", "Virginica" }));
+    
+    // Test numerical data
+    EXPECT_TRUE(data.get_rows() == 12);
+    EXPECT_TRUE(test_numerical_row_data_(data[0], { 5.1, 3.5, 1.4, 0.2 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[4], { 7.0, 3.2, 4.7, 1.4 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[9], { 7.2, 3.0, 5.8, 1.6 }));
+
+    // Test numerical target values
+    Matrix targets = dataset.get_targets();
+    EXPECT_TRUE(static_cast<int>(targets[0][0]) == 0);
+    EXPECT_TRUE(static_cast<int>(targets[4][0]) == 1);
+    EXPECT_TRUE(static_cast<int>(targets[9][0]) == 2);
 }
 
 TEST_F(DatasetTest, LoadCSVTestFive) {
     // Test on data without headers
-    // ...
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test_no_headers.csv");
+    vector<vector<string>> raw_data = dataset.get_raw_data();
+    Matrix data = dataset.get_data();
+    
+    // Test header names
+    vector<string> headers = dataset.get_headers();
+    EXPECT_TRUE(headers.empty());
+
+    // Test raw data
+    EXPECT_TRUE(raw_data.size() == 150);
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_splitted_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
+
+    // Test numerical data
+    EXPECT_TRUE(data.get_rows() == 150);
+    EXPECT_TRUE(test_numerical_row_data_(data[0], { 5.1, 3.5, 1.4, 0.2 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[75], { 6.6, 3, 4.4, 1.4 }));
+    EXPECT_TRUE(test_numerical_row_data_(data[149], { 5.9, 3, 5.1, 1.8 }));
+
+    // Test numerical target values
+    Matrix targets = dataset.get_targets();
+    EXPECT_TRUE(static_cast<int>(targets[0][0]) == 0);
+    EXPECT_TRUE(static_cast<int>(targets[75][0]) == 1);
+    EXPECT_TRUE(static_cast<int>(targets[149][0]) == 2);
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {
