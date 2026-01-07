@@ -159,7 +159,18 @@ TEST_F(DatasetTest, LoadCSVTestFive) {
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test.csv", true);
+    vector<vector<string>> raw_data = dataset.get_raw_data();
+    Matrix data = dataset.get_data();
+    Matrix data_range = dataset.get_range(3, 6);
 
+    EXPECT_TRUE(data_range.get_rows() == 3);
+    EXPECT_TRUE(data_range.get_cols() == data.get_cols());
+    EXPECT_TRUE(test_numerical_row_data_(data_range[0], data[3]));
+    EXPECT_TRUE(test_numerical_row_data_(data_range[1], data[4]));
+    EXPECT_TRUE(test_numerical_row_data_(data_range[2], data[5]));
+    EXPECT_THROW(dataset.get_range(3, 2), std::invalid_argument);
 }
 
 TEST_F(DatasetTest, AccessOperatorTest) {

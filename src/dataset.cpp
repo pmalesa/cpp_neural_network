@@ -40,11 +40,23 @@ Matrix Dataset::operator[](size_t row) const {
     return data_[row];
 }
 
-/* TODO */
-Matrix Dataset::get_range(size_t start, size_t end) const {
-    // Return a range from start to end as Matrix object (inlcusive)
+Matrix Dataset::get_range(size_t start_row, size_t end_row) const {
+    if (end_row < start_row) {
+        throw std::invalid_argument("Invalid range - start index has to be smaller or equal to the end index.");
+    }
 
-    return data_[end];
+    size_t n_elements = end_row - start_row;
+    Matrix result(n_elements, data_.get_cols());
+
+    size_t current_row = 0;
+    for (size_t row = start_row; row < end_row; ++row) {
+        for (size_t col = 0; col < data_.get_cols(); ++col) {
+            result[current_row][col] = data_[row][col];
+        }
+        ++current_row;
+    }
+
+    return result;
 }
 
 
