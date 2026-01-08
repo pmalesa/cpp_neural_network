@@ -6,8 +6,10 @@
 #include <stdexcept>
 #include <algorithm>
 #include <set>
+#include <sstream>
 
 using std::ifstream;
+using std::ofstream;
 using std::getline;
 using std::find_if;
 using std::isspace;
@@ -32,9 +34,38 @@ void Dataset::load_csv(const string& path, bool headers, bool index_column, size
     process_data_();
 }
 
-/* TODO */
 void Dataset::save_csv(const string& path) {
-    
+    ofstream file;
+    file.open(path);
+
+    std::ostringstream oss;
+
+    // Save headers if present
+    if (headers_) {
+        for (size_t col = 0; col < header_names_.size(); ++col) {
+            oss << header_names_[col];
+            if (col < header_names_.size() - 1) {
+                oss << ',';
+            }
+        }
+        oss << '\n';
+        file << oss.str();
+        oss.str("");
+    }
+
+    // Save the rest of the data
+    for (size_t row = 0; row < raw_data_.size(); ++row) {
+        for (size_t col = 0; col < raw_data_[0].size(); ++col) {
+            oss << raw_data_[row][col];
+            if (col < raw_data_[0].size() - 1) {
+                oss << ',';
+            }
+        }
+        oss << '\n';
+        file << oss.str();
+        oss.str("");
+    }
+    file.close();
 }
 
 Matrix Dataset::operator[](size_t row) const {

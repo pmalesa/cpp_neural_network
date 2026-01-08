@@ -3,8 +3,10 @@
 #include "matrix.h"
 #include "logger.h"
 #include <stdexcept>
+#include <cstdio>
 #include <iostream>
 
+using std::string;
 using il = std::initializer_list<std::initializer_list<double>>;
 
 static Logger& logger = Logger::instance();
@@ -20,7 +22,7 @@ public:
     }
 
 protected:
-    bool test_splitted_row_data_(const vector<string>& line_to_test, const vector<string>& correct_line) {
+    bool test_string_data_(const vector<string>& line_to_test, const vector<string>& correct_line) {
         if (line_to_test.size() != correct_line.size()) {
             return false;
         }
@@ -71,9 +73,9 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
 
     // Test raw data
     EXPECT_TRUE(raw_data.size() == 150);
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
+    EXPECT_TRUE(test_string_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_string_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_string_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
 
     // Test numerical data
     EXPECT_TRUE(data.get_rows() == 150);
@@ -113,9 +115,9 @@ TEST_F(DatasetTest, LoadCSVTestFour) {
 
     // Test raw data
     EXPECT_TRUE(raw_data.size() == 12);
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "1", "5.1", "3.5", "1.4", ".2", "Setosa" }));
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[4], { "5", "7", "3.2", "4.7", "1.4", "Versicolor" }));
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[9], { "10", "7.2", "3", "5.8", "1.6", "Virginica" }));
+    EXPECT_TRUE(test_string_data_(raw_data[0], { "1", "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_string_data_(raw_data[4], { "5", "7", "3.2", "4.7", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_string_data_(raw_data[9], { "10", "7.2", "3", "5.8", "1.6", "Virginica" }));
     
     // Test numerical data
     EXPECT_TRUE(data.get_rows() == 12);
@@ -143,9 +145,9 @@ TEST_F(DatasetTest, LoadCSVTestFive) {
 
     // Test raw data
     EXPECT_TRUE(raw_data.size() == 150);
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
-    EXPECT_TRUE(test_splitted_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
+    EXPECT_TRUE(test_string_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_string_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_string_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
 
     // Test numerical data
     EXPECT_TRUE(data.get_rows() == 150);
@@ -158,6 +160,40 @@ TEST_F(DatasetTest, LoadCSVTestFive) {
     EXPECT_TRUE(static_cast<int>(targets[0][0]) == 0);
     EXPECT_TRUE(static_cast<int>(targets[75][0]) == 1);
     EXPECT_TRUE(static_cast<int>(targets[149][0]) == 2);
+}
+
+TEST_F(DatasetTest, SaveCSVTestOne) {
+    Dataset dataset_1, dataset_2;
+    dataset_1.load_csv("./tests/data/dataset_test.csv", true);
+    string temp_filepath = "./tests/data/dataset_test_temp.csv";
+    dataset_1.save_csv(temp_filepath);
+    dataset_2.load_csv(temp_filepath, true);
+    std::remove(temp_filepath.c_str());
+
+    EXPECT_TRUE(dataset_1.size() == dataset_2.size());
+    EXPECT_TRUE(dataset_1.get_columns_count() == dataset_2.get_columns_count());
+    EXPECT_TRUE(dataset_1.get_features_count() == dataset_2.get_features_count());
+
+    vector<vector<string>> raw_data_1 = dataset_1.get_raw_data();
+    vector<string> raw_targets_1 = dataset_1.get_raw_targets();
+    vector<string> headers_1 = dataset_1.get_headers();
+    Matrix data_1 = dataset_1.get_data();
+    Matrix targets_1 = dataset_1.get_targets();
+
+    vector<vector<string>> raw_data_2 = dataset_2.get_raw_data();
+    vector<string> raw_targets_2 = dataset_2.get_raw_targets();
+    vector<string> headers_2 = dataset_2.get_headers();
+    Matrix data_2 = dataset_2.get_data();
+    Matrix targets_2 = dataset_2.get_targets();
+
+    EXPECT_TRUE(raw_data_1.size() == raw_data_2.size());
+    for (size_t row = 0; row < raw_data_1.size(); ++row) {
+        EXPECT_TRUE(test_string_data_(raw_data_1[row], raw_data_2[row]));
+    }
+    EXPECT_TRUE(test_string_data_(raw_targets_1, raw_targets_2));
+    EXPECT_TRUE(test_string_data_(headers_1, headers_2));
+    EXPECT_TRUE(data_1 == data_2);
+    EXPECT_TRUE(targets_1 == targets_2);
 }
 
 TEST_F(DatasetTest, GetRangeMethodTest) {
@@ -178,15 +214,15 @@ TEST_F(DatasetTest, GetRangeMethodTest) {
 TEST_F(DatasetTest, AccessOperatorTest) {
     Dataset dataset;
     dataset.load_csv("./tests/data/dataset_test.csv", true);
-    
-    // Test numerical data
-    EXPECT_TRUE(dataset.size() == 150);
     EXPECT_TRUE((dataset[0] == il{ { 5.1, 3.5, 1.4, 0.2 }}));
     EXPECT_TRUE((dataset[75] == il{ { 6.6, 3, 4.4, 1.4 }}));
     EXPECT_TRUE((dataset[149] == il{ { 5.9, 3, 5.1, 1.8 } }));
 }
 
 TEST_F(DatasetTest, SizeTest) {
-
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test.csv", true);
+    EXPECT_TRUE(dataset.size() == 150);
+    dataset.load_csv("./tests/data/dataset_test_index_column.csv", true, true);
 }
 

@@ -37,7 +37,7 @@ public:
     Matrix get_targets() const { return targets_; }
     const vector<vector<string>>& get_raw_data() const { return raw_data_; }
     const vector<string>& get_raw_targets() const { return raw_data_[target_column_]; }
-    Matrix get_range(size_t start, size_t end) const;
+    Matrix get_range(size_t start, size_t end) const; // throws std::invalid_argument
     const vector<string>& get_row(size_t row) const;
     const vector<string>& get_headers() const { return header_names_; }
     size_t size() const { return size_; }
