@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <iostream>
 
+using il = std::initializer_list<std::initializer_list<double>>;
+
 static Logger& logger = Logger::instance();
 
 class DatasetTest : public testing::Test {
@@ -174,7 +176,14 @@ TEST_F(DatasetTest, GetRangeMethodTest) {
 }
 
 TEST_F(DatasetTest, AccessOperatorTest) {
-
+    Dataset dataset;
+    dataset.load_csv("./tests/data/dataset_test.csv", true);
+    
+    // Test numerical data
+    EXPECT_TRUE(dataset.size() == 150);
+    EXPECT_TRUE((dataset[0] == il{ { 5.1, 3.5, 1.4, 0.2 }}));
+    EXPECT_TRUE((dataset[75] == il{ { 6.6, 3, 4.4, 1.4 }}));
+    EXPECT_TRUE((dataset[149] == il{ { 5.9, 3, 5.1, 1.8 } }));
 }
 
 TEST_F(DatasetTest, SizeTest) {

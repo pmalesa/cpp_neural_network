@@ -28,6 +28,7 @@ void Dataset::load_csv(const string& path, bool headers, bool index_column, size
     headers_ = headers;
     index_column_ = index_column;
     target_column_ = target_column;
+    size_ = 0;
     process_data_();
 }
 
@@ -154,10 +155,10 @@ void Dataset::convert_to_numerical_() {
     if (index_column_) {
         --n_features;
     }
-    size_t n_examples = raw_data_.size();
+    size_ = raw_data_.size();
     size_t current_column = 0;
     size_t target_column = static_cast<size_t>(target_column_);
-    data_ = Matrix(n_examples, n_features);
+    data_ = Matrix(size_, n_features);
     for (size_t col = 0; col < raw_data_[0].size(); ++col) {
         if ((index_column_ && col == 0) || col == target_column) {
             continue;
@@ -169,7 +170,7 @@ void Dataset::convert_to_numerical_() {
     }
 
     /* Convert the target column to mapped integer values (from N to N-1) */
-    targets_ = Matrix(n_examples, 1);
+    targets_ = Matrix(size_, 1);
     label_to_int_map_.clear();
     int_to_label_map_.clear();
     if (is_target_column_categorical_()) {
@@ -183,11 +184,11 @@ void Dataset::convert_to_numerical_() {
             int_to_label_map_.insert({label, *it});
             ++label;
         }
-        for (size_t row = 0; row < n_examples; ++row) {
+        for (size_t row = 0; row < size_; ++row) {
             targets_[row][0] = static_cast<double>(label_to_int_map_[raw_data_[row][target_column]]);
         }
     } else {
-        for (size_t row = 0; row < n_examples; ++row) {
+        for (size_t row = 0; row < size_; ++row) {
             targets_[row][0] = std::stod(raw_data_[row][target_column]);
         }
     }
