@@ -22,7 +22,7 @@ public:
     }
 
 protected:
-    bool test_string_data_(const vector<string>& line_to_test, const vector<string>& correct_line) {
+    bool test_string_row_data_(const vector<string>& line_to_test, const vector<string>& correct_line) {
         if (line_to_test.size() != correct_line.size()) {
             return false;
         }
@@ -73,9 +73,9 @@ TEST_F(DatasetTest, LoadCSVTestOne) {
 
     // Test raw data
     EXPECT_TRUE(raw_data.size() == 150);
-    EXPECT_TRUE(test_string_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
-    EXPECT_TRUE(test_string_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
-    EXPECT_TRUE(test_string_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
 
     // Test numerical data
     EXPECT_TRUE(data.get_rows() == 150);
@@ -115,9 +115,9 @@ TEST_F(DatasetTest, LoadCSVTestFour) {
 
     // Test raw data
     EXPECT_TRUE(raw_data.size() == 12);
-    EXPECT_TRUE(test_string_data_(raw_data[0], { "1", "5.1", "3.5", "1.4", ".2", "Setosa" }));
-    EXPECT_TRUE(test_string_data_(raw_data[4], { "5", "7", "3.2", "4.7", "1.4", "Versicolor" }));
-    EXPECT_TRUE(test_string_data_(raw_data[9], { "10", "7.2", "3", "5.8", "1.6", "Virginica" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[0], { "1", "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[4], { "5", "7", "3.2", "4.7", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[9], { "10", "7.2", "3", "5.8", "1.6", "Virginica" }));
     
     // Test numerical data
     EXPECT_TRUE(data.get_rows() == 12);
@@ -145,9 +145,9 @@ TEST_F(DatasetTest, LoadCSVTestFive) {
 
     // Test raw data
     EXPECT_TRUE(raw_data.size() == 150);
-    EXPECT_TRUE(test_string_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
-    EXPECT_TRUE(test_string_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
-    EXPECT_TRUE(test_string_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[0], { "5.1", "3.5", "1.4", ".2", "Setosa" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[75], { "6.6", "3", "4.4", "1.4", "Versicolor" }));
+    EXPECT_TRUE(test_string_row_data_(raw_data[149], { "5.9", "3", "5.1", "1.8", "Virginica" }));
 
     // Test numerical data
     EXPECT_TRUE(data.get_rows() == 150);
@@ -188,10 +188,10 @@ TEST_F(DatasetTest, SaveCSVTestOne) {
 
     EXPECT_TRUE(raw_data_1.size() == raw_data_2.size());
     for (size_t row = 0; row < raw_data_1.size(); ++row) {
-        EXPECT_TRUE(test_string_data_(raw_data_1[row], raw_data_2[row]));
+        EXPECT_TRUE(test_string_row_data_(raw_data_1[row], raw_data_2[row]));
     }
-    EXPECT_TRUE(test_string_data_(raw_targets_1, raw_targets_2));
-    EXPECT_TRUE(test_string_data_(headers_1, headers_2));
+    EXPECT_TRUE(test_string_row_data_(raw_targets_1, raw_targets_2));
+    EXPECT_TRUE(test_string_row_data_(headers_1, headers_2));
     EXPECT_TRUE(data_1 == data_2);
     EXPECT_TRUE(targets_1 == targets_2);
 }

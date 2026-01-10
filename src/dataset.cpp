@@ -26,6 +26,7 @@ Dataset::Dataset(const string& path)
 }
 
 void Dataset::load_csv(const string& path, bool headers, bool index_column, size_t target_column) {
+    logger.log("Loading dataset from: '" + path + "'", Logger::Level::Info);
     path_ = path;
     headers_ = headers;
     index_column_ = index_column;
@@ -35,6 +36,7 @@ void Dataset::load_csv(const string& path, bool headers, bool index_column, size
 }
 
 void Dataset::save_csv(const string& path) {
+    logger.log("Saving dataset to: '" + path + "'", Logger::Level::Info);
     ofstream file;
     file.open(path);
 
@@ -128,7 +130,9 @@ void Dataset::set_headers(bool headers) {
 void Dataset::process_data_() {
     ifstream file(path_);
     if (!file.is_open()) {
-        throw std::runtime_error("Failed to open file: " + path_);
+        string message = "Failed to open file: " + path_;
+        logger.log(message, Logger::Level::Error);
+        throw std::runtime_error(message);
     }
     
     // Erase any existing data
@@ -145,15 +149,12 @@ void Dataset::process_data_() {
         }
         raw_data_.push_back(line_splitted);
     }
-
     if (raw_data_.empty()) {
         return;
     }
-    
     if (target_column_ < 0 || target_column_ > static_cast<long long>(raw_data_[0].size()) - 1) {
         target_column_ = static_cast<long long>(raw_data_[0].size()) - 1;
     }
-
     if (target_column_ < 0) {
         string message = "[ERROR] Target column could not be processed correctly.";
         logger.log(message, Logger::Level::Error);
@@ -302,4 +303,3 @@ bool Dataset::is_target_column_categorical_() const {
     }
     return false;
 }
-
