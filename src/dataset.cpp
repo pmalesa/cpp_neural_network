@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include <set>
-#include <sstream>
 
 using std::ifstream;
 using std::ofstream;
@@ -17,91 +16,113 @@ using std::set;
 
 static Logger& logger = Logger::instance();
 
+// --------------------------------------------------
+//  Constructors
+// --------------------------------------------------
+
 Dataset::Dataset()
-    : path_(""), size_(0), target_column_(-1), headers_(false), index_column_(false), categorical_(false) { }
+    : path_(""), 
+      size_(0), 
+      target_column_(-1),
+      headers_(false),
+      index_column_(false),
+      categorical_(false) {}
 
 Dataset::Dataset(const string& path)
-    : path_(path), size_(0), target_column_(-1), headers_(false), index_column_(false), categorical_(false) {
+    : Dataset() {
     load_csv(path);
 }
 
+// --------------------------------------------------
+//  I/O Operations
+// --------------------------------------------------
+
 void Dataset::load_csv(const string& path, bool headers, bool index_column, size_t target_column) {
     logger.log("Loading dataset from: '" + path + "'", Logger::Level::Info);
+    
     path_ = path;
     headers_ = headers;
     index_column_ = index_column;
     target_column_ = target_column;
     size_ = 0;
+
     process_data_();
 }
 
 void Dataset::save_csv(const string& path) {
     logger.log("Saving dataset to: '" + path + "'", Logger::Level::Info);
-    ofstream file;
-    file.open(path);
-
-    std::ostringstream oss;
-
-    // Save headers if present
-    if (headers_) {
-        for (size_t col = 0; col < header_names_.size(); ++col) {
-            oss << header_names_[col];
-            if (col < header_names_.size() - 1) {
-                oss << ',';
-            }
-        }
-        oss << '\n';
-        file << oss.str();
-        oss.str("");
+    
+    ofstream file(path);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open file for writing: '" + path + "'");
     }
 
-    // Save the rest of the data
-    for (size_t row = 0; row < raw_data_.size(); ++row) {
-        for (size_t col = 0; col < raw_data_[0].size(); ++col) {
-            oss << raw_data_[row][col];
-            if (col < raw_data_[0].size() - 1) {
-                oss << ',';
+    // Write headers if present
+    if (headers_ && !header_names_.empty()) {
+        for (size_t col = 0; col < header_names_.size(); ++col) {
+            file << header_names_[col];
+            if (col + 1 < header_names_.size()) {
+                file << ',';
             }
         }
-        oss << '\n';
-        file << oss.str();
-        oss.str("");
+        file << '\n';
+    }
+
+    // Write data
+    for (const auto& row : raw_data_) {
+        for (size_t col = 0; col < row.size(); ++col) {
+            file << row[col];
+            if (col + 1 < row.size()) {
+                file << ',';
+            }
+        }
+        file << '\n';
     }
     file.close();
-}
-
-Matrix Dataset::operator[](size_t row) const {
-    return data_[row];
-}
-
-Matrix Dataset::get_range(size_t start_row, size_t end_row) const {
-    if (end_row < start_row) {
-        throw std::invalid_argument("Invalid range - start index has to be smaller or equal to the end index.");
-    }
-
-    size_t n_elements = end_row - start_row;
-    Matrix result(n_elements, data_.get_cols());
-
-    size_t current_row = 0;
-    for (size_t row = start_row; row < end_row; ++row) {
-        for (size_t col = 0; col < data_.get_cols(); ++col) {
-            result[current_row][col] = data_[row][col];
-        }
-        ++current_row;
-    }
-
-    return result;
-}
-
-
-const vector<string>& Dataset::get_row(size_t row) const {
-    return raw_data_[row];
 }
 
 /* TODO */
 void Dataset::print() const {
     
 }
+
+// --------------------------------------------------
+//  Data Access
+// --------------------------------------------------
+
+Matrix Dataset::operator[](size_t row) const {
+    if (row >= data_.get_rows()) {
+        throw std::out_of_range("Row index out of bounds.");
+    }
+    return data_[row];
+}
+
+Matrix Dataset::get_range(size_t start_row, size_t end_row) const {
+    if (start_row >= end_row || end_row > data_.get_rows()) {
+        throw std::invalid_argument("Invalid dataset range: [" +
+            std::to_string(start_row) + ", " + std::to_string(end_row) + ")");
+    }
+
+    size_t n_rows = end_row - start_row;
+    Matrix result(n_rows, data_.get_cols());
+    for (size_t row = 0; row < n_rows; ++row) {
+        for (size_t col = 0; col < data_.get_cols(); ++col) {
+            result[row][col] = data_[start_row + row][col];
+        }
+    }
+    return result;
+}
+
+const vector<string>& Dataset::get_row(size_t row) const {
+    if (row >= raw_data_.size()) {
+        throw std::out_of_range("Row index out of bounds.");
+    }
+    return raw_data_[row];
+}
+
+// --------------------------------------------------
+//  Configuration setters
+// --------------------------------------------------
 
 void Dataset::set_target_column(size_t target_column) {
     if (target_column_ == static_cast<long long>(target_column)) {
@@ -126,6 +147,10 @@ void Dataset::set_headers(bool headers) {
     headers_ = headers;
     process_data_();
 }
+
+// --------------------------------------------------
+//  CSV Parsing & Conversion (TODO - REFACTOR)
+// --------------------------------------------------
 
 void Dataset::process_data_() {
     ifstream file(path_);
