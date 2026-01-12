@@ -149,7 +149,7 @@ void Dataset::set_headers(bool headers) {
 }
 
 // --------------------------------------------------
-//  CSV Parsing & Conversion (TODO - REFACTOR)
+//  CSV Parsing & Conversion
 // --------------------------------------------------
 
 void Dataset::process_data_() {
@@ -167,23 +167,17 @@ void Dataset::process_data_() {
     // Obtain raw data
     string line;
     while (getline(file, line)) {
-        vector<string> line_splitted = split_csv_line_(line);
+        auto tokens = split_csv_line_(line);
         if (headers_ && header_names_.empty()) {
-            header_names_ = line_splitted;
+            header_names_ = std::move(tokens);
             continue;
         }
-        raw_data_.push_back(line_splitted);
+        raw_data_.push_back(tokens);
     }
     if (raw_data_.empty()) {
-        return;
-    }
-    if (target_column_ < 0 || target_column_ > static_cast<long long>(raw_data_[0].size()) - 1) {
-        target_column_ = static_cast<long long>(raw_data_[0].size()) - 1;
-    }
-    if (target_column_ < 0) {
-        string message = "[ERROR] Target column could not be processed correctly.";
+        string message = "[ERROR] Empty dataset file: '" + path_ + "'";
         logger.log(message, Logger::Level::Error);
-        throw std::invalid_argument(message);
+        throw std::runtime_error(message);
     }
 
     // Verify number of columns
@@ -195,8 +189,18 @@ void Dataset::process_data_() {
             throw std::invalid_argument(message);
         }
     }
-    logger.log("Raw data processed successfully.", Logger::Level::Info);
 
+    // Default to last column if invalid
+    if (target_column_ < 0 || target_column_ > static_cast<long long>(raw_data_[0].size()) - 1) {
+        target_column_ = static_cast<long long>(raw_data_[0].size()) - 1;
+    }
+    if (target_column_ < 0) {
+        string message = "[ERROR] Target column could not be set correctly - dataset empty.";
+        logger.log(message, Logger::Level::Error);
+        throw std::invalid_argument(message);
+    }
+
+    logger.log("Raw CSV processed successfully.", Logger::Level::Info);
     convert_to_numerical_();
 }
 
@@ -207,46 +211,47 @@ void Dataset::convert_to_numerical_() {
         throw std::invalid_argument(message);
     }
 
+    const size_t n_cols = raw_data_[0].size();
+    const size_t n_rows = raw_data_.size();
+    const size_t target_col = static_cast<size_t>(target_column_);
+    const size_t n_features = n_cols - (index_column_ ? 2 : 1);
+    size_ = n_rows;
+
     /* Convert raw data into numerical */
-    size_t n_features = raw_data_[0].size() - 1; 
-    if (index_column_) {
-        --n_features;
-    }
-    size_ = raw_data_.size();
-    size_t current_column = 0;
-    size_t target_column = static_cast<size_t>(target_column_);
     data_ = Matrix(size_, n_features);
-    for (size_t col = 0; col < raw_data_[0].size(); ++col) {
-        if ((index_column_ && col == 0) || col == target_column) {
+    size_t feature_col = 0;
+    for (size_t col = 0; col < n_cols; ++col) {
+        if ((index_column_ && col == 0) || col == target_col) {
             continue;
         }
-        for (size_t row = 0; row < raw_data_.size(); ++row) {
-            data_[row][current_column] = std::stod(raw_data_[row][col]);
+        for (size_t row = 0; row < n_rows; ++row) {
+            data_[row][feature_col] = std::stod(raw_data_[row][col]);
         }
-        ++current_column;
+        ++feature_col;
     }
+
+    label_to_int_map_.clear();
+    int_to_label_map_.clear();
 
     /* Convert the target column to mapped integer values (from N to N-1) */
     targets_ = Matrix(size_, 1);
-    label_to_int_map_.clear();
-    int_to_label_map_.clear();
     if (is_target_column_categorical_()) {
         set<string> unique_labels;
-        for (size_t row = 0; row < raw_data_.size(); ++row) {
-            unique_labels.insert(raw_data_[row][target_column]);
+        for (const auto& row : raw_data_) {
+            unique_labels.insert(row[target_col]);
         }
-        int label = 0;
-        for (auto it = unique_labels.begin(); it != unique_labels.end(); ++it) {
-            label_to_int_map_.insert({*it, label});
-            int_to_label_map_.insert({label, *it});
-            ++label;
+        int id = 0;
+        for (const auto& label : unique_labels) {
+            label_to_int_map_[label] = id;
+            int_to_label_map_[id] = label;
+            ++id;
         }
-        for (size_t row = 0; row < size_; ++row) {
-            targets_[row][0] = static_cast<double>(label_to_int_map_[raw_data_[row][target_column]]);
+        for (size_t row = 0; row < n_rows; ++row) {
+            targets_[row][0] = static_cast<double>(label_to_int_map_.at(raw_data_[row][target_col]));
         }
     } else {
-        for (size_t row = 0; row < size_; ++row) {
-            targets_[row][0] = std::stod(raw_data_[row][target_column]);
+        for (size_t row = 0; row < n_rows; ++row) {
+            targets_[row][0] = std::stod(raw_data_[row][target_col]);
         }
     }
 
@@ -256,14 +261,14 @@ void Dataset::convert_to_numerical_() {
 vector<string> Dataset::split_csv_line_(const string& line) const {
     vector<string> result;
     string cell;
-    bool in_quotes;
+    bool in_quotes = false;
 
     for (char ch : line) {
         if (ch == '"') {
             in_quotes = !in_quotes;
         } else if (ch == ',' && !in_quotes) {
             trim_(cell);
-            result.push_back(cell);
+            result.push_back(std::move(cell));
             cell.clear();
         } else {
             cell += ch;
@@ -271,7 +276,7 @@ vector<string> Dataset::split_csv_line_(const string& line) const {
     }
 
     trim_(cell);
-    result.push_back(cell);
+    result.push_back(std::move(cell));
     return result;
 }
 
@@ -288,13 +293,13 @@ void Dataset::trim_(string& str) const {
  * any categorical data (excluding the target column).
 */
 bool Dataset::is_data_categorical_() const {
-    size_t target_column = static_cast<size_t>(target_column_);
-    for (size_t row = 0; row < raw_data_.size(); ++row) {
-        for (size_t col = 0; col < raw_data_[0].size(); ++col) {
-            if (col == target_column) {
+    size_t target_col = static_cast<size_t>(target_column_);
+    for (const auto& row : raw_data_) {
+        for (size_t col = 0; col < row.size(); ++col) {
+            if (col == target_col) {
                 continue;
             }
-            if (!is_float_(raw_data_[row][col])) {
+            if (!is_float_(row[col])) {
                 return true;
             }
         }
@@ -312,17 +317,15 @@ bool Dataset::is_float_(const string& float_str) const {
         size_t pos;
         std::stod(float_str, &pos);
         return pos == float_str.size();
-    } catch (const std::invalid_argument&) {
-        return false;
-    } catch (const std::out_of_range&) {
+    } catch (...) {
         return false;
     }
 }
 
 bool Dataset::is_target_column_categorical_() const {
-    size_t target_column = static_cast<size_t>(target_column_);
-    for (size_t row = 0; row < raw_data_.size(); ++row) {
-        if (!is_float_(raw_data_[row][target_column])) {
+    size_t target_col = static_cast<size_t>(target_column_);
+    for (const auto& row : raw_data_) {
+        if (!is_float_(row[target_col])) {
             return true;
         }
     }
