@@ -20,15 +20,15 @@ rule link_rule
     description  = Linking $out
 
 # Build the .o files
-build $objdir/timer.o: compile_obj_rule $srcdir/timer.cpp
-build $objdir/logger.o: compile_obj_rule $srcdir/logger.cpp
-build $objdir/model.o: compile_obj_rule $srcdir/model.cpp
-build $objdir/neural_network.o: compile_obj_rule $srcdir/neural_network.cpp
-build $objdir/matrix.o: compile_obj_rule $srcdir/matrix.cpp
-build $objdir/loss.o: compile_obj_rule $srcdir/loss.cpp
-build $objdir/activation.o: compile_obj_rule $srcdir/activation.cpp
-build $objdir/dataset.o: compile_obj_rule $srcdir/dataset.cpp
-build $objdir/metrics.o: compile_obj_rule $srcdir/metrics.cpp
+build $objdir/timer.o: compile_obj_rule $srcdir/core/timer.cpp
+build $objdir/logger.o: compile_obj_rule $srcdir/io/logger.cpp
+build $objdir/model.o: compile_obj_rule $srcdir/model/model.cpp
+build $objdir/neural_network.o: compile_obj_rule $srcdir/model/neural_network.cpp
+build $objdir/matrix.o: compile_obj_rule $srcdir/core/matrix.cpp
+build $objdir/loss.o: compile_obj_rule $srcdir/core/loss.cpp
+build $objdir/activation.o: compile_obj_rule $srcdir/core/activation.cpp
+build $objdir/dataset.o: compile_obj_rule $srcdir/io/dataset.cpp
+build $objdir/metrics.o: compile_obj_rule $srcdir/core/metrics.cpp
 build $objdir/matrix_unittest.o: compile_obj_rule $testsdir/matrix_unittest.cpp
 build $objdir/model_unittest.o: compile_obj_rule $testsdir/model_unittest.cpp
 build $objdir/neural_network_unittest.o: compile_obj_rule $testsdir/neural_network_unittest.cpp
