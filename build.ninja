@@ -17,7 +17,14 @@ rule compile_exec_rule
 # Link .o files
 rule link_rule
     command = g++ $in -o $out $ldflags
-    description  = Linking $out
+    description = Linking $out
+
+# Clean rule
+rule clean_rule
+    command = rm -rf $objdir libmynn.a run_tests
+    description = Cleaning build artifacts
+
+build clean: clean_rule
 
 # Build the .o files
 build $objdir/timer.o: compile_obj_rule $srcdir/core/timer.cpp
@@ -38,4 +45,63 @@ build $objdir/dataset_unittest.o: compile_obj_rule $testsdir/dataset_unittest.cp
 build $objdir/metrics_unittest.o: compile_obj_rule $testsdir/metrics_unittest.cpp
 
 # Link the .o files and produce the binary
-build run_tests: link_rule $objdir/timer.o $objdir/logger.o $objdir/model.o $objdir/neural_network.o $objdir/matrix.o $objdir/loss.o $objdir/activation.o $objdir/dataset.o $objdir/metrics.o $objdir/model_unittest.o $objdir/neural_network_unittest.o $objdir/matrix_unittest.o $objdir/activation_unittest.o $objdir/loss_unittest.o $objdir/dataset_unittest.o $objdir/metrics_unittest.o
+build run_tests: link_rule $
+    $objdir/timer.o $
+    $objdir/logger.o $
+    $objdir/model.o $
+    $objdir/neural_network.o $
+    $objdir/matrix.o $
+    $objdir/loss.o $
+    $objdir/activation.o $
+    $objdir/dataset.o $
+    $objdir/metrics.o $
+    $objdir/model_unittest.o $
+    $objdir/neural_network_unittest.o $
+    $objdir/matrix_unittest.o $
+    $objdir/activation_unittest.o $
+    $objdir/loss_unittest.o $
+    $objdir/dataset_unittest.o $
+    $objdir/metrics_unittest.o
+
+default run_tests
+
+########################################
+# Static library and installation
+########################################
+
+# Rule to create a static library (.a)
+rule ar_rule
+    command = ar rcs $out $in
+    description = Creating static library $out
+
+# Create static library from compiled object files (excluding unit tests)
+build libcppnn.a: ar_rule $
+    $objdir/timer.o $
+    $objdir/logger.o $
+    $objdir/model.o $
+    $objdir/neural_network.o $
+    $objdir/matrix.o $
+    $objdir/loss.o $
+    $objdir/activation.o $
+    $objdir/dataset.o $
+    $objdir/metrics.o $
+
+# Rule to install headers and library system-wide (Unix)
+rule install_rule
+    command = install -d /usr/local/include/libcppnn && $
+              install -m 644 include/*.h /usr/local/include/libcppnn/ && $
+              install -d /usr/local/lib && $
+              install -m 644 libcppnn.a /usr/local/lib/
+    description = Installing libcppnn.a and headers
+
+# Target to perform installation
+build install: install_rule libcppnn.a
+
+# Rule to uninstall headers and lbirary from the system (Unix)
+rule uninstall_rule
+    command = rm -rf /usr/local/include/libcppnn && $
+              rm /usr/local/lib/libcppnn.a
+    description = Uninstalling libcppnn.a and headers
+
+# Target to perform uninstallation
+build uninstall: uninstall_rule
