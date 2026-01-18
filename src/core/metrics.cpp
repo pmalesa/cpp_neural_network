@@ -4,9 +4,14 @@
 
 namespace Metrics {
 
-// TODO
 double accuracy(const Matrix& y_pred, const Matrix& y_true) {
-    return 0.0;
+    const ConfusionMatrix cm = get_confusion_matrix_values(y_pred, y_true);
+    const double nom = static_cast<double>(cm.tp + cm.tn);
+    const double denom = static_cast<double>(cm.tp + cm.fp + cm.tn + cm.fn);
+    if (denom < 1.0) {
+        return 0.0;
+    }
+    return nom / denom;
 }
 
 double precision(const Matrix& y_pred, const Matrix& y_true) {
@@ -35,11 +40,16 @@ ConfusionMatrix get_confusion_matrix_values(const Matrix& y_pred, const Matrix& 
 
     const size_t n_rows = y_pred.get_rows();
     const size_t n_cols = y_pred.get_cols();
+    ConfusionMatrix cm;
+
+    if (n_rows == 0 || n_cols == 0) {
+        return cm;
+    }
+
     if (n_rows != 1 && n_cols != 1) {
         throw std::logic_error("Matrix objects need to be in a form of either column or row vectors (1 x N or N x 1).");
     }
 
-    ConfusionMatrix cm;
     const size_t n = (n_rows == 1) ? n_cols : n_rows;
     auto doubles_equal = [](double a, double b, double tolerance = 1e-9) {
         return fabs(a - b) < tolerance;
