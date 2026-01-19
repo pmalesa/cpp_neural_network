@@ -23,9 +23,13 @@ double precision(const Matrix& y_pred, const Matrix& y_true) {
     return static_cast<double>(cm.tp) / denom;
 }
 
-// TODO
 double recall(const Matrix& y_pred, const Matrix& y_true) {
-    return 0.0;
+    const ConfusionMatrix cm = get_confusion_matrix_values(y_pred, y_true);
+    const double denom = static_cast<double>(cm.tp + cm.fn);
+    if (denom < 1.0) {
+        return 0.0;
+    }
+    return static_cast<double>(cm.tp) / denom;
 }
 
 // TODO
