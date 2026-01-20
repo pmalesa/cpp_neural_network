@@ -32,9 +32,15 @@ double recall(const Matrix& y_pred, const Matrix& y_true) {
     return static_cast<double>(cm.tp) / denom;
 }
 
-// TODO
 double f1(const Matrix& y_pred, const Matrix& y_true) {
-    return 0.0;
+    const double precision = Metrics::precision(y_pred, y_true);
+    const double recall = Metrics::recall(y_pred, y_true);    
+    const double nom = 2 * precision * recall;
+    const double denom = precision + recall;
+    if (denom < 1.0) {
+        return 0.0;
+    }
+    return nom / denom;
 }
 
 ConfusionMatrix get_confusion_matrix_values(const Matrix& y_pred, const Matrix& y_true) {
