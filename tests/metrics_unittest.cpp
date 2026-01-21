@@ -16,9 +16,38 @@ protected:
     }
 };
 
-// TEST_F(LossTest, GetConfusionMatrixValuesTest) {
+TEST_F(LossTest, GetConfusionMatrixValuesTest) {
+    // Incorrect sizes
+    Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
+    Matrix gt_incorrect = { {1.0, 1.0} };
+    EXPECT_THROW(Metrics::precision(pred_incorrect, gt_incorrect), std::logic_error);
 
-// }
+    pred_incorrect = { {1.0, 1.0, 0.0}, {0.0, 1.0, 1.0} };
+    gt_incorrect = { {1.0, 1.0, 1.0}, {0.0, 0.0, 0.0} };
+    EXPECT_THROW(Metrics::precision(pred_incorrect, gt_incorrect), std::logic_error);
+
+    // Row vector
+    Matrix pred = { {1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0 } };
+    Matrix gt = { {1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0} };
+    Metrics::ConfusionMatrix cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 2 && cm.tn == 2 && cm.fp == 2 && cm.fn == 1);
+
+    // Column vector
+    pred = { {1.0}, {0.0}, {1.0}, {0.0}, {0.0}, {1.0}, {1.0} };
+    gt = { {1.0}, {0.0}, {0.0}, {1.0}, {0.0}, {0.0}, {1.0} };
+    cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 2 && cm.tn == 2 && cm.fp == 2 && cm.fn == 1);
+
+    // Empty vectors (row/column matrices)
+    pred = { };
+    gt = { };
+    cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 0 && cm.tn == 0 && cm.fp == 0 && cm.fn == 0);
+    pred = { {} };
+    gt = { {} };
+    cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 0 && cm.tn == 0 && cm.fp == 0 && cm.fn == 0); 
+}
 
 TEST_F(LossTest, BinaryClassificationAccuracyTest) {
     // Incorrect sizes
