@@ -31,12 +31,26 @@ TEST_F(LossTest, GetConfusionMatrixValuesTest) {
     Matrix gt = { {1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0} };
     Metrics::ConfusionMatrix cm = Metrics::get_confusion_matrix_values(pred, gt);
     EXPECT_TRUE(cm.tp == 2 && cm.tn == 2 && cm.fp == 2 && cm.fn == 1);
+    pred = { {1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0} };
+    gt = { {1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0} };
+    cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 3 && cm.tn == 4 && cm.fp == 2 && cm.fn == 1);
 
     // Column vector
     pred = { {1.0}, {0.0}, {1.0}, {0.0}, {0.0}, {1.0}, {1.0} };
     gt = { {1.0}, {0.0}, {0.0}, {1.0}, {0.0}, {0.0}, {1.0} };
     cm = Metrics::get_confusion_matrix_values(pred, gt);
     EXPECT_TRUE(cm.tp == 2 && cm.tn == 2 && cm.fp == 2 && cm.fn == 1);
+    pred = { {1.0}, {0.0}, {1.0}, {1.0}, {0.0}, {0.0}, {1.0}, {0.0}, {1.0}, {0.0} };
+    gt = { {1.0}, {0.0}, {0.0}, {1.0}, {1.0}, {0.0}, {1.0}, {0.0}, {0.0}, {0.0} };
+    cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 3 && cm.tn == 4 && cm.fp == 2 && cm.fn == 1);
+
+    // Floating-point fuzz tolerance test
+    pred = { {0.9999999999, 0.0000000001, 1.0000000001, -0.0000000001} };    
+    gt = { {1.0, 0.0, 0.0, 0.0} };
+    cm = Metrics::get_confusion_matrix_values(pred, gt);
+    EXPECT_TRUE(cm.tp == 1 && cm.tn == 2 && cm.fp == 1 && cm.fn == 0);
 
     // Empty vectors (row/column matrices)
     pred = { };
@@ -47,6 +61,11 @@ TEST_F(LossTest, GetConfusionMatrixValuesTest) {
     gt = { {} };
     cm = Metrics::get_confusion_matrix_values(pred, gt);
     EXPECT_TRUE(cm.tp == 0 && cm.tn == 0 && cm.fp == 0 && cm.fn == 0); 
+
+    // Invalid labels
+    pred = { {1.0, 2.0, -1.0, 0.0} };
+    gt = { {1.0, 0.0, 0.0, 1.0} };
+    EXPECT_THROW(Metrics::get_confusion_matrix_values(pred, gt), std::logic_error);
 }
 
 TEST_F(LossTest, BinaryClassificationAccuracyTest) {

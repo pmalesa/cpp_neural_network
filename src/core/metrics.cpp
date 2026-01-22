@@ -64,10 +64,19 @@ ConfusionMatrix get_confusion_matrix_values(const Matrix& y_pred, const Matrix& 
     auto doubles_equal = [](double a, double b, double tolerance = 1e-9) {
         return fabs(a - b) < tolerance;
     };
+    auto is_binary = [](double a, double tolerance = 1e-9) {
+        return fabs(a - 0.0) < tolerance || fabs(a - 1.0) < tolerance;
+    };
 
     for (size_t i = 0; i < n; ++i) {
-        double t = (n_rows == 1) ? y_true[0][i] : y_true[i][0];
-        double p = (n_rows == 1) ? y_pred[0][i] : y_pred[i][0];
+        size_t row = (n_rows == 1) ? 0 : i;
+        size_t col = (n_rows == 1) ? i : 0;
+        double t = y_true[row][col];
+        double p = y_pred[row][col];
+
+        if (!is_binary(t) || !is_binary(p)) {
+            throw std::logic_error("Values in the compared row/column matrices should be binary {0.0, 1.0}");
+        }
 
         if (doubles_equal(p, 1.0) && doubles_equal(t, 1.0)) {
             ++cm.tp;
