@@ -6,9 +6,9 @@
 
 using il = std::initializer_list<std::initializer_list<double>>;
 
-class LossTest : public testing::Test {
+class MetricsTest : public testing::Test {
 public:
-    LossTest() {}
+    MetricsTest() {}
 
 protected:
     bool double_values_equal_(double lhs, double rhs, double tolerance = 1e-9) {
@@ -16,7 +16,7 @@ protected:
     }
 };
 
-TEST_F(LossTest, GetConfusionMatrixValuesTest) {
+TEST_F(MetricsTest, GetConfusionMatrixValuesTest) {
     // Incorrect sizes
     Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
     Matrix gt_incorrect = { {1.0, 1.0} };
@@ -68,7 +68,7 @@ TEST_F(LossTest, GetConfusionMatrixValuesTest) {
     EXPECT_THROW(Metrics::get_confusion_matrix_values(pred, gt), std::logic_error);
 }
 
-TEST_F(LossTest, BinaryClassificationAccuracyTest) {
+TEST_F(MetricsTest, BinaryClassificationAccuracyTest) {
     // Incorrect sizes
     Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
     Matrix gt_incorrect = { {1.0, 1.0} };
@@ -103,7 +103,7 @@ TEST_F(LossTest, BinaryClassificationAccuracyTest) {
     EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), 0.0));    
 }
 
-TEST_F(LossTest, BinaryClassificationPrecisionTest) {
+TEST_F(MetricsTest, BinaryClassificationPrecisionTest) {
     // Incorrect sizes
     Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
     Matrix gt_incorrect = { {1.0, 1.0} };
@@ -138,7 +138,7 @@ TEST_F(LossTest, BinaryClassificationPrecisionTest) {
     EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), 0.0));
 }
 
-TEST_F(LossTest, RecallTest) {
+TEST_F(MetricsTest, RecallTest) {
     // Incorrect sizes
     Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
     Matrix gt_incorrect = { {1.0, 1.0} };
@@ -173,7 +173,7 @@ TEST_F(LossTest, RecallTest) {
     EXPECT_TRUE(double_values_equal_(Metrics::recall(pred, gt), 0.0));
 }
 
-TEST_F(LossTest, F1Test) {
+TEST_F(MetricsTest, F1Test) {
     // Incorrect sizes
     Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
     Matrix gt_incorrect = { {1.0, 1.0} };
