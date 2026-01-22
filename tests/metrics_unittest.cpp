@@ -72,35 +72,30 @@ TEST_F(MetricsTest, BinaryClassificationAccuracyTest) {
     // Incorrect sizes
     Matrix pred_incorrect = { {1.0, 1.0, 0.0} };
     Matrix gt_incorrect = { {1.0, 1.0} };
-    EXPECT_THROW(Metrics::precision(pred_incorrect, gt_incorrect), std::logic_error);
+    EXPECT_THROW(Metrics::accuracy(pred_incorrect, gt_incorrect), std::logic_error);
 
     pred_incorrect = { {1.0, 1.0, 0.0}, {0.0, 1.0, 1.0} };
     gt_incorrect = { {1.0, 1.0, 1.0}, {0.0, 0.0, 0.0} };
-    EXPECT_THROW(Metrics::precision(pred_incorrect, gt_incorrect), std::logic_error);
+    EXPECT_THROW(Metrics::accuracy(pred_incorrect, gt_incorrect), std::logic_error);
 
     // Row vector
     Matrix pred = { {1.0, 0.0, 1.0, 0.0, 0.0, 1.0 } };
     Matrix gt = { {1.0, 0.0, 1.0, 1.0, 0.0, 0.0} };
     double result = 4.0 / 6.0;
-    EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), result));
+    EXPECT_TRUE(double_values_equal_(Metrics::accuracy(pred, gt), result));
 
     // Column vector
     pred = { {1.0}, {0.0}, {1.0}, {0.0}, {0.0}, {1.0} };
     gt = { {1.0}, {0.0}, {1.0}, {1.0}, {0.0}, {0.0} };
-    EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), result));
-
-    // No true positives and no false positives (denominator == 0.0)
-    pred = { {0.0}, {0.0}, {0.0}, {0.0}, {0.0}, {0.0} };
-    gt = { {1.0}, {0.0}, {1.0}, {1.0}, {0.0}, {0.0} };
-    EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), 0.0));
+    EXPECT_TRUE(double_values_equal_(Metrics::accuracy(pred, gt), result));
 
     // Empty vectors (row/column matrices)
     pred = { };
     gt = { };
-    EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), 0.0));
+    EXPECT_TRUE(double_values_equal_(Metrics::accuracy(pred, gt), 0.0));
     pred = { {} };
     gt = { {} };
-    EXPECT_TRUE(double_values_equal_(Metrics::precision(pred, gt), 0.0));    
+    EXPECT_TRUE(double_values_equal_(Metrics::accuracy(pred, gt), 0.0));    
 }
 
 TEST_F(MetricsTest, BinaryClassificationPrecisionTest) {
