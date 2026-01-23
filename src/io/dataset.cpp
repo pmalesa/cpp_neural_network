@@ -1,5 +1,5 @@
 #include "dataset.h"
-#include "logger.h"
+#include "spdlog/spdlog.h"
 
 #include <fstream>
 #include <iostream>
@@ -13,8 +13,6 @@ using std::getline;
 using std::find_if;
 using std::isspace;
 using std::set;
-
-static Logger& logger = Logger::instance();
 
 // --------------------------------------------------
 //  Constructors
@@ -38,7 +36,7 @@ Dataset::Dataset(const string& path)
 // --------------------------------------------------
 
 void Dataset::load_csv(const string& path, bool headers, bool index_column, size_t target_column) {
-    logger.log("Loading dataset from: '" + path + "'", Logger::Level::Info);
+    spdlog::info("Loading dataset from: '" + path + "'");
     
     path_ = path;
     headers_ = headers;
@@ -50,7 +48,7 @@ void Dataset::load_csv(const string& path, bool headers, bool index_column, size
 }
 
 void Dataset::save_csv(const string& path) {
-    logger.log("Saving dataset to: '" + path + "'", Logger::Level::Info);
+    spdlog::info("Saving dataset to: '" + path + "'");
     
     ofstream file(path);
     if (!file.is_open()) {
@@ -156,7 +154,7 @@ void Dataset::process_data_() {
     ifstream file(path_);
     if (!file.is_open()) {
         string message = "Failed to open file: " + path_;
-        logger.log(message, Logger::Level::Error);
+        spdlog::error(message);
         throw std::runtime_error(message);
     }
     
@@ -175,8 +173,8 @@ void Dataset::process_data_() {
         raw_data_.push_back(tokens);
     }
     if (raw_data_.empty()) {
-        string message = "[ERROR] Empty dataset file: '" + path_ + "'";
-        logger.log(message, Logger::Level::Error);
+        string message = "Empty dataset file: '" + path_ + "'";
+        spdlog::error(message);
         throw std::runtime_error(message);
     }
 
@@ -185,7 +183,7 @@ void Dataset::process_data_() {
     for (auto& row : raw_data_) {
         if (row.size() != n_columns) {
             string message = "Loaded CSV file is corrupted - different number of columns in rows.";
-            logger.log(message, Logger::Level::Error);
+            spdlog::error(message);
             throw std::invalid_argument(message);
         }
     }
@@ -195,19 +193,19 @@ void Dataset::process_data_() {
         target_column_ = static_cast<long long>(raw_data_[0].size()) - 1;
     }
     if (target_column_ < 0) {
-        string message = "[ERROR] Target column could not be set correctly - dataset empty.";
-        logger.log(message, Logger::Level::Error);
+        string message = "Target column could not be set correctly - dataset empty.";
+        spdlog::error(message);
         throw std::invalid_argument(message);
     }
 
-    logger.log("Raw CSV processed successfully.", Logger::Level::Info);
+    spdlog::info("Raw CSV processed successfully.");
     convert_to_numerical_();
 }
 
 void Dataset::convert_to_numerical_() {
     if (is_data_categorical_()) {
         string message = "Categorical data procesing not supported!";
-        logger.log(message, Logger::Level::Error);
+        spdlog::error(message);
         throw std::invalid_argument(message);
     }
 
@@ -255,7 +253,7 @@ void Dataset::convert_to_numerical_() {
         }
     }
 
-    logger.log("Conversion to numerical data successful.", Logger::Level::Info);
+    spdlog::info("Conversion to numerical data successful.");
 }
 
 vector<string> Dataset::split_csv_line_(const string& line) const {

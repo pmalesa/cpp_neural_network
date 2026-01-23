@@ -1,21 +1,19 @@
 #include "model.h"
 #include <gtest/gtest.h>
 #include "matrix.h"
-#include "logger.h"
+#include "spdlog/spdlog.h"
 #include <stdexcept>
 
 using il = std::initializer_list<std::initializer_list<double>>;
 
-static Logger& logger = Logger::instance();
-
 class NeuralNetworkTest : public testing::Test {
 public:
     NeuralNetworkTest() {
-        logger.set_printing_enabled(false);
+        spdlog::set_level(spdlog::level::off);
     }
 
     ~NeuralNetworkTest() {
-        logger.set_printing_enabled(true);
+        spdlog::set_level(spdlog::level::info);
     }
 
 protected:

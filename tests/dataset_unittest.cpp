@@ -1,7 +1,7 @@
 #include "dataset.h"
 #include <gtest/gtest.h>
 #include "matrix.h"
-#include "logger.h"
+#include "spdlog/spdlog.h"
 #include <stdexcept>
 #include <cstdio>
 #include <iostream>
@@ -9,16 +9,14 @@
 using std::string;
 using il = std::initializer_list<std::initializer_list<double>>;
 
-static Logger& logger = Logger::instance();
-
 class DatasetTest : public testing::Test {
 public:
     DatasetTest() {
-        logger.set_printing_enabled(false);
+        spdlog::set_level(spdlog::level::off);
     }
 
     ~DatasetTest() {
-        logger.set_printing_enabled(true);
+        spdlog::set_level(spdlog::level::info);
     }
 
 protected:

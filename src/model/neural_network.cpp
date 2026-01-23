@@ -1,18 +1,16 @@
 #include "neural_network.h"
-#include "logger.h"
+#include "spdlog/spdlog.h"
 #include "activation.h"
 #include "loss.h"
 
 #include <stdexcept>
 #include <sstream>
 
-static Logger& logger = Logger::instance();
+using std::string;
 
 NeuralNetwork::NeuralNetwork()
     : n_layers(0), shape({}), activation_functions({}),
-      weights({}), built_(false), A_values_({}), Z_values_({}) {
-    logger.set_level(Logger::Level::Error);
-}
+      weights({}), built_(false), A_values_({}), Z_values_({}) {}
 
 NeuralNetwork::NeuralNetwork(const vector<size_t>& new_shape, const vector<ActivationFunction>& new_activation_functions) 
     : n_layers(new_shape.size()), shape(new_shape), activation_functions(new_activation_functions), 
@@ -20,7 +18,6 @@ NeuralNetwork::NeuralNetwork(const vector<size_t>& new_shape, const vector<Activ
 /*
     Network layer's sizes including input and output layers
 */
-    logger.set_level(Logger::Level::Error);
     if (new_shape.size() != new_activation_functions.size()) {
         n_layers = 0;
         shape.clear();
@@ -41,10 +38,10 @@ NeuralNetwork& NeuralNetwork::erase() {
 }
 
 NeuralNetwork& NeuralNetwork::build() {
-    logger.log("Building neural network...", Logger::Level::Info);
+    spdlog::info("Building neural network...");
     if (n_layers < 2) {
         string err_msg = "Cannot build a network with fewer than 2 layers!.";
-        logger.log(err_msg, Logger::Level::Error);
+        spdlog::error(err_msg);
         throw std::logic_error(err_msg); 
     }
     for (size_t layer = 0; layer < n_layers - 1; ++layer) {
@@ -54,7 +51,7 @@ NeuralNetwork& NeuralNetwork::build() {
     }
     built_ = true;
 
-    logger.log("Neural network built successfully.", Logger::Level::Info);
+    spdlog::info("Neural network built successfully.");
     std::ostringstream log_msg_oss;
     log_msg_oss << "Number of hidden layers: " << (n_layers > 2 ? n_layers - 2 : 0) << " | Network structure: [";
     for (size_t layer = 0; layer < shape.size(); ++layer) {
@@ -64,7 +61,7 @@ NeuralNetwork& NeuralNetwork::build() {
         }
     }
     log_msg_oss << "]";
-    logger.log(log_msg_oss.str(), Logger::Level::Info);
+    spdlog::info(log_msg_oss.str());
 
     return *this;
 }

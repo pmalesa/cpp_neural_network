@@ -1,7 +1,7 @@
 srcdir = src
 testsdir = tests
 objdir = obj
-cflags = -Wall -Isrc -Iinclude
+cflags = -Wall -Isrc -Iinclude -Iinclude/spdlog
 ldflags = -lgtest -lgtest_main -pthread
 
 # Compile from .cpp -> .o
@@ -28,7 +28,6 @@ build clean: clean_rule
 
 # Build the .o files
 build $objdir/timer.o: compile_obj_rule $srcdir/core/timer.cpp
-build $objdir/logger.o: compile_obj_rule $srcdir/io/logger.cpp
 build $objdir/model.o: compile_obj_rule $srcdir/model/model.cpp
 build $objdir/neural_network.o: compile_obj_rule $srcdir/model/neural_network.cpp
 build $objdir/matrix.o: compile_obj_rule $srcdir/core/matrix.cpp
@@ -47,7 +46,6 @@ build $objdir/metrics_unittest.o: compile_obj_rule $testsdir/metrics_unittest.cp
 # Link the .o files and produce the binary
 build run_tests: link_rule $
     $objdir/timer.o $
-    $objdir/logger.o $
     $objdir/model.o $
     $objdir/neural_network.o $
     $objdir/matrix.o $
@@ -77,7 +75,6 @@ rule ar_rule
 # Create static library from compiled object files (excluding unit tests)
 build libcppnn.a: ar_rule $
     $objdir/timer.o $
-    $objdir/logger.o $
     $objdir/model.o $
     $objdir/neural_network.o $
     $objdir/matrix.o $
