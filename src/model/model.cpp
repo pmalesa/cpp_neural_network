@@ -14,9 +14,7 @@ Model::Model(const vector<size_t>& shape, const vector<ActivationFunction>& acti
     Network layer's sizes including input and output layers
 */
     if (shape.size() != activation_functions.size()) {
-        nn_.n_layers = 0;
-        nn_.shape.clear();
-        nn_.activation_functions.clear();
+        nn_.erase();
         throw std::logic_error("Number of layers and number of activation functions cannot be different!");
     }
 }
@@ -28,11 +26,7 @@ Model& Model::add_layer(size_t n_neurons, LayerType layer_type, ActivationFuncti
     if (n_neurons < 1) {
         return *this;
     }
-    ++nn_.n_layers;
-    nn_.shape.push_back(n_neurons);
-    if (layer_type != LayerType::Output) {
-        nn_.activation_functions.push_back(activation_function);
-    }
+    nn_.add_layer(n_neurons, layer_type, activation_function);
     return *this;
 }
 

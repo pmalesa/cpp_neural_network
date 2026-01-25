@@ -7,6 +7,7 @@
 
 using std::vector;
 using types::ActivationFunction;
+using types::LayerType;
 
 class NeuralNetwork {
 public:
@@ -22,12 +23,25 @@ public:
     void backward(const Matrix& input, const Matrix& target, double learning_rate);
     bool is_built() const { return built_; }
 
-    size_t n_layers;
-    vector<size_t> shape;
-    vector<ActivationFunction> activation_functions;
-    vector<Matrix> weights;
+    NeuralNetwork& add_layer(size_t n_neurons, LayerType layer_type, ActivationFunction activation_function);
+    // If layer_type is equal to LayerType::Output, then activation_function parameter can be ommitted (it will not be used)
+
+    // Overloads for "Python-like" parameter passing
+    NeuralNetwork& add_layer(size_t n_neurons);
+    NeuralNetwork& add_layer(size_t n_neurons, LayerType layer_type);
+    NeuralNetwork& add_layer(size_t n_neurons, ActivationFunction activation_function);
+
+    size_t get_n_layers() const { return n_layers_; }
+    vector<size_t> get_shape() const { return shape_; }
+    vector<ActivationFunction> get_activation_functions() const { return activation_functions_; }
+    vector<Matrix> get_weights() const { return weights_; }
 
 private:
+    size_t n_layers_;
+    vector<size_t> shape_;
+    vector<ActivationFunction> activation_functions_;
+    vector<Matrix> weights_;
+
     bool built_;
     vector<Matrix> A_values_;
     vector<Matrix> Z_values_;

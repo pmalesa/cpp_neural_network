@@ -40,7 +40,7 @@ public:
     Model& clear();
     void save(const string& filename) const;
     void load(const string& filename);
-    vector<size_t> shape() const { return nn_.shape; }
+    vector<size_t> shape() const { return nn_.get_shape(); }
 
 private:
     NeuralNetwork nn_;

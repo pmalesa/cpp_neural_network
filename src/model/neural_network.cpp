@@ -9,28 +9,28 @@
 using std::string;
 
 NeuralNetwork::NeuralNetwork()
-    : n_layers(0), shape({}), activation_functions({}),
-      weights({}), built_(false), A_values_({}), Z_values_({}) {}
+    : n_layers_(0), shape_({}), activation_functions_({}),
+      weights_({}), built_(false), A_values_({}), Z_values_({}) {}
 
 NeuralNetwork::NeuralNetwork(const vector<size_t>& new_shape, const vector<ActivationFunction>& new_activation_functions) 
-    : n_layers(new_shape.size()), shape(new_shape), activation_functions(new_activation_functions), 
-      weights({}), built_(false), A_values_({}), Z_values_({}) {
+    : n_layers_(new_shape.size()), shape_(new_shape), activation_functions_(new_activation_functions), 
+      weights_({}), built_(false), A_values_({}), Z_values_({}) {
 /*
     Network layer's sizes including input and output layers
 */
     if (new_shape.size() != new_activation_functions.size()) {
-        n_layers = 0;
-        shape.clear();
-        activation_functions.clear();
+        n_layers_ = 0;
+        shape_.clear();
+        activation_functions_.clear();
         throw std::logic_error("Number of layers and number of activation functions cannot be different!");
     }
 }
 
 NeuralNetwork& NeuralNetwork::erase() {
-    n_layers = 0;
-    shape.clear();
-    activation_functions.clear();
-    weights.clear();
+    n_layers_ = 0;
+    shape_.clear();
+    activation_functions_.clear();
+    weights_.clear();
     A_values_.clear();
     Z_values_.clear();
     built_ = false;
@@ -39,24 +39,24 @@ NeuralNetwork& NeuralNetwork::erase() {
 
 NeuralNetwork& NeuralNetwork::build() {
     spdlog::info("Building neural network...");
-    if (n_layers < 2) {
+    if (n_layers_ < 2) {
         string err_msg = "Cannot build a network with fewer than 2 layers!.";
         spdlog::error(err_msg);
         throw std::logic_error(err_msg); 
     }
-    for (size_t layer = 0; layer < n_layers - 1; ++layer) {
-        Matrix layer_weights(shape[layer] + 1, shape[layer + 1]);
+    for (size_t layer = 0; layer < n_layers_ - 1; ++layer) {
+        Matrix layer_weights(shape_[layer] + 1, shape_[layer + 1]);
         layer_weights.fill_random();
-        weights.push_back(layer_weights); 
+        weights_.push_back(layer_weights); 
     }
     built_ = true;
 
     spdlog::info("Neural network built successfully.");
     std::ostringstream log_msg_oss;
-    log_msg_oss << "Number of hidden layers: " << (n_layers > 2 ? n_layers - 2 : 0) << " | Network structure: [";
-    for (size_t layer = 0; layer < shape.size(); ++layer) {
-        log_msg_oss << shape[layer];
-        if (layer < shape.size() - 1) {
+    log_msg_oss << "Number of hidden layers: " << (n_layers_ > 2 ? n_layers_ - 2 : 0) << " | Network structure: [";
+    for (size_t layer = 0; layer < shape_.size(); ++layer) {
+        log_msg_oss << shape_[layer];
+        if (layer < shape_.size() - 1) {
             log_msg_oss << ", ";
         }
     }
@@ -70,7 +70,7 @@ void NeuralNetwork::randomize_weights_() {
     if (built_ == false) {
         throw std::logic_error("Cannot randomize weights of an unbuilt network!"); 
     }
-    for (Matrix& weights : weights) {
+    for (Matrix& weights : weights_) {
         weights.fill_random();
     }
 }
@@ -90,14 +90,14 @@ It takes batch of column vectors on input.
 
     Matrix X = input;
 
-    for (size_t layer = 0; layer < weights.size(); ++layer) {
+    for (size_t layer = 0; layer < weights_.size(); ++layer) {
         Matrix X_bias = X.add_bias_row();
-        const Matrix& W = weights[layer];
+        const Matrix& W = weights_[layer];
         Matrix Z = W.transpose() * X_bias;
         if (learning) {
             Z_values_.push_back(Z);
         }
-        switch (activation_functions[layer]) {
+        switch (activation_functions_[layer]) {
             case ActivationFunction::ReLU:
                 X = Activation::relu(Z);
                 break;
@@ -135,4 +135,25 @@ void NeuralNetwork::backward(const Matrix& input, const Matrix& target, double l
 
     // ...
 
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type, ActivationFunction activation_function) {
+    ++n_layers_;
+    shape_.push_back(n_neurons);
+    if (layer_type != LayerType::Output) {
+        activation_functions_.push_back(activation_function);
+    }
+    return *this;
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons) {
+    return add_layer(n_neurons, LayerType::Hidden, ActivationFunction::ReLU);
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type) {
+    return add_layer(n_neurons, layer_type, ActivationFunction::ReLU);
+}
+
+NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, ActivationFunction activation_function) {
+    return add_layer(n_neurons, LayerType::Hidden, activation_function);
 }
