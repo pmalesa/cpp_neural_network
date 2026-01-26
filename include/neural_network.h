@@ -33,19 +33,17 @@ public:
 
     size_t get_n_layers() const { return n_layers_; }
     vector<size_t> get_shape() const { return shape_; }
-    vector<ActivationFunction> get_activation_functions() const { return activation_functions_; }
-    vector<Matrix> get_weights() const { return weights_; }
+    vector<ActivationFunction>& get_activation_functions() { return activation_functions_; }
+    vector<Matrix>& get_weights() { return weights_; }
 
 private:
     size_t n_layers_;
     vector<size_t> shape_;
     vector<ActivationFunction> activation_functions_;
     vector<Matrix> weights_;
-
     bool built_;
     vector<Matrix> A_values_;
     vector<Matrix> Z_values_;
 };
-
 
 #endif // NEURAL_NETWORK_H

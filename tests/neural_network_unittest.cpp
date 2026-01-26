@@ -123,27 +123,19 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckBatchTest) {
     EXPECT_TRUE(output.get_rows() == 4);
     EXPECT_TRUE(output.get_cols() == 15);
 }
-/* 
+
 TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckSingleTest) {
     NeuralNetwork nn;
 
-    // Add first layer
     nn.add_layer(4);
-
-    // Add second layer
     nn.add_layer(8);
-
-    // Add third layer
     nn.add_layer(16);
-
-    // Add output layer
     nn.add_layer(2, LayerType::Output);
-
     nn.build();
 
-    nn.weights[0].fill(2.0);
-    nn.weights[1].fill(4.0);
-    nn.weights[2].fill(8.0);
+    nn.get_weights()[0].fill(2.0);
+    nn.get_weights()[1].fill(4.0);
+    nn.get_weights()[2].fill(8.0);
 
     Matrix input(4, 1);
     input.fill(0.5);
@@ -155,30 +147,16 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckSingleTest) {
 
 TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckBatchTest) {
     NeuralNetwork nn;
-    // Add first layer
-    ++nn.n_layers;
-    nn.shape.push_back(4);
-    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
 
-    // Add second layer
-    ++nn.n_layers;
-    nn.shape.push_back(8);
-    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
-
-    // Add third layer
-    ++nn.n_layers;
-    nn.shape.push_back(16);
-    nn.activation_functions.push_back(ActivationFunction::Sigmoid);
-
-    // Add output layer
-    ++nn.n_layers;
-    nn.shape.push_back(2);
-
+    nn.add_layer(4, ActivationFunction::Sigmoid);
+    nn.add_layer(8, ActivationFunction::Sigmoid);
+    nn.add_layer(16, ActivationFunction::Sigmoid);
+    nn.add_layer(2, LayerType::Output);
     nn.build();
 
-    nn.weights[0].fill(2.0);
-    nn.weights[1].fill(4.0);
-    nn.weights[2].fill(8.0);
+    nn.get_weights()[0].fill(2.0);
+    nn.get_weights()[1].fill(4.0);
+    nn.get_weights()[2].fill(8.0);
 
     Matrix input(4, 5);
     input.fill(0.5);
@@ -187,7 +165,7 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckBatchTest) {
     EXPECT_TRUE(output.get_cols() == 5);
     EXPECT_TRUE((output == il{ {1.0, 1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 1.0, 1.0} }));
 }
- */
+
 TEST_F(NeuralNetworkTest, BackwardMethodTest) {
     NeuralNetwork nn;
     EXPECT_THROW(nn.backward({}, {}, 1e-5), std::logic_error);
