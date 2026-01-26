@@ -48,6 +48,44 @@ TEST_F(NeuralNetworkTest, EraseMethodTest) {
     EXPECT_TRUE(not nn.is_built());    
 }
 
+TEST_F(NeuralNetworkTest, AddLayerMethodTest) {
+    NeuralNetwork nn;
+
+    // Add layer with default type and activation function (ReLU + Hidden)
+    nn.add_layer(10);
+    EXPECT_TRUE(nn.get_activation_functions().size() == 1);
+    EXPECT_TRUE(nn.get_activation_functions()[0] == ActivationFunction::ReLU);
+    EXPECT_TRUE(nn.get_n_layers() == 1);
+    EXPECT_TRUE(nn.get_shape()[0] == 10);
+
+    // Add layer with default type (Hidden)
+    nn.add_layer(20, ActivationFunction::Sigmoid);
+    EXPECT_TRUE(nn.get_activation_functions().size() == 2);
+    EXPECT_TRUE(nn.get_activation_functions()[1] == ActivationFunction::Sigmoid);
+    EXPECT_TRUE(nn.get_n_layers() == 2);
+    EXPECT_TRUE(nn.get_shape()[1] == 20);
+
+    // Add layer with default activation function (ReLU)
+    nn.add_layer(30, LayerType::Hidden);
+    EXPECT_TRUE(nn.get_activation_functions().size() == 3);
+    EXPECT_TRUE(nn.get_activation_functions()[2] == ActivationFunction::ReLU);
+    EXPECT_TRUE(nn.get_n_layers() == 3);
+    EXPECT_TRUE(nn.get_shape()[2] == 30);
+
+    // Add layer with no default arguments
+    nn.add_layer(40, LayerType::Hidden, ActivationFunction::Sigmoid);
+    EXPECT_TRUE(nn.get_activation_functions().size() == 4);
+    EXPECT_TRUE(nn.get_activation_functions()[3] == ActivationFunction::Sigmoid);
+    EXPECT_TRUE(nn.get_n_layers() == 4);
+    EXPECT_TRUE(nn.get_shape()[3] == 40);
+
+    // Add output layer
+    nn.add_layer(50, LayerType::Output);
+    EXPECT_TRUE(nn.get_activation_functions().size() == 4);
+    EXPECT_TRUE(nn.get_n_layers() == 5);
+    EXPECT_TRUE(nn.get_shape()[4] == 50);
+}
+
 TEST_F(NeuralNetworkTest, BuildMethodTest) {
     NeuralNetwork nn;
 
@@ -79,13 +117,8 @@ TEST_F(NeuralNetworkTest, BuildMethodTest) {
 
 TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckSingleTest) {
     NeuralNetwork nn;
-
-    // Add first layer
     nn.add_layer(3, ActivationFunction::Sigmoid);
-
-    // Add output layer
     nn.add_layer(2, LayerType::Output);
-
     nn.build();
 
     Matrix input(3, 1);
@@ -98,22 +131,11 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckSingleTest) {
 
 TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckBatchTest) {
     NeuralNetwork nn;
-
-    // Add first layer
     nn.add_layer(100);
-
-    // Add second layer
     nn.add_layer(500);
-
-    // Add third layer
     nn.add_layer(1000);
-
-    // Add fourth layer
     nn.add_layer(500);
-
-    // Add output layer
     nn.add_layer(4, LayerType::Output);
-
     nn.build();
 
     Matrix input(100, 15);
@@ -126,7 +148,6 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputShapeCheckBatchTest) {
 
 TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckSingleTest) {
     NeuralNetwork nn;
-
     nn.add_layer(4);
     nn.add_layer(8);
     nn.add_layer(16);
@@ -147,7 +168,6 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckSingleTest) {
 
 TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckBatchTest) {
     NeuralNetwork nn;
-
     nn.add_layer(4, ActivationFunction::Sigmoid);
     nn.add_layer(8, ActivationFunction::Sigmoid);
     nn.add_layer(16, ActivationFunction::Sigmoid);
