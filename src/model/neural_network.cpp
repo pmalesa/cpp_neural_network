@@ -66,15 +66,6 @@ NeuralNetwork& NeuralNetwork::build() {
     return *this;
 }
 
-void NeuralNetwork::randomize_weights_() {
-    if (built_ == false) {
-        throw std::logic_error("Cannot randomize weights of an unbuilt network!"); 
-    }
-    for (Matrix& weights : weights_) {
-        weights.fill_random();
-    }
-}
-
 Matrix NeuralNetwork::forward(const Matrix& input, bool learning) {
 /*
 It takes batch of column vectors on input.
@@ -156,4 +147,13 @@ NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type) 
 
 NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, ActivationFunction activation_function) {
     return add_layer(n_neurons, LayerType::Hidden, activation_function);
+}
+
+void NeuralNetwork::randomize_weights_() {
+    if (built_ == false) {
+        throw std::logic_error("Cannot randomize weights of an unbuilt network!"); 
+    }
+    for (Matrix& weights : weights_) {
+        weights.fill_random();
+    }
 }
