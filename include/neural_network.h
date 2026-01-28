@@ -13,7 +13,12 @@ class NeuralNetwork {
 public:
     NeuralNetwork();
     NeuralNetwork(const vector<size_t>& shape, const vector<ActivationFunction>& activation_functions);
+    NeuralNetwork(const NeuralNetwork& nn) = default;
+    NeuralNetwork(NeuralNetwork&& nn) noexcept = default;
     ~NeuralNetwork() = default;
+
+    NeuralNetwork& operator=(const NeuralNetwork& nn) = default;
+    NeuralNetwork& operator=(NeuralNetwork&& nn) noexcept = default;
 
     NeuralNetwork& erase(); // Erases all layers, sizes and weights (state as after default constructor)
     NeuralNetwork& build();
