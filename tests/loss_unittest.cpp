@@ -103,8 +103,8 @@ TEST_F(LossTest, MAEDerivativeTest) {
     };
 
     Matrix grad_2 = Loss::mae_derivative(y_true_2, y_pred_2);
-    EXPECT_EQ(grad_2.get_rows(), 3);
-    EXPECT_EQ(grad_2.get_cols(), 3);
+    EXPECT_TRUE(grad_2.get_rows() == 3);
+    EXPECT_TRUE(grad_2.get_cols() == 3);
     EXPECT_TRUE((grad_2 == il{ {0.1111111, 0.1111111, 0.1111111}, {-0.1111111, -0.1111111, -0.1111111}, {0.0, 0.0, 0.0} }));
 }
 
