@@ -82,7 +82,7 @@ It takes batch of column vectors on input.
     Matrix X = input;
 
     for (size_t layer = 0; layer < weights_.size(); ++layer) {
-        Matrix X_bias = X.add_bias_row();
+        Matrix X_bias = X.add_row();
         const Matrix& W = weights_[layer];
         Matrix Z = W.transpose() * X_bias;
         if (learning) {

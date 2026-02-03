@@ -530,7 +530,7 @@ void Matrix::fill_random(double min, double max) {
     }
 }
 
-Matrix Matrix::add_bias_row(double val, bool prepend) const {
+Matrix Matrix::add_row(double val, bool prepend) const {
     if (rows_ == 0 || cols_ == 0) {
         return {};
     }
@@ -553,7 +553,7 @@ Matrix Matrix::add_bias_row(double val, bool prepend) const {
     return result;
 }
 
-Matrix Matrix::add_bias_column(double val, bool prepend) const {
+Matrix Matrix::add_column(double val, bool prepend) const {
     if (rows_ == 0 || cols_ == 0) {
         return {};
     }
@@ -569,6 +569,32 @@ Matrix Matrix::add_bias_column(double val, bool prepend) const {
                 result[row][col] = data_[row][col];
             }    
             result[row][cols_] = val;
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::remove_row(bool beginning) const {
+    if (rows_ == 0 || cols_ == 0 || rows_ == 1) {
+        return {};
+    }
+    Matrix result(rows_ - 1, cols_);
+    size_t i = beginning ? 1 : 0;
+    for (size_t row = 0; row < result.rows_; ++row) {
+        result[row] = data_[row + i];
+    }
+    return result;
+}
+
+Matrix Matrix::remove_column(bool beginning) const {
+    if (rows_ == 0 || cols_ == 0 || cols_ == 1) {
+        return {};
+    }
+    Matrix result(rows_, cols_ - 1);
+    size_t i = beginning ? 1 : 0;
+    for (size_t row = 0; row < result.rows_; ++row) {
+        for (size_t col = 0; col < result.cols_; ++col) {
+            result[row][col] = data_[row][col + i];
         }
     }
     return result;

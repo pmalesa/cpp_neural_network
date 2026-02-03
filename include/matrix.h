@@ -78,8 +78,10 @@ public:
     Matrix flatten() const;
     void fill_random(double min = -1.0, double max = 1.0);
 
-    Matrix add_bias_row(double val = 1.0, bool prepend = true) const;
-    Matrix add_bias_column(double val = 1.0, bool prepend = true) const;
+    Matrix add_row(double val = 1.0, bool prepend = true) const;
+    Matrix add_column(double val = 1.0, bool prepend = true) const;
+    Matrix remove_row(bool beginning = true) const;
+    Matrix remove_column(bool beginning = true) const;
 
     size_t get_rows() const { return rows_; }
     size_t get_cols() const { return cols_; }
