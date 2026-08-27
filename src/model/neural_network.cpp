@@ -77,6 +77,7 @@ It takes batch of column vectors on input.
     if (learning) {
         Z_values_.clear();
         A_values_.clear();
+        A_values_.push_back(input); 
     }
 
     Matrix X = input;
@@ -84,30 +85,18 @@ It takes batch of column vectors on input.
     for (size_t layer = 0; layer < weights_.size(); ++layer) {
         Matrix X_bias = X.add_row();
         const Matrix& W = weights_[layer];
+        
         Matrix Z = W.transpose() * X_bias;
+
         if (learning) {
             Z_values_.push_back(Z);
         }
-        switch (activation_functions_[layer]) {
-            case ActivationFunction::ReLU:
-                X = Activation::relu(Z);
-                break;
-            case ActivationFunction::Tanh:
-                X = Activation::tanh(Z);
-                break;
-            case ActivationFunction::Sigmoid:
-                X = Activation::sigmoid(Z);
-                break;
-            case ActivationFunction::Softmax:
-                X = Activation::softmax(Z);
-                break;
-            default:
-                throw std::logic_error("Unknown activation function!");
-        }
-    }
 
-    if (learning) {
-        A_values_.push_back(X);
+        X = apply_activation_(Z, layer);
+
+        if (learning) {
+            A_values_.push_back(X);
+        }
     }
 
     return X;
@@ -155,5 +144,20 @@ void NeuralNetwork::randomize_weights_() {
     }
     for (Matrix& weights : weights_) {
         weights.fill_random();
+    }
+}
+
+Matrix NeuralNetwork::apply_activation_(const Matrix& Z, size_t layer) {
+    switch (activation_functions_[layer]) {
+        case ActivationFunction::ReLU:
+            return Activation::relu(Z);
+        case ActivationFunction::Tanh:
+            return Activation::tanh(Z);
+        case ActivationFunction::Sigmoid:
+            return Activation::sigmoid(Z);
+        case ActivationFunction::Softmax:
+            return Activation::softmax(Z);
+        default:
+            throw std::logic_error("Unknown activation function!");
     }
 }

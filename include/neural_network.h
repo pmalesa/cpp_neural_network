@@ -46,6 +46,7 @@ public:
     
 private:
     void randomize_weights_();
+    Matrix apply_activation_(const Matrix& Z, size_t layer);
     
     size_t n_layers_;
     vector<size_t> shape_;
