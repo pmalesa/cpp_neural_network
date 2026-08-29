@@ -102,10 +102,14 @@ Matrix categorical_cross_entropy_derivative(const Matrix& y_true, const Matrix& 
     }
 
     const double scale = 1.0 / static_cast<double>(y_true.get_cols());
+    const double eps = 1e-15;
+
     Matrix grads(y_true.get_rows(), y_true.get_cols());
+    
     for (size_t row = 0; row < grads.get_rows(); ++row) {
         for (size_t col = 0; col < grads.get_cols(); ++col) {
-            grads[row][col] = scale * (y_pred[row][col] - y_true[row][col]);
+            double prediction = std::max(y_pred[row][col], eps);
+            grads[row][col] = - scale * y_true[row][col] / prediction;
         }
     }
     return grads;

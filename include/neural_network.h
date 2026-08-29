@@ -8,6 +8,7 @@
 using std::vector;
 using types::ActivationFunction;
 using types::LayerType;
+using types::LossFunction;
 
 class NeuralNetwork {
 public:
@@ -24,7 +25,7 @@ public:
     NeuralNetwork& build();
 
     Matrix forward(const Matrix& input, bool learning = false);
-    void backward(const Matrix& input, const Matrix& target, double learning_rate);
+    void backward(const Matrix& input, const Matrix& target, double learning_rate, LossFunction loss);
     bool is_built() const { return built_; }
     
     NeuralNetwork& add_layer(size_t n_neurons, LayerType layer_type, ActivationFunction activation_function);
@@ -45,9 +46,12 @@ public:
     const vector<Matrix>& get_pre_activations() const { return Z_values_; }
     
 private:
-    void randomize_weights_();
+    void randomize_weights_();  
     Matrix apply_activation_(const Matrix& Z, size_t layer);
-    
+    Matrix apply_loss_derivative_(const Matrix& target, const Matrix& pred, LossFunction loss);
+    Matrix activation_backward_(const Matrix& dA, const Matrix& Z, const Matrix& A, size_t layer);
+    Matrix softmax_backward_(const Matrix& dA, const Matrix& A);
+
     size_t n_layers_;
     vector<size_t> shape_;
     vector<ActivationFunction> activation_functions_;

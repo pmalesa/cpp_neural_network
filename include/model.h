@@ -33,8 +33,8 @@ public:
     Model& add_layer(size_t n_neurons, ActivationFunction activation_function);
 
     Model& fit(const Matrix& X, const Matrix& y,
-                       size_t epochs = 100, double learning_rate = 0.01,
-                       LossFunction loss = LossFunction::BinaryCrossEntropy);
+               size_t epochs = 100, double learning_rate = 0.01,
+               LossFunction loss = LossFunction::BinaryCrossEntropy);
 
     Matrix predict(const Matrix& input) const;
     Model& clear();

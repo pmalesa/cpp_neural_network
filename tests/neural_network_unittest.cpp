@@ -188,6 +188,37 @@ TEST_F(NeuralNetworkTest, ForwardMethodOutputValuesCheckBatchTest) {
 
 TEST_F(NeuralNetworkTest, BackwardMethodTest) {
     NeuralNetwork nn;
-    EXPECT_THROW(nn.backward({}, {}, 1e-5), std::logic_error);
-    // ...
+
+    EXPECT_THROW(nn.backward({}, {}, 1e-5, LossFunction::BinaryCrossEntropy), std::logic_error);
+
+    nn.add_layer(2, ActivationFunction::Sigmoid);
+    nn.add_layer(1, LayerType::Output);
+    nn.build();
+
+    nn.get_weights()[0] = {
+        {0.1},
+        {0.2},
+        {-0.1}
+    };
+
+    Matrix input = {
+        {1.0},
+        {2.0}
+    };
+
+    Matrix target = {
+        {1.0}
+    };
+
+    constexpr double learning_rate = 0.1;
+    constexpr double tolerance = 1e-9;
+
+    nn.forward(input, true);
+    nn.backward(input, target, learning_rate, LossFunction::MSE);
+
+    const Matrix& updated_weights = nn.get_weights()[0];
+
+    EXPECT_NEAR(updated_weights[0][0], 0.123691761847142, tolerance);
+    EXPECT_NEAR(updated_weights[1][0], 0.223691761847142, tolerance);
+    EXPECT_NEAR(updated_weights[2][0], -0.052616476305715, tolerance);
 }
