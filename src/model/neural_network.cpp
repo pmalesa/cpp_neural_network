@@ -9,25 +9,31 @@
 using std::string;
 
 NeuralNetwork::NeuralNetwork()
-    : n_layers_(0), shape_({}), activation_functions_({}),
+    : shape_({}), activation_functions_({}),
       weights_({}), built_(false), A_values_({}), Z_values_({}) {}
 
 NeuralNetwork::NeuralNetwork(const vector<size_t>& new_shape, const vector<ActivationFunction>& new_activation_functions) 
-    : n_layers_(new_shape.size()), shape_(new_shape), activation_functions_(new_activation_functions), 
+    : shape_(new_shape), activation_functions_(new_activation_functions), 
       weights_({}), built_(false), A_values_({}), Z_values_({}) {
 /*
     Network layer's sizes including input and output layers
 */
-    if (new_shape.size() != new_activation_functions.size()) {
-        n_layers_ = 0;
-        shape_.clear();
-        activation_functions_.clear();
-        throw std::logic_error("Number of layers and number of activation functions cannot be different!");
+    if (new_shape.size() < 2 ) {
+        throw std::logic_error("A neural network requires at least an input and output layer!");
+    }
+
+    if (new_activation_functions.size() != new_shape.size() - 1) {
+        throw std::logic_error("A neural network requires one activation per non-input layer!");
+    }
+
+    for (size_t n_neurons : new_shape) {
+        if (n_neurons == 0) {
+            throw std::invalid_argument("Layer must contain at least one neuron!");
+        }
     }
 }
 
 NeuralNetwork& NeuralNetwork::erase() {
-    n_layers_ = 0;
     shape_.clear();
     activation_functions_.clear();
     weights_.clear();
@@ -39,12 +45,25 @@ NeuralNetwork& NeuralNetwork::erase() {
 
 NeuralNetwork& NeuralNetwork::build() {
     spdlog::info("Building neural network...");
-    if (n_layers_ < 2) {
-        string err_msg = "Cannot build a network with fewer than 2 layers!.";
+    if (built_) {
+        string err_msg = "Network has already been built!";
         spdlog::error(err_msg);
         throw std::logic_error(err_msg); 
     }
-    for (size_t layer = 0; layer < n_layers_ - 1; ++layer) {
+
+    if (get_n_layers() < 2) {
+        string err_msg = "Cannot build a network with fewer than 2 layers!";
+        spdlog::error(err_msg);
+        throw std::logic_error(err_msg); 
+    }
+
+    if (activation_functions_.size() != shape_.size() - 1) {
+        string err_msg = "Invalid number of activation functions!";
+        spdlog::error(err_msg);
+        throw std::logic_error(err_msg);
+    }
+
+    for (size_t layer = 0; layer < get_n_layers() - 1; ++layer) {
         Matrix layer_weights(shape_[layer] + 1, shape_[layer + 1]);
         layer_weights.fill_random();
         weights_.push_back(layer_weights); 
@@ -52,14 +71,16 @@ NeuralNetwork& NeuralNetwork::build() {
     built_ = true;
 
     spdlog::info("Neural network built successfully.");
+
     std::ostringstream log_msg_oss;
-    log_msg_oss << "Number of hidden layers: " << (n_layers_ > 2 ? n_layers_ - 2 : 0) << " | Network structure: [";
+    log_msg_oss << "Number of hidden layers: " << (get_n_layers() > 2 ? get_n_layers() - 2 : 0) << " | Network structure: [";
     for (size_t layer = 0; layer < shape_.size(); ++layer) {
         log_msg_oss << shape_[layer];
         if (layer < shape_.size() - 1) {
             log_msg_oss << ", ";
         }
     }
+
     log_msg_oss << "]";
     spdlog::info(log_msg_oss.str());
 
@@ -72,6 +93,14 @@ It takes batch of column vectors on input.
 */
     if (!built_) {
         throw std::logic_error("Network must be built before forward pass!");
+    }
+
+    if (input.get_rows() != shape_.front()) {
+        throw std::invalid_argument("Input feature count does not match the input layer!");
+    }
+
+    if (input.get_cols() == 0) {
+        throw std::invalid_argument("Input batch cannot be empty!");
     }
 
     if (learning) {
@@ -136,27 +165,51 @@ void NeuralNetwork::backward(const Matrix& input, const Matrix& target, double l
 
         weights_[layer] = weights_[layer] - learning_rate * dW;
     }
+
+    // Clear cached values which correspond to the previous weights
+    A_values_.clear();
+    Z_values_.clear();
 }
 
-NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type, ActivationFunction activation_function) {
-    ++n_layers_;
-    shape_.push_back(n_neurons);
-    if (layer_type != LayerType::Output) {
-        activation_functions_.push_back(activation_function);
+NeuralNetwork& NeuralNetwork::add_input_layer(size_t n_neurons) {
+    if (built_) {
+        throw std::logic_error("Cannot add layers after building the network!");
     }
+
+    if (!shape_.empty()) {
+        throw std::logic_error("Input layer has already been added!");
+    }
+
+    if (n_neurons == 0) {
+        throw std::invalid_argument("Layer must contain at least one neuron!");
+    }
+
+    shape_.push_back(n_neurons);
+
     return *this;
 }
 
 NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons) {
-    return add_layer(n_neurons, LayerType::Hidden, ActivationFunction::ReLU);
-}
-
-NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, LayerType layer_type) {
-    return add_layer(n_neurons, layer_type, ActivationFunction::ReLU);
+    return add_layer(n_neurons, ActivationFunction::ReLU);
 }
 
 NeuralNetwork& NeuralNetwork::add_layer(size_t n_neurons, ActivationFunction activation_function) {
-    return add_layer(n_neurons, LayerType::Hidden, activation_function);
+    if (shape_.empty()) {
+        throw std::logic_error("Input layer must be added first!");
+    }
+
+    if (built_) {
+        throw std::logic_error("Cannot add layers after building the network!");
+    }
+
+    if (n_neurons == 0) {
+        throw std::invalid_argument("Layer must contain at least one neuron!");
+    }
+
+    shape_.push_back(n_neurons);
+    activation_functions_.push_back(activation_function);
+
+    return *this;
 }
 
 void NeuralNetwork::randomize_weights_() {

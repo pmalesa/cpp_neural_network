@@ -7,7 +7,6 @@
 
 using std::vector;
 using types::ActivationFunction;
-using types::LayerType;
 using types::LossFunction;
 
 class NeuralNetwork {
@@ -28,15 +27,11 @@ public:
     void backward(const Matrix& input, const Matrix& target, double learning_rate, LossFunction loss);
     bool is_built() const { return built_; }
     
-    NeuralNetwork& add_layer(size_t n_neurons, LayerType layer_type, ActivationFunction activation_function);
-    // If layer_type is equal to LayerType::Output, then activation_function parameter can be ommitted (it will not be used)
-    
-    // Overloads for "Python-like" parameter passing
+    NeuralNetwork& add_input_layer(size_t n_neurons);
     NeuralNetwork& add_layer(size_t n_neurons);
-    NeuralNetwork& add_layer(size_t n_neurons, LayerType layer_type);
     NeuralNetwork& add_layer(size_t n_neurons, ActivationFunction activation_function);
     
-    size_t get_n_layers() const { return n_layers_; }
+    size_t get_n_layers() const { return shape_.size(); }
     vector<size_t> get_shape() const { return shape_; }
     vector<ActivationFunction>& get_activation_functions() { return activation_functions_; }
     const vector<ActivationFunction>& get_activation_functions() const { return activation_functions_; }
@@ -52,7 +47,6 @@ private:
     Matrix activation_backward_(const Matrix& dA, const Matrix& Z, const Matrix& A, size_t layer);
     Matrix softmax_backward_(const Matrix& dA, const Matrix& A);
 
-    size_t n_layers_;
     vector<size_t> shape_;
     vector<ActivationFunction> activation_functions_;
     vector<Matrix> weights_;
