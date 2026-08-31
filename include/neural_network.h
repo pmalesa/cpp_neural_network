@@ -39,13 +39,14 @@ public:
     const vector<Matrix>& get_weights() const { return weights_; }
     const vector<Matrix>& get_activations() const { return A_values_; }
     const vector<Matrix>& get_pre_activations() const { return Z_values_; }
+    double get_loss(const Matrix& target, const Matrix& pred, LossFunction loss) const;
     
 private:
     void randomize_weights_();  
-    Matrix apply_activation_(const Matrix& Z, size_t layer);
-    Matrix apply_loss_derivative_(const Matrix& target, const Matrix& pred, LossFunction loss);
-    Matrix activation_backward_(const Matrix& dA, const Matrix& Z, const Matrix& A, size_t layer);
-    Matrix softmax_backward_(const Matrix& dA, const Matrix& A);
+    Matrix apply_activation_(const Matrix& Z, size_t layer) const;
+    Matrix apply_loss_derivative_(const Matrix& target, const Matrix& pred, LossFunction loss) const;
+    Matrix activation_backward_(const Matrix& dA, const Matrix& Z, const Matrix& A, size_t layer) const;
+    Matrix softmax_backward_(const Matrix& dA, const Matrix& A) const;
 
     vector<size_t> shape_;
     vector<ActivationFunction> activation_functions_;

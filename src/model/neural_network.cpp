@@ -171,6 +171,21 @@ void NeuralNetwork::backward(const Matrix& input, const Matrix& target, double l
     Z_values_.clear();
 }
 
+double NeuralNetwork::get_loss(const Matrix& target, const Matrix& pred, LossFunction loss) const {
+    switch (loss) {
+        case LossFunction::MSE:
+            return Loss::mse(target, pred);
+        case LossFunction::MAE:
+            return Loss::mae(target, pred);
+        case LossFunction::BinaryCrossEntropy:
+            return Loss::binary_cross_entropy(target, pred);
+        case LossFunction::CategoricalCrossEntropy:
+            return Loss::categorical_cross_entropy(target, pred);
+        default:
+            throw std::logic_error("Unknown loss function!");
+    }
+}
+
 NeuralNetwork& NeuralNetwork::add_input_layer(size_t n_neurons) {
     if (built_) {
         throw std::logic_error("Cannot add layers after building the network!");
@@ -221,7 +236,7 @@ void NeuralNetwork::randomize_weights_() {
     }
 }
 
-Matrix NeuralNetwork::apply_activation_(const Matrix& Z, size_t layer) {
+Matrix NeuralNetwork::apply_activation_(const Matrix& Z, size_t layer) const {
     switch (activation_functions_[layer]) {
         case ActivationFunction::ReLU:
             return Activation::relu(Z);
@@ -236,7 +251,7 @@ Matrix NeuralNetwork::apply_activation_(const Matrix& Z, size_t layer) {
     }
 }
 
-Matrix NeuralNetwork::apply_loss_derivative_(const Matrix& target, const Matrix& pred, LossFunction loss) {
+Matrix NeuralNetwork::apply_loss_derivative_(const Matrix& target, const Matrix& pred, LossFunction loss) const {
     switch (loss) {
         case LossFunction::MSE:
             return Loss::mse_derivative(target, pred);
@@ -251,7 +266,7 @@ Matrix NeuralNetwork::apply_loss_derivative_(const Matrix& target, const Matrix&
     }
 }
 
-Matrix NeuralNetwork::activation_backward_(const Matrix& dA, const Matrix& Z, const Matrix& A, size_t layer) {
+Matrix NeuralNetwork::activation_backward_(const Matrix& dA, const Matrix& Z, const Matrix& A, size_t layer) const {
     switch (activation_functions_[layer]) {
         case ActivationFunction::ReLU:
             return dA.elementwise_mul(Activation::relu_derivative(Z));
@@ -266,7 +281,7 @@ Matrix NeuralNetwork::activation_backward_(const Matrix& dA, const Matrix& Z, co
     }
 }
 
-Matrix NeuralNetwork::softmax_backward_(const Matrix& dA, const Matrix& A) {
+Matrix NeuralNetwork::softmax_backward_(const Matrix& dA, const Matrix& A) const {
     Matrix dZ(A.get_rows(), A.get_cols());
 
     for (size_t col = 0; col < A.get_cols(); ++col) {
