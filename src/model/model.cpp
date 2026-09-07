@@ -80,6 +80,10 @@ Model& Model::fit(const Matrix& X, const Matrix& y, size_t epochs, double learni
 }
 
 Matrix Model::predict(const Matrix& input) {
+    if (!fit_) {
+        throw std::logic_error("Model must be fitted before prediction!");
+    }
+
     return nn_.forward(input, false);
 }
 

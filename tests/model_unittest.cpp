@@ -1,6 +1,7 @@
 #include "model.h"
 #include <gtest/gtest.h>
 #include "matrix.h"
+#include "loss.h"
 #include "spdlog/spdlog.h"
 #include <stdexcept>
 
@@ -20,21 +21,52 @@ protected:
 };
 
 TEST_F(ModelTest, ConstructorTest) {
-    // vector<size_t> shape = {10, 20, 30};
-    // vector<ActivationFunction> activation_functions = {ActivationFunction::ReLU};
-    // EXPECT_THROW(Model model(shape, activation_functions), std::logic_error);
+    Model model;
+    model.add_input_layer(2);
+    model.add_layer(3, ActivationFunction::ReLU);
+    model.add_layer(2, ActivationFunction::Softmax);
+
+    EXPECT_TRUE(model.shape() == vector<size_t>({2, 3, 2}));
 }
 
-TEST_F(ModelTest, AddLayerMethodTest) {
-    // Model model;
-    // model.add_layer(10);
-    // model.add_layer(20);
-    // model.add_layer(30);
-    // model.add_layer(1, LayerType::Output);    
-    // EXPECT_TRUE(model.shape()[0] == 10);
-    // EXPECT_TRUE(model.shape()[1] == 20);
-    // EXPECT_TRUE(model.shape()[2] == 30);
-    // EXPECT_TRUE(model.shape()[3] == 1);
-    // model.fit({}, {}, 100, 1e-5, LossFunction::MAE);
-    // EXPECT_THROW(model.add_layer(666), std::logic_error);
+TEST_F(ModelTest, FitRejectsInvalidArguments) {
+    // ...
+}
+
+TEST_F(ModelTest, FitReducesLossTest) {
+    Model model;
+    model.add_input_layer(2);
+    model.add_layer(2, ActivationFunction::Softmax);
+
+    Matrix X = {
+        {-1.0, -1.0, 1.0, 1.0},
+        {-1.0,  1.0, -1.0, 1.0}
+    };
+
+    Matrix y = {
+        {1.0, 1.0, 0.0, 0.0},
+        {0.0, 0.0, 1.0, 1.0}
+    };
+
+    model.fit(X, y, 1, 0.01, LossFunction::CategoricalCrossEntropy);
+
+    Matrix pred_before = model.predict(X);
+    double loss_before = Loss::categorical_cross_entropy(y, pred_before);
+
+    model.fit(X, y, 1, 0.01, LossFunction::CategoricalCrossEntropy);
+
+    Matrix pred_after = model.predict(X);
+    double loss_after = Loss::categorical_cross_entropy(y, pred_after);
+
+    EXPECT_TRUE(loss_after < loss_before);
+}
+
+TEST_F(ModelTest, ClearMethodTest) {
+    Model model;
+    model.add_input_layer(2);
+    model.add_layer(3, ActivationFunction::ReLU);
+    model.add_layer(2, ActivationFunction::Softmax);
+    model.clear();
+
+    EXPECT_TRUE(model.shape().size() == 0);
 }
